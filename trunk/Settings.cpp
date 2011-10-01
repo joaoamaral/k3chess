@@ -118,7 +118,7 @@ QString K3ChessSettings::localeName() const
 
 QString K3ChessSettings::pieceStyle() const
 {
-   QString name = settings_.value("PieceStyle", cDefaultPieceStyle).toString();
+   QString name = settings_.value("Board/PieceStyle", cDefaultPieceStyle).toString();
    if(pieceStyles_.find(name)==pieceStyles_.end())
    {
       if(pieceStyles_.empty()) return cDefaultLocaleName;
