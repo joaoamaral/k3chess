@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>744</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Sans Serif</family>
+    <pointsize>11</pointsize>
+    <weight>75</weight>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <widget class="QLabel" name="lEngine">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>129</y>
+     <width>201</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Engine</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbEngine">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>123</y>
+     <width>231</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbPieceStyle">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>173</y>
+     <width>230</width>
+     <height>30</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lPieceStyle">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>180</y>
+     <width>201</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Piece style</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lGameControl">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>240</y>
+     <width>511</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Game control</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lPlayerTime">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>280</y>
+     <width>211</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Player time</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lEngineTime">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>329</y>
+     <width>211</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Engine time</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbPlayerTime">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>273</y>
+     <width>231</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbEngineTime">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>320</y>
+     <width>230</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cbPondering">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>380</y>
+     <width>441</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Pondering</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lOtherSettings">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>440</y>
+     <width>501</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Other settings</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lGeneralSettings">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>40</y>
+     <width>521</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+     <italic>false</italic>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string notr="true">General settings</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lPlayerName">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>80</y>
+     <width>201</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Player name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="edPlayerName">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>73</y>
+     <width>231</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lInterfaceLanguage">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>686</y>
+     <width>241</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+   <property name="text">
+    <string>Interface language</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cmbInterfaceLanguage">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>680</y>
+     <width>231</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>480</y>
+     <width>491</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCheckBox" name="cbDrawMoveArrow">
+      <property name="text">
+       <string>Draw last move arrow</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="cbDrawCoordinates">
+      <property name="text">
+       <string>Draw coordinates on board sides</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="cbShowMoveHints">
+      <property name="text">
+       <string>Show move hints</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="cbQuickSingleMoveSelection">
+      <property name="text">
+       <string>Allow quick selection of single moves</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="cbAutoSaveGames">
+      <property name="text">
+       <string>Auto save games</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>lEngine</zorder>
+  <zorder>cmbEngine</zorder>
+  <zorder>cmbPieceStyle</zorder>
+  <zorder>lPieceStyle</zorder>
+  <zorder>lGameControl</zorder>
+  <zorder>lPlayerTime</zorder>
+  <zorder>lEngineTime</zorder>
+  <zorder>cmbPlayerTime</zorder>
+  <zorder>cmbEngineTime</zorder>
+  <zorder>cbPondering</zorder>
+  <zorder>lOtherSettings</zorder>
+  <zorder>lGeneralSettings</zorder>
+  <zorder>lPlayerName</zorder>
+  <zorder>edPlayerName</zorder>
+  <zorder>lInterfaceLanguage</zorder>
+  <zorder>cmbInterfaceLanguage</zorder>
+ </widget>
+ <tabstops>
+  <tabstop>edPlayerName</tabstop>
+  <tabstop>cmbEngine</tabstop>
+  <tabstop>cmbPieceStyle</tabstop>
+  <tabstop>cmbPlayerTime</tabstop>
+  <tabstop>cmbEngineTime</tabstop>
+  <tabstop>cbPondering</tabstop>
+  <tabstop>cbDrawMoveArrow</tabstop>
+  <tabstop>cbDrawCoordinates</tabstop>
+  <tabstop>cbShowMoveHints</tabstop>
+  <tabstop>cbQuickSingleMoveSelection</tabstop>
+  <tabstop>cbAutoSaveGames</tabstop>
+  <tabstop>cmbInterfaceLanguage</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
