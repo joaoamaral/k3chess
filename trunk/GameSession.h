@@ -46,7 +46,7 @@ signals:
 private slots:
    void white_isReady();
    void white_moves(const ChessMove& move);
-   void white_moves(const std::string& move);
+   void white_moves(const std::string& move_str);
    void white_offersDraw();
    void white_resigns();
    void white_says(const QString& msg);
@@ -55,7 +55,7 @@ private slots:
 
    void black_isReady();
    void black_moves(const ChessMove& move);
-   void black_moves(const std::string& move);
+   void black_moves(const std::string& move_str);
    void black_offersDraw();
    void black_resigns();
    void black_says(const QString& msg);

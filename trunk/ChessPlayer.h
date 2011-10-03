@@ -25,8 +25,8 @@ public:
                          const ChessMove& lastMove,
                          const ChessClock& whiteClock,
                          const ChessClock& blackClock) = 0;  // prompt player to make a move in the given position and given last opponent move (if any)
-
    // notifications (optional processing)
+   virtual void illegalMove() {}                          // informs the player that the move he attempted to make is an illegal move (makeMove() call will follow)
    virtual void opponentMoves(const ChessMove& move) {}   // inform player about opponent's next move
    virtual void opponentOffersDraw() {}                   // inform player that his opponent has offered a draw (send draw offer to accept, move to reject)
    virtual void opponentAcceptsDraw() {}                  // inform player that his opponent has accepted the draw offer

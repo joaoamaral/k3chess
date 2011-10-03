@@ -41,8 +41,12 @@ ChessCoord ChessCoord::fromString(const std::string& s)
 {
    if(s.length()==2)
    {
-      return ChessCoord(colFromChar(s[0]),
-                        rowFromChar(s[1]));
+      ChessCoord coord;
+      coord.col = colFromChar(s[0]);
+      if(coord.col==0) return ChessCoord();
+      coord.row = rowFromChar(s[1]);
+      if(coord.row==0) return ChessCoord();
+      return coord;
    }
    else
    {
@@ -65,8 +69,12 @@ CoordPair CoordPair::fromString(const std::string& str)
 {
    if(str.length()==4)
    {
-      return CoordPair(ChessCoord::fromString(str.substr(0, 2)),
-                       ChessCoord::fromString(str.substr(2)));
+      CoordPair cpair;
+      cpair.from = ChessCoord::fromString(str.substr(0, 2));
+      if(cpair.from==ChessCoord()) return CoordPair();
+      cpair.to = ChessCoord::fromString(str.substr(2));
+      if(cpair.to==ChessCoord()) return CoordPair();
+      return cpair;
    }
    else
    {

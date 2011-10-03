@@ -16,7 +16,10 @@ bool customEventFilter(void *message, long *)
 			return true;
 		}
 		if(pke->simpleData.keycode == Qt::Key_WakeUp) {
-			qApp->activeWindow()->repaint();
+			QSize size = qApp->activeWindow()->size();
+			// force repaint
+			qApp->activeWindow()->resize(size.width(), size.height()+1);
+			qApp->activeWindow()->resize(size.width(), size.height());
 			return true;
 		}
 		qDebug("QWS key: key=0x%x, press=%d, uni=%d", pke->simpleData.keycode,

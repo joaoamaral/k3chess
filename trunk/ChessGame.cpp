@@ -1,12 +1,13 @@
 #include "ChessGame.h"
 #include "Settings.h"
+#include "StringUtils.h"
 
 #include <fstream>
 
 namespace
 {
 
-void logPositionAndMoves(const ChessPosition& position, const ChessMoveMap& moves)
+void logString(const std::string& str)
 {
    static unsigned nCalls = 0;
    static bool noLog = false;
@@ -14,27 +15,43 @@ void logPositionAndMoves(const ChessPosition& position, const ChessMoveMap& move
    std::ofstream out("./logs/pos_moves.log", nCalls==0 ? std::ios::trunc : std::ios::app);
    noLog = out.fail();
    if(noLog) return; // will fail if there is no 'logs' folder
-   out << "Position: " << position.toString() << std::endl;
-   out << "Available moves:";
+   out << str << std::endl;
+   ++nCalls;
+}
+
+void logIllegalMove(const ChessMove& move)
+{
+   logString(std::string("Attempt to make an illegal move: ") + move.toString());
+}
+
+void logPositionAndMoves(const ChessPosition& position, const ChessMoveMap& moves)
+{
+   std::string str;
+   str.reserve(200);
+   str.append("Position: ");
+   str.append(position.toString());
+   str.append("\n");
+   str.append("Available moves:");
    //
    ChessMoveMap::const_iterator_pair range =
          moves.getAllMoves();
    //
    if(range.first==range.second)
    {
-      out << " -";
+      str.append(" -");
    }
    else
    {
       for(;range.first!=range.second;++range.first)
       {
-         out << " " << range.first->toString();
+         str.append(" ");
+         str.append(range.first->toString());
       }
    }
    //
-   out << std::endl << std::endl;
+   str.append("\n");
    //
-   ++nCalls;
+   logString(str);
 }
 
 QString toSANMove(const ChessPosition& position, const ChessMoveMap& moves, const ChessMove& move)
@@ -128,21 +145,21 @@ QString toSANMove(const ChessPosition& position, const ChessMoveMap& moves, cons
       {
          s.append(ChessPiece(move.promotion|pcBlack).toChar());
       }
-      //
-      ChessMoveMap moves;
-      //
-      g_chessRules.findPossibleMoves(nextPosition, moves);
-      //
-      if(g_chessRules.isKingChecked(nextPosition.sideToMove(), nextPosition))
+   }
+   //
+   ChessMoveMap nextMoves;
+   //
+   g_chessRules.findPossibleMoves(nextPosition, nextMoves);
+   //
+   if(g_chessRules.isKingChecked(nextPosition.sideToMove(), nextPosition))
+   {
+      if(nextMoves.empty())
       {
-         if(moves.empty())
-         {
-            s.append('#');
-         }
-         else
-         {
-            s.append('+');
-         }
+         s.append('#');
+      }
+      else
+      {
+         s.append('+');
       }
    }
    //
@@ -197,12 +214,12 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
 {
    if(move_str.length()<2 || move_str.length()>7) return CoordPair();
    //
-   if(move_str=="O-O")
+   if(startsWith(move_str, "O-O"))
    {
       RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
       return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
    }
-   else if(move_str=="O-O-O")
+   else if(startsWith(move_str, "O-O-O"))
    {
       RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
       return CoordPair(ChessCoord(5, row), ChessCoord(3, row));
@@ -284,6 +301,80 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
    ChessMove move = findPieceMove(moves, position, pt, from, to);
    move.promotion = promotion;
    return move;
+}
+
+ChessMove interpretDashedMove(const std::string& move_str)
+{
+   // interprets moves in the format containing two coordinates
+   // separated with a dash, and possibly preceded by a piece symbol
+   size_t pos = move_str.find('-');
+   if(pos==std::string::npos || pos < 2 || move_str.length()-pos < 3) return ChessMove();
+   ChessMove move;
+   move.from = ChessCoord::fromString(move_str.substr(pos-2, 2));
+   if(move.from==ChessCoord()) return ChessMove();
+   move.to = ChessCoord::fromString(move_str.substr(pos+1, 2));
+   if(move.from==ChessCoord()) return ChessMove();
+   if(move_str.length()-pos>3)
+   {
+      ChessPiece piece = ChessPiece::fromChar(move_str[pos+3]);
+      switch(piece.type())
+      {
+         case ptQueen:
+         case ptRook:
+         case ptBishop:
+         case ptKnight:
+            move.promotion = piece.type();
+            break;
+         default:
+            break;
+      }
+   }
+   return move;
+}
+
+
+QString getPgnScore(ChessGameResult result)
+{
+   switch(result)
+   {
+      case resultWhiteCheckmates:
+      case resultBlackResigns:
+      case resultWhiteWonOnTime:
+         return "1-0";
+         break;
+      case resultBlackCheckmates:
+      case resultWhiteResigns:
+      case resultBlackWonOnTime:
+         return "0-1";
+         break;
+      case resultDrawnByAgreement:
+      case resultDrawnByStalemate:
+      case resultDrawnByRepetition:
+      case resultDrawnBy50MoveRule:
+         return "1/2-1/2";
+         break;
+      default:
+         return QString();
+   }
+}
+
+QString getPgnResultMessage(ChessGameResult result)
+{
+   switch(result)
+   {
+   case resultWhiteCheckmates: return "White won by checkmate";
+   case resultBlackCheckmates: return "Black won by checkmate";
+   case resultWhiteWonOnTime: return "White won on time";
+   case resultBlackWonOnTime: return "Black won on time";
+   case resultWhiteResigns: return "Black won by resignation";
+   case resultBlackResigns: return "White won by resignation";
+   case resultDrawnByAgreement: return "Game drawn by agreement";
+   case resultDrawnByRepetition: return "Game drawn by threefold repetition";
+   case resultDrawnByStalemate: return "Game drawn by stalemate";
+   case resultDrawnBy50MoveRule: return "Game drawn by 50 move rule";
+   default:
+      return QString();
+   }
 }
 
 }
@@ -376,6 +467,7 @@ bool ChessGame::applyMove(const ChessMove& move)
 {
    if(!possibleMoves_.contains(move))
    {
+      logIllegalMove(move);
       return false; // attempt to make an illegal move
    }
    //
@@ -453,11 +545,11 @@ QString ChessGame::toPGN() const
    pgn.reserve(2048);
    //
    pgn.append("[Event \"K3Chess game\"]\n");
-   pgn.append("[Site \"?\"]");
+   pgn.append("[Site \"?\"]\n");
    pgn.append("[Date \"");
    pgn.append(startTime_.date().toString("yyyy.MM.dd"));
    pgn.append("\"]\n");
-   pgn.append("[Round \"?\"]");
+   pgn.append("[Round \"?\"]\n");
    //
    pgn.append("[White \"");
    pgn.append(whitePlayerName_);
@@ -469,37 +561,12 @@ QString ChessGame::toPGN() const
    //
    pgn.append("[Result \"");
    //
-   QString score;
-   score.reserve(8);
-   //
-   switch(result_)
-   {
-      case resultWhiteCheckmates:
-      case resultBlackResigns:
-      case resultWhiteWonOnTime:
-         score.append("1-0");
-         break;
-      case resultBlackCheckmates:
-      case resultWhiteResigns:
-      case resultBlackWonOnTime:
-         score.append("0-1");
-         break;
-      case resultDrawnByAgreement:
-      case resultDrawnByStalemate:
-      case resultDrawnByRepetition:
-      case resultDrawnBy50MoveRule:
-         score.append("1/2-1/2");
-         break;
-      default:
-         break;
-   }
-   //
-   pgn.append(" ");
+   QString score = getPgnScore(result_);
    pgn.append(score.isEmpty() ? QString("*") : score);
    pgn.append("\"]\n");
    //
    pgn.append("[Termination \"");
-   pgn.append(resultMessage_);
+   pgn.append(getPgnResultMessage(result_));
    pgn.append("\"]\n");
    //
    for(unsigned i=0; i<sanMoves_.size(); ++i)
@@ -522,6 +589,8 @@ QString ChessGame::toPGN() const
       //
       pgn.append(sanMoves_[i]);
    }
+   //
+   pgn.append(" ");
    //
    pgn.append(score);
    //
@@ -549,10 +618,20 @@ bool ChessGame::takebackOneFullMove()
    return true;
 }
 
-ChessMove ChessGame::interpretSANMove(const std::string &san)
+ChessMove ChessGame::interpretMoveString(const std::string &move_str) const
 {
    if(possibleMoves_.empty()) return ChessMove();
    //
-   return findSANMove(possibleMoves_, position_, san);
+   ChessMove move = ChessMove::fromString(move_str);
+   if(move==ChessMove())
+   {
+      move = findSANMove(possibleMoves_, position_, move_str);
+      if(move==ChessMove())
+      {
+         move = interpretDashedMove(move_str);
+      }
+   }
+   //
+   return move;
 }
 

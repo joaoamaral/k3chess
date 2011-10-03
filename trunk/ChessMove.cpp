@@ -38,5 +38,7 @@ ChessMove ChessMove::fromString(const std::string& str)
             break;
       }
    }
-   return ChessMove(CoordPair::fromString(str.substr(0, 4)), promotion);
+   CoordPair cpair = CoordPair::fromString(str.substr(0, 4));
+   if(cpair==CoordPair()) return ChessMove();
+   return ChessMove(cpair, promotion);
 }

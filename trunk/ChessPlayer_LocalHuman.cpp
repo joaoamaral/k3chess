@@ -138,3 +138,7 @@ void ChessPlayer_LocalHuman::opponentRequestsAbort(bool &accept)
    accept = true;
 }
 
+void ChessPlayer_LocalHuman::illegalMove(const std::string &move_str)
+{
+}
+

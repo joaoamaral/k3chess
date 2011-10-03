@@ -412,7 +412,7 @@ ChessPosition ChessPosition::fromString(const std::string& s)
    return position;
 }
 
-void ChessPosition::prohibitShortCastle(PieceColor color)
+void ChessPosition::prohibitShortCastling(PieceColor color)
 {
    switch(color)
    {
@@ -421,12 +421,21 @@ void ChessPosition::prohibitShortCastle(PieceColor color)
    }
 }
 
-void ChessPosition::prohibitLongCastle(PieceColor color)
+void ChessPosition::prohibitLongCastling(PieceColor color)
 {
    switch(color)
    {
       case pcWhite:  castling_ &= ~cWhiteCanLongCastle; break;
       case pcBlack:  castling_ &= ~cBlackCanLongCastle; break;
+   }
+}
+
+void ChessPosition::prohibitCastling(PieceColor color)
+{
+   switch(color)
+   {
+      case pcWhite:  castling_ &= ~(cWhiteCanShortCastle|cWhiteCanLongCastle); break;
+      case pcBlack:  castling_ &= ~(cBlackCanShortCastle|cBlackCanLongCastle); break;
    }
 }
 

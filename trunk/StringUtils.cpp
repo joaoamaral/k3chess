@@ -68,13 +68,18 @@ unsigned countChars(const std::string& s, char c)
    return count;
 }
 
-bool startsWith(const std::string& s, const char *prefix)
+bool startsWith(const std::string& str, const char *prefix)
 {
-   std::string::const_iterator it = s.begin(), itEnd = s.end();
-   for(;it!=itEnd;++it,++prefix)
+   if(str.empty()) return *prefix==0;
+   //
+   const char *s = str.c_str();
+   while(true)
    {
       if(*prefix==0) return true;
-      if(*it!=*prefix) return false;
+      if(*s==0) break;
+      if(*prefix!=*s) break;
+      ++s;
+      ++prefix;
    }
    return false;
 }

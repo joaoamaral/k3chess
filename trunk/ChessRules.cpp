@@ -1,6 +1,7 @@
 #include "ChessRules.h"
 
 #include <list>
+#include <iostream>
 
 namespace
 {
@@ -777,14 +778,14 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
             position.canLongCastle(position.sideToMove()))
          {
             applyCastlingMove(position, false, move.from);
-            position.prohibitLongCastle(position.sideToMove());
+            position.prohibitCastling(position.sideToMove());
             return moveLongCastling;
          }
          else if(move.to.col==position.rightRookInitialCol() &&
                  position.canShortCastle(position.sideToMove()))
          {
             applyCastlingMove(position, true, move.from);
-            position.prohibitShortCastle(position.sideToMove());
+            position.prohibitCastling(position.sideToMove());
             return moveShortCastling;
          }
       }
@@ -794,13 +795,13 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
          if(move.to.col==3)
          {
             applyCastlingMove(position, false, move.from);
-            position.prohibitLongCastle(position.sideToMove());
+            position.prohibitCastling(position.sideToMove());
             return moveLongCastling;
          }
          else if(move.to.col==position.maxCol()-1)
          {
             applyCastlingMove(position, true, move.from);
-            position.prohibitShortCastle(position.sideToMove());
+            position.prohibitCastling(position.sideToMove());
             return moveShortCastling;
          }
       }
@@ -812,8 +813,14 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
 inline
 ChessMoveType applyEnpassantCapture(ChessPosition& position, const CoordPair& move)
 {
+   //
    // @note: only 0 or moveCapture is returned
    //
+   if(position.enpassant()==ChessCoord() ||
+      position.cell(position.enpassant()).color()==position.sideToMove())
+   {
+      return 0;
+   }
    ChessPiece movedPiece = position.cell(move.from);
    //
    if(movedPiece.type()!=ptPawn)
@@ -840,13 +847,13 @@ void adjustCastlingPossibility(ChessPosition& position, ChessCoord coord, ChessP
    {
       case ptRook:
          if(coord.col==position.leftRookInitialCol())
-            position.prohibitLongCastle(position.sideToMove());
+            position.prohibitLongCastling(position.sideToMove());
          else if(coord.col==position.rightRookInitialCol())
-            position.prohibitShortCastle(position.sideToMove());
+            position.prohibitShortCastling(position.sideToMove());
          break;
       case ptKing:
-         position.prohibitLongCastle(position.sideToMove());
-         position.prohibitShortCastle(position.sideToMove());
+         position.prohibitLongCastling(position.sideToMove());
+         position.prohibitShortCastling(position.sideToMove());
          break;
    }
 }
@@ -862,8 +869,10 @@ MoveType applyConventionalMove(ChessPosition& position, const CoordPair& move)
    if(!position.touched(move.from))
       adjustCastlingPossibility(position, move.from, movedPiece);
    //
-   assert(movedPiece.type()!=ptNone);
-   assert(movedPiece.color()==position.sideToMove());
+   if(movedPiece.type()==ptNone || movedPiece.color()!=position.sideToMove())
+   {
+      assert(false);
+   }
    //
    position.setCell(move.from, ChessPiece());
    position.setCell(move.to, movedPiece);
@@ -942,15 +951,6 @@ void ChessRules::findPossibleMoves(const ChessPosition &position, ChessMoveMap &
       {
          moves.add(*it);
       }
-#ifdef _DEBUG
-      else
-      {
-         std::string fen = position.toString();
-         std::string rejectedMove = it->toString();
-         int x = 0;
-         ++x;
-      }
-#endif
    }
 }
 

@@ -6,7 +6,7 @@
 const int cDefaultCommandPanelHeight = 38;
 
 K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
-    QMainWindow(parent), customKeyboardMode_(false)
+   QMainWindow(parent), customKeyboardMode_(false)
 {
    boardView_ = new ChessBoardView(this);
    console_ = new QPlainTextEdit(this);
@@ -19,11 +19,13 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    console_->setReadOnly(true);
    console_->setFocusPolicy(Qt::NoFocus);
    console_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-   console_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+   console_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
    console_->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
    console_->setFont(textFont);
    moveList_->setFocusPolicy(Qt::NoFocus);
    moveList_->setFont(textFont);
+   moveList_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+   moveList_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    commandPanel_->setFocusPolicy(Qt::NoFocus);
    commandPanel_->setFont(textFont);
    commandPanel_->setUseHotKeys(false);
@@ -86,7 +88,12 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
    switch(key)
    {
       case Qt::Key_Refresh:
-         repaint(rect());
+         {
+            // this is a cludge, because repaint() does not
+            // always trigger actual repaint
+            resize(width(), height()+1);
+            resize(width(), height());
+          }
          break;
       default:
          if(commandPanel_->hasCursor())
@@ -147,7 +154,7 @@ void K3ChessMainWindow::updateControlLayout()
    {
       // portrait orientation
       consoleRect = QRect(0, commandRect.bottom()+1,
-                          width()*2/3, height()-commandRect.bottom()-1);
+                          width()*31/50, height()-commandRect.bottom()-1);
       moveListRect = QRect(consoleRect.right()+1, consoleRect.top()+1,
                            width()-consoleRect.right()-1, consoleRect.height());
    }
@@ -155,7 +162,7 @@ void K3ChessMainWindow::updateControlLayout()
    {
       // landscape orientation
       consoleRect = QRect(boardRect.right()+1, boardRect.top(),
-                          width()-boardRect.right()-1, boardRect.height()*1/3);
+                          width()-boardRect.right()-1, boardRect.height()*19/50);
       moveListRect = QRect(consoleRect.left(), consoleRect.bottom()+1,
                            consoleRect.width(), boardRect.height()-consoleRect.height());
    }
