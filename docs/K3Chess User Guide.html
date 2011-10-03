@@ -1,0 +1,626 @@
+<html>
+<head>
+<title>K3Chess user guide</title>
+</head>
+<body>
+
+<h1>K3Chess user guide</h1>
+
+<h2>Introduction</h2>
+
+K3Chess is a graphical chess interface optimized for
+mobile devices and e-book readers. K3Chess supports UCI and XBoard
+chess engines. K3Chess implements basic functionality for
+playing games against an engine or another human opponent
+and saving the games to a PGN file.
+
+<h3>K3Chess window</h3>
+
+When K3Chess is started the following items are displayed on the
+device screen:
+
+<ul>
+<li>Chessboard with coordinates on two sides</li>
+<li>Menu area (just below the chessboard)</li>
+<li>Console window (bottom left)</li>
+<li>Move list (bottom right)</li>
+</ul>
+
+<h3>Menu area</h3>
+
+The menu area is located immediately below the chessboard. It is used
+to display menu items and some static notification messages.
+To select a menu item use the <b>Left</b> and <b>Right</b> cursor keys which you
+assigned on the first program run. Typically this would be left and
+right keys of the 5-way controller. To select an item press the <b>Select</b> key
+(typically the center button of the 5-way controller).
+To close the menu or to display an additional menu (if availalble),
+press the <b>Menu</b> key. <b>Note:</b> the <b>Back</b> key may also be used instead
+of <b>Menu</b> key for opening/closing menus. The <b>Back</b> key is hardcoded
+(not mapped), so it may not work on certain devices.
+
+<h3>Console window</h3>
+
+The console window is intended for displaying various messages that
+are related to the game being played. For example, when the game
+starts it displays the new game information, including player names
+and their respective time settings. When a player makes a draw offer,
+it displays the draw offer. When the game is finished, it displays
+the corresponding game result message.
+
+<h3>Move list</h3>
+
+The move list contains the current game moves in SAN format, which
+is standard for most chess programs. It can be used to keep track
+of game progress. When a move is taken back, it is removed from
+the move list. K3Chess does not support recorded game variations.
+
+<h2>Key mapping</h2>
+
+On the first run, K3Chess will prompt you to enter keys which will
+be used for controlling the program. This allows you to set up custom
+or to tune the program for your specific device.
+When you see a message like 'Press a key for &lt;Left&gt;', you should press
+the key which will be used as the left cursor key.
+Typically it would be the left arrow of the 5-way controller.
+Similarly, the <b>Select</b> key will most likely be the center button of the
+5-way joystick, but you can set it to any other key. 
+The <b>Refresh</b> key is a key to be used for refreshing the whole screen
+(full screen refresh is required on e-Ink devices every once in a while).
+
+<b>Note:</b> When remapping keys, please remember that the following keys are
+used in K3Chess for quick move selection on the chessboard. It is
+recommended that you do not use them for other functions:
+   a, b, c, d, e, f, g, k, q, r, i, n, p
+
+If you made a mistake or want to change the key mapping, close the
+program (by pressing <b>Alt-Back</b>), attach the Kindle to the computer
+and delete the 'keys.ini' file from the 'K3Chess' directory. On next
+program startup you will be prompted to enter a new key mapping.
+
+<h2>Starting a game</h2>
+
+On the inital K3Chess screen the menu area will display the following
+menu:
+
+&nbsp;&nbsp&nbsp;<b>New game as white&nbsp;&nbsp;&nbsp;
+New game as black&nbsp;&nbsp;&nbsp;Two player game</b>
+
+The first two game types are for playing against an engine, the last
+game type is for playing with another human opponent using K3Chess
+as a graphical chessboard. Select one of the menu items to start a
+new game.
+
+<h2>Playing a game</h2>
+
+After the game has started, you can make moves by entering them
+via the assigned cursor keys and <b>Select</b> key, or by using
+quick move selection techniques described below.
+
+E-Ink displays are slow, so if you are playing chess on such a
+device, it is not always convenient to enter moves with the 5-way
+controller. To ease up move selection the following techniques
+can be used.
+
+To select a piece that is on a certain file (column):
+
+&nbsp;&nbsp;&nbsp;Press the key for that column (<b>a</b>-<b>h</b>)
+
+To select next movable piece in the same column:
+
+&nbsp;&nbsp;&nbsp;Press the key for that column again
+
+To select a piece with a certain value:
+
+&nbsp;&nbsp;&nbsp;Press <b>K</b> for King, <b>Q</b> for Queen,
+<b>R</b> for Rook, <b>I</b> for bIshop, <b>N</b> for kNight, <b>P</b> for Pawn.
+
+To select next piece with the given value:
+
+&nbsp;&nbsp;&nbsp;Press the piece key once again
+
+<b>Note:</b> Piece and column keys are case-insensitive.
+
+To move cursor to a specific rank:
+
+&nbsp;&nbsp;&nbsp;Press the rank number <b>1..8</b> (if your device has numerical keys or can emulate them)
+
+After you have selected the starting square, you can use the same techniques to select the target
+square by pressing the corresponding file/column key (one or more times), rank/row key, or piece key
+(in which case it selects the piece to be captured). If a piece is selected that has only one allowed
+move and the "Allow quick selection of single moves" option is enabled, the move will be performed
+right away without the need to select the target square. If this behavior seems not intuitive to you,
+turn off the "Allow quick selection of single moves" option in the settings dialog. 
+
+<b>Note:</b> Only allowed moves can be selected using quick selection techniques. If you press a key
+and nothing happens, please make sure that the move is legal in the current position. You can use
+the move hints option to display small marks in the squares to which the selected piece can be
+moved. If you accidentally selected the wrong piece, select it again instead of the target square or
+press the <b>Back</b> button to start the selection over.
+
+<h2>Refreshing the screen</h2>
+
+E-Ink screens require a periodical refresh. The built-in software
+of e-Ink devices typically refresh the screen on each page turn.
+K3Chess does not refresh the screen after every chess move, but
+you can refresh the screen manually by pressing the <b>Refresh</b>
+key assigned on the first program run. For example, the spacebar key
+can be used for refreshing the screen.
+
+<h2>Saving or discarding a game</h2>
+
+After a game is finished, you will be prompted to either save
+or discard the game. The games are saved to the 'games.pgn'
+file located in the K3Chess application folder. If you have not
+yet saved games with K3Chess, there will be no 'games.pgn' file,
+and it will be created dynamically. If 'games.pgn' already exists,
+then the game will be appended to the end of the file.
+Currently K3Chess does not allow viewing PGN files, but you can
+view the stored games on a PC or another device which has a PGN
+viewer software intalled such as Eboard, BabasChess, Arena, etc.
+
+<h2>Changing program settings</h2>
+
+On the initial screen, when the game type menu is shown, press the
+<b>Menu</b> key. An additional menu with the following items will appear:
+
+&nbsp;&nbsp&nbsp;<b>Settings&nbsp;&nbsp&nbsp;Quit</b>
+
+Choose Settings to open the settings screen. On the settings screen
+you can change various program settings, including the style of
+chess pieces, the name of the chess engine, the clock setup for you
+and for the engine, etc. Once you are finished changing settings,
+press the <b>Menu</b> key (or <b>Back</b> key) to close the settings window.
+<b>Note:</b> there are no 'OK' and 'Cancel' buttons, the new settings will
+be applied immediately.
+
+<h2>Exiting the program</h2>
+
+To close the program and return to your device's home screen press
+the <b>Alt+Back</b> key combination. You can also select 'Quit' from
+the additional menu described above.
+
+<h2>Adding custom chess piece styles</h2>
+
+Chess pieces and unoccupied board cells are drawn using the files
+located in the 'pieces' subfolder of the K3Chess application window.
+You can copy one of the provided image files and modify it, or
+create a completely new file with the same proportions (7x4 squares),
+containing the same arrangement of chess pieces and board squares.
+The 'pieces' subfolder is scanned on each program startup and the
+available piece image files are listed in the settings window.
+Simply open the settings window and select the new custom piece
+image file and it will be used to draw the chessboard.
+
+<h2>Adding chess engines</h2>
+
+Chess engines are programs which run in the background and
+with which you actually play. K3Chess only provides a graphical
+interface to those programs. It allows you to load any UCI or XBoard
+compatible chess engine compiled for running on your device platform.  
+To add a chess engine, open the 'engines' subfolder within the K3Chess
+application folder, create a new subfolder for your engine, such as
+'MyEngine'. Then copy your engine executable and data files there and
+create an 'engine.ini' file in the same folder with the following contents:
+
+<pre>
+[Description]
+EngineName=your engine name
+Executable=name of the engine executable file
+EngineType=engine type (UCI or XBoard)
+</pre>
+
+If you are unsure which type the engine is, you can use the following
+option instead:
+
+<pre>
+EngineType=Detect
+</pre>
+
+In this case K3Chess will try to detect the engine type automatically
+when you first load the engine. This may take up to several seconds.
+
+If you want to send the engine some commands immediately after its
+startup, add the following section to the 'engine.ini' file:
+
+<pre>
+[Startup]
+CommandCount=number of commands
+Command1=command 1 text
+Command2=command 2 text
+...
+</pre>
+
+The commands will be executed in the order that corresponds to their
+numbering.
+
+Some chess engines leave log files and history files in the engine directory.
+If you want K3Chess to remove those files automatically, add the following
+section to the 'engine.ini' file:
+
+<pre>
+[Cleanup]
+DeleteFiles=file masks
+</pre>
+
+for example:
+
+<pre>
+DeleteFiles="*.log;*.tmp"
+</pre>
+
+<h2>Adding localizations</h2>
+
+You can add a custom localization or edit existing menu item and message text
+used in K3Chess. The localized strings are stored in the 'locales' subfolder of
+the K3Chess folder. Each localization file is an ini file with a specific format.
+To create a new localization, copy 'en.ini' or another existing localization file
+and modify it. Do not forget to rename the locale to match the target language.
+The newly created locale file will be added to the list of locales available in
+the settings menu on the next program start.
+
+<h2>Enabling and disabling logging</h2>
+
+By default there is a 'logs' subdirectory in the K3Chess folder, into which
+the program writes certain session information, such as chess engine
+communication messages and position-moves log. This information can be used for
+debugging the program, because it is still in an early phase of development
+and may contain a reasonable number of bugs. If you do not want the logs
+to be created, simply delete the 'logs' folder. If you ever decide you need
+the logs functionality back, create an empty 'logs' folder again.
+The new logs will be written to that directory. 
+
+<h2>Reporting bugs</h2>
+
+K3Chess is a volunteer project. If you find a bug, or if you have a suggestion,
+you can post them on the corresponding issue tracking page. 
+It is recommended that you attach the zipped 'K3Chess/logs' subfolder,
+which contain the engine communication log and position-moves information.
+It will help reproduce the bug. If you do not have the 'K3Chess/logs' folder
+you will need to create that folder manually and then try to reproduce the bug
+again. Please remember that each time you start K3Chess, the previous logs are
+replaced with the new logs, so it is advisable to exit K3Chess immediately
+after the bug was discovered. You can do so by pressing <b>Alt+Back</b>. This
+will help make sure that the 'logs' folder contains the appropriate log
+information.
+
+<p></p>
+<i>K3Chess User Guide. Last modification: Oct 03, 2011.</i>  
+<p></p>
+</body>
+</html>=======
+<html>
+<head>
+<title>K3Chess user guide</title>
+</head>
+<body>
+
+<h1>K3Chess user guide</h1>
+
+<h2>Introduction</h2>
+
+K3Chess is a graphical chess interface optimized for
+mobile devices and e-book readers. It can also run as a desktop application.
+K3Chess supports UCI and XBoard chess engines and implements basic functionality such as
+playing games against an engine or another human opponent
+and saving games to a PGN file. K3Chess is built using the open-source QT library.
+It requires that the QT library is installed and set up on the device in order to run.
+
+<h3>K3Chess window</h3>
+
+When K3Chess is started the following items are displayed on the
+device screen:
+
+<ul>
+<li>Chessboard with coordinates on two sides</li>
+<li>Menu area (just below the chessboard)</li>
+<li>Console window (bottom left)</li>
+<li>Move list (bottom right)</li>
+</ul>
+
+<h3>Menu area</h3>
+
+The menu area is located immediately below the chessboard. It is used
+to display menu items and some static notification messages.
+To select an item use the <b>Left</b> and <b>Right</b> cursor keys which you
+assigned on the first program run. Typically this would be left and
+right keys of the 5-way controller. To select an item press the <b>Select</b> key
+(typically the center button of the 5-way controller).
+To close the menu or to display an additional menu (if availalble),
+press the <b>Menu</b> key. <b>Note:</b> the <b>Back</b> key may also be used instead
+of <b>Menu</b> key for opening/closing menus. The <b>Back</b> key is hardcoded
+(not mapped), so it may not work on certain devices.
+
+<h3>Console window</h3>
+
+The console window is intended for displaying various messages that
+are related to the game being played. For example, when the game
+starts it displays the new game information, including player names
+and their respective time settings. When a player makes a draw offer,
+it displays the draw offer. When the game is finished, it displays
+the corresponding game result message.
+
+<h3>Move list</h3>
+
+The move list contains the current game moves in SAN format, which
+is standard for most chess programs. It can be used to keep track
+of game progress. When a move is taken back, it is removed from
+the move list. K3Chess does not support recorded game variations.
+
+<h2>Key mapping</h2>
+
+On the first run, K3Chess will prompt you to enter keys which will
+be used for controlling the program. This allows you to set up custom
+or to tune the program for your specific device.
+When you see a message like 'Press a key for &lt;Left&gt;', you should press
+the key which will be used as the left cursor key.
+Typically it would be the left arrow of the 5-way controller.
+Similarly, the <b>Select</b> key will most likely be the center button of the
+5-way joystick, but you can set it to any other key. 
+The <b>Refresh</b> key is a key to be used for refreshing the whole screen
+(full screen refresh is required on e-Ink devices every once in a while).
+
+<b>Note:</b> When remapping keys, please remember that the following keys are
+used in K3Chess for quick move selection on the chessboard. It is
+recommended that you do not use them for other functions:
+   a, b, c, d, e, f, g, k, q, r, i, n, p
+
+If you made a mistake or want to change the key mapping, close the
+program (by pressing <b>Alt-Back</b>), attach the Kindle to the computer
+and delete the 'keys.ini' file from the 'K3Chess' directory. On next
+program startup you will be prompted to enter a new key mapping.
+
+<b>Note:</b> If you want to use K3Chess on a device that has no keyboard
+or has insufficient keys, you can create an empty keys.ini file.
+
+<h2>Starting a game</h2>
+
+On the inital K3Chess screen the menu area will display the following
+menu:
+<p></p>
+&nbsp;&nbsp&nbsp;<b>New game as white&nbsp;&nbsp;&nbsp;
+New game as black&nbsp;&nbsp;&nbsp;Two player game</b>
+<p></p>
+The first two game types are for playing against an engine, the last
+game type is for playing with another human opponent using K3Chess
+as a graphical chessboard. Select one of the menu items to start a
+new game.
+
+<h2>Playing a game</h2>
+
+After the game has started, you can make moves by entering them
+via the assigned cursor keys and <b>Select</b> key, or by using
+quick move selection techniques described below.
+
+E-Ink displays are slow, so if you are playing chess on such a
+device, it is not always convenient to enter moves with the 5-way
+controller. To ease up move selection the following techniques
+can be used.
+
+To select a piece that is on a certain file (column):
+
+&nbsp;&nbsp;&nbsp;Press the key for that column (<b>a</b>-<b>h</b>)
+
+To select next movable piece in the same column:
+
+&nbsp;&nbsp;&nbsp;Press the key for that column again
+
+To select a piece with a certain value:
+
+&nbsp;&nbsp;&nbsp;Press <b>K</b> for King, <b>Q</b> for Queen,
+<b>R</b> for Rook, <b>I</b> for bIshop, <b>N</b> for kNight, <b>P</b> for Pawn.
+
+To select next piece with the given value:
+
+&nbsp;&nbsp;&nbsp;Press the piece key once again
+
+<b>Note:</b> Piece and column keys are case-insensitive.
+
+To move cursor to a specific rank:
+
+&nbsp;&nbsp;&nbsp;Press the rank number <b>1..8</b> (if your device has numerical keys or can emulate them)
+
+After you have selected the starting square, you can use the same techniques to select the target
+square by pressing the corresponding file/column key (one or more times), rank/row key, or piece key
+(in which case it selects the piece to be captured). 
+
+<b>Note:</b> Only allowed moves can be selected using quick selection techniques. If you press a key
+and nothing happens, please make sure that the move is legal in the current position. The
+"Show legal moves" option helps see which moves are available for the selected piece in the
+current position.
+
+<h2>Accessing in-game options</h2>
+
+While playing you can select one of several in-game options which are displayed if you press
+the <b>Menu</b> key:
+<p></p>
+&nbsp;&nbsp;&nbsp;<b>Takeback&nbsp;&nbsp;&nbsp;Draw&nbsp;&nbsp;&nbsp;Resign&nbsp;&nbsp;&nbsp;Abort</b>
+<p></p>
+Not all of those options may be available depending on the game context. The options are explained below.
+
+<ul>
+<li><b>Takeback</b> retracts the last two half-moves. Multiple takebacks are allowed.</li>
+<li><b>Draw</b> sends a draw offer to the opponent, or accepts an opponent's draw offer.</li>
+<li><b>Resign</b> is used to resign the current game.</li>
+<li><b>Abort</b> is used to abort the game. The game will not be saved.</li>
+</ul>
+
+To hide the in-game menu press the <b>Menu</b> button again.
+
+<h2>Refreshing the screen</h2>
+
+E-Ink screens require a periodical refresh. The built-in software
+of e-Ink devices typically refresh the screen on each page turn.
+K3Chess does not refresh the screen after every chess move, but
+you can refresh the screen manually by pressing the <b>Refresh</b>
+key assigned on the first program run. For example, the spacebar key
+can be used for refreshing the screen.
+
+<h2>Saving or discarding a game</h2>
+
+After a game is finished, you will be prompted to either save
+or discard the game. The games are saved to the 'games.pgn'
+file located in the K3Chess application folder. If you have not
+yet saved games with K3Chess, there will be no 'games.pgn' file,
+and it will be created dynamically. If 'games.pgn' already exists,
+then the game will be appended to the end of the file.
+Currently K3Chess does not allow viewing PGN files, but you can
+view the stored games on a PC or another device which has a PGN
+viewer software intalled such as Eboard, BabasChess, Arena, etc.
+
+<h2>Changing program settings</h2>
+
+On the initial screen, when the game type menu is shown, press the
+<b>Menu</b> key. An additional menu with the following items will appear:
+<p></p>
+&nbsp;&nbsp&nbsp;<b>Settings&nbsp;&nbsp&nbsp;Quit</b>
+<p></p>
+Choose Settings to open the settings screen. On the settings screen
+you can change various program settings, including the style of
+chess pieces, the name of the chess engine, the clock setup for you
+and for the engine, etc. Once you are finished changing settings,
+press the <b>Menu</b> key (or <b>Back</b> key) to close the settings window.
+<b>Note:</b> there are no 'OK' and 'Cancel' buttons, the new settings will
+be applied immediately.
+
+Note that turning on move hints can reduce display performance on
+e-Ink devices, because more squares will have to be redrawn after
+each move selection.
+
+<h2>Exiting the program</h2>
+
+To close the program and return to your device's home screen press
+the <b>Alt+Back</b> key combination. You can also select 'Quit' from
+the additional menu described above.
+
+<h2>Adding custom chess piece styles</h2>
+
+Chess pieces and unoccupied board cells are drawn using the files
+located in the 'pieces' subfolder of the K3Chess application window.
+You can copy one of the provided image files and modify it, or
+create a completely new file with the same proportions (7x4 squares),
+containing the same arrangement of chess pieces and board squares.
+The 'pieces' subfolder is scanned on each program startup and the
+available piece image files are listed in the settings window.
+Simply open the settings window and select the new custom piece
+image file and it will be used to draw the chessboard.
+
+<h2>Mouse/stylus operation</h2>
+K3Chess also supports mouse/stylus operation if the appropriate
+hardware and drivers are present on the target platform.
+To choose a menu item in the menu area, click/touch that item,
+to switch or close the menu touch the free space in the menu area,
+to close the settings dialog, touch the free space in the settings
+dialog.
+
+<h2>Adding chess engines</h2>
+
+Chess engines are programs which run in the background and
+with which you actually play. K3Chess only provides a graphical
+interface to those programs. It allows you to load any UCI or XBoard
+compatible chess engine compiled for running on your device platform.  
+To add a chess engine, open the 'engines' subfolder within the K3Chess
+application folder, create a new subfolder for your engine, such as
+'MyEngine'. Then copy your engine executable and data files there and
+create an 'engine.ini' file in the same folder with the following contents:
+
+<pre>
+[Description]
+EngineName=your engine name
+Executable=name of the engine executable file
+EngineType=engine type (UCI or XBoard)
+</pre>
+
+If you are unsure which type the engine is, you can use the following
+option instead:
+
+<pre>
+EngineType=Detect
+</pre>
+
+In this case K3Chess will try to detect the engine type automatically
+when you first load the engine. This may take up to several seconds.
+
+If you want to send the engine some commands immediately after its
+startup, add the following section to the 'engine.ini' file:
+
+<pre>
+[Startup]
+CommandCount=number of commands
+Command1=command 1 text
+Command2=command 2 text
+...
+</pre>
+
+The commands will be executed in the order that corresponds to their
+numbering.
+
+Some chess engines leave log files and history files in the engine directory.
+If you want K3Chess to remove those files automatically, add the following
+section to the 'engine.ini' file:
+
+<pre>
+[Cleanup]
+DeleteFiles=file masks
+</pre>
+
+for example:
+
+<pre>
+DeleteFiles="*.log;*.tmp"
+</pre>
+
+<h2>Adding localizations</h2>
+
+You can add a custom localization or edit existing menu item and message text
+used in K3Chess. The localized strings are stored in the 'locales' subfolder of
+the K3Chess folder. Each localization file is an ini file with a specific format.
+To create a new localization, copy 'en.ini' or another existing localization file
+and modify it. Do not forget to rename the locale to match the target language.
+The newly created locale file will be added to the list of locales available in
+the settings menu on the next program start.
+
+<h2>Program profiles</h2>
+
+There is a setting in the 'K3Chess.ini' file which sets up the program for running
+in various environments. By default K3Chess assumes that it runs in a desktop environment,
+so it starts in a window with default style and look. If you specify a different profile
+in a 'Profile' variable in the 'General' section of the 'K3Chess.ini' file, the program
+will attempt to use that profile. The profile specification consists of one or more keywords
+separated by semicolons. No spaces should be used before or after semicolons. The whole
+profile string should be enclosed in quotes if it contains more than one keyword.
+Currently the 'Ebook' profile keyword is the only one that is supported. When using
+this profile, K3Chess will adjust its visual parameters to fit the capabilities of
+an E-Ink device (e.g. setting background to white and text color to black, making
+all windows show in full-screen, etc.).
+
+<h2>Enabling and disabling logging</h2>
+
+By default there is a 'logs' subdirectory in the K3Chess folder, into which
+the program writes certain session information, such as chess engine
+communication messages and position-moves log. This information can be used for
+debugging the program, because it is still in an early phase of development
+and may contain a reasonable number of bugs. If you do not want the logs
+to be created, simply delete the 'logs' folder. If you ever decide you need
+the logs functionality back, create an empty 'logs' folder again.
+The new logs will be written to that directory. 
+
+<h2>Reporting bugs</h2>
+
+K3Chess is a volunteer project. If you find a bug, or if you have a suggestion,
+you can post it on the corresponding issue tracking page. 
+It is recommended that you attach the zipped 'K3Chess/logs' subfolder,
+which contains the engine communication log and position-moves log.
+It will help reproduce the bug. If you do not find the 'logs' subfolder
+in the K3Chess folder you will need to create the 'logs' subfolder manually and
+then try to reproduce the bug again. Please remember that each time you start
+K3Chess, the previous logs are replaced with the new logs, so it is advisable to
+exit K3Chess immediately after the bug was discovered. You can do so by pressing
+<b>Alt+Back</b>. This will help make sure that the 'logs' folder contains the
+appropriate log information.
+
+<p></p>
+<i>K3Chess User Guide. Last modification: Oct 04, 2011.</i>  
+<p></p>
+</body>
+</html>
