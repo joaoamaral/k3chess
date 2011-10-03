@@ -18,6 +18,7 @@ public:
                          const ChessClock& whiteClock,
                          const ChessClock& blackClock);
 
+   virtual void illegalMove(const std::string &move_str);
    virtual void opponentOffersDraw();
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);

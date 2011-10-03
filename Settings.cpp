@@ -11,11 +11,9 @@
 
 const QString cK3ChessIniPath = "./K3Chess.ini";
 const QString cDefaultKeymapIniFile = "./keys.ini";
-const QString cDefaultEngine = "gnuchess";
-const QString cDefaultPieceStyle = "alpha";
 const QString cDefaultBoardSetup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const QString cDefaultPlayerClockSetup = "15 0";
-const QString cDefaultEngineClockSetup = "2 2";
+const QString cDefaultEngineClockSetup = "5 0";
 const QString cDefaultPgnFilePath = "./games.pgn";
 const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
@@ -41,8 +39,8 @@ ChessClock stringToClock(const QString& s)
       //
       if(s_game.indexOf(':')>=0)
       {
-         QString s_min = s_game.section(':', 1, 1);
-         QString s_sec = s_game.section(':', 2, 2);
+         QString s_min = s_game.section(':', 0, 0);
+         QString s_sec = s_game.section(':', 1, 1);
          //
          secs_per_game = s_min.toInt()*60 + s_sec.toInt();
       }
@@ -92,7 +90,7 @@ K3ChessSettings::~K3ChessSettings()
 
 const EngineInfo& K3ChessSettings::engineInfo() const
 {
-   QString name = settings_.value("Engine", cDefaultEngine).toString();
+   QString name = settings_.value("Engine", QString()).toString();
    std::map<QString, EngineInfo>::const_iterator it = engines_.find(name);
    if(it==engines_.end())
    {
@@ -118,10 +116,10 @@ QString K3ChessSettings::localeName() const
 
 QString K3ChessSettings::pieceStyle() const
 {
-   QString name = settings_.value("Board/PieceStyle", cDefaultPieceStyle).toString();
+   QString name = settings_.value("Board/PieceStyle", QString()).toString();
    if(pieceStyles_.find(name)==pieceStyles_.end())
    {
-      if(pieceStyles_.empty()) return cDefaultLocaleName;
+      if(pieceStyles_.empty()) return QString();
       return pieceStyles_.begin()->first;
    }
    else
@@ -190,7 +188,7 @@ bool K3ChessSettings::autoSaveGames() const
 
 bool K3ChessSettings::canPonder() const
 {
-   return settings_.value("Game/Pondering", false).toBool();
+   return settings_.value("Game/Pondering", true).toBool();
 }
 
 bool K3ChessSettings::keyColumnSelect() const
@@ -213,7 +211,7 @@ void K3ChessSettings::enumEngines(QDir dir)
     enumEnginesProc(dir);
     if(!engines_.empty() &&
           engines_.find(settings_.value("Engine",
-             cDefaultEngine).toString())==engines_.end())
+             QString()).toString())==engines_.end())
     {
        settings_.setValue("Engine", engines_.begin()->first);
     }
@@ -265,7 +263,7 @@ void K3ChessSettings::enumPieceStyles(QDir dir)
    //
    if(!pieceStyles_.empty() &&
          pieceStyles_.find(settings_.value("Board/PieceStyle",
-            cDefaultPieceStyle).toString())==pieceStyles_.end())
+            QString()).toString())==pieceStyles_.end())
    {
       settings_.setValue("Board/PieceStyle", pieceStyles_.begin()->first);
    }
@@ -448,7 +446,7 @@ void K3ChessSettings::flush()
 
 bool K3ChessSettings::showMoveHints() const
 {
-   return settings_.value("Board/ShowMoveHints", false).toBool();
+   return settings_.value("Board/ShowMoveHints", true).toBool();
 }
 
 void K3ChessSettings::setShowMoveHints(bool value)
@@ -482,10 +480,33 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
       type = etXBoard;
    }
    //
+   ini.endGroup();
+   //
    info.name = name;
    info.exePath = extractFolderPath(engineIniFile) + '/' + exeName;
    info.type = type;
-   // @@todo: maybe add handling of engine startup commands
+   //
+   ini.beginGroup("Startup");
+   //
+   int nStartupCommands = ini.value("CommandCount", 0).toInt();
+   if(nStartupCommands)
+   {
+      info.startupCommands.reserve(nStartupCommands);
+      for(int i=1; i<=nStartupCommands; ++i)
+      {
+         QString cmdVar = QString("Command") + QString::number(i);
+         QString cmd = ini.value(cmdVar, QString()).toString();
+         if(!cmd.isEmpty()) info.startupCommands.push_back(cmd);
+      }
+   }
+   //
+   ini.endGroup();
+   //
+   QString masks = ini.value("Cleanup/DeleteFiles", QString()).toString().trimmed();
+   if(!masks.isEmpty())
+      info.cleanUpMasks = masks.split(';');
+   //
+   ini.endGroup();
    return true;
 }
 

@@ -79,7 +79,7 @@ private:
    void drawPiece(QPainter& painter, const QRect& rect, ChessPiece piece, bool blackCell);
    void drawCellHighlight(QPainter& painter, const QRect& rect, bool bold);
    void drawMoveArrow(QPainter& painter, const QRect& fromRect, const QRect& toRect);
-   void showMoveHints(QPainter& painter, ChessCoord& coord, const QRect& clipRect);
+   void drawMoveHints(QPainter& painter, ChessCoord& coord, const QRect& clipRect);
    void drawBorder(QPainter& painter, const QRect& clipRect);
    void drawCoords(QPainter& painter, const QRect& clipRect);
 

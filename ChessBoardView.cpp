@@ -20,6 +20,7 @@ namespace
 const int cDefaultCoordsBorderPadding = 16;
 const QColor cBoardBorderColor(213, 196, 170);
 const QColor cBoardInnerFrameColor(148, 119, 95);
+const QColor cMoveHintColor(0x30, 0x30, 0x30);
 
 }
 
@@ -542,11 +543,11 @@ void ChessBoardView::drawBoard(QPainter& painter, const QRect& clipRect)
    //
    if(showMoveHints_ && cellSelectMode_==selectTarget)
    {
-      showMoveHints(painter, move_.from, clipRect);
+      drawMoveHints(painter, move_.from, clipRect);
    }
 }
 
-void ChessBoardView::showMoveHints(QPainter& painter, ChessCoord& coord, const QRect& clipRect)
+void ChessBoardView::drawMoveHints(QPainter& painter, ChessCoord& coord, const QRect& clipRect)
 {
    ChessMoveMap::const_iterator_pair range =
          possibleMoves_.getMovesFrom(coord);
@@ -554,7 +555,7 @@ void ChessBoardView::showMoveHints(QPainter& painter, ChessCoord& coord, const Q
    if(range.first==range.second) return;
    //
    painter.setPen(Qt::NoPen);
-   painter.setBrush(Qt::darkGray);
+   painter.setBrush(cMoveHintColor);
    //
    for(;range.first!=range.second;++range.first)
    {

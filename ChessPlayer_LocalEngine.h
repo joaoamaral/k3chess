@@ -13,6 +13,7 @@ class ChessPlayer_LocalEngine : public ChessPlayer
 
 public:
    ChessPlayer_LocalEngine(const EngineInfo& info);
+   virtual ~ChessPlayer_LocalEngine();
 
    virtual void getReady();
    virtual void beginGame(PieceColor color, const QString& opponentName,
@@ -21,6 +22,7 @@ public:
                          const ChessMove& lastMove,
                          const ChessClock& whiteClock,
                          const ChessClock& blackClock);
+   virtual void illegalMove();
 
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);
@@ -39,13 +41,14 @@ signals:
 private slots:
    void engineStarted();
    void engineHasOutput();
-
    void uciokTimeout();
 
 private:
    void tellEngine(const std::string& str);
    void processEngineResponse(const std::string& str);
    void setUCIPonderOption(); // sets UCI engine Ponder option according to current GUI preference
+   void engineTypeDetected(bool updateEngineIni=false);
+   void performCleanup();
 
 private:
    EngineInfo info_;

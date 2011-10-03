@@ -48,8 +48,9 @@ public:
    bool canLongCastle(PieceColor color) const;
    bool canCastle(PieceColor color) const;       // at least in one direction
    //
-   void prohibitShortCastle(PieceColor color);
-   void prohibitLongCastle(PieceColor color);
+   void prohibitShortCastling(PieceColor color);
+   void prohibitLongCastling(PieceColor color);
+   void prohibitCastling(PieceColor color);
    //
    void setEnpassant(ChessCoord coord);
    //

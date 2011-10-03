@@ -87,7 +87,8 @@ void LocalChessGui::beginNewGame(
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
    mainWindow_->boardView()->setInitialCursorPos(ChessCoord());
-   mainWindow_->console()->appendPlainText(getNewGameText(whitePlayerName, blackPlayerName, profile));
+   mainWindow_->console()->appendPlainText(
+      getNewGameText(whitePlayerName, blackPlayerName, profile));
 }
 
 void LocalChessGui::beginMoveSelection()
@@ -106,6 +107,8 @@ void LocalChessGui::showStaticMessage(const QString &msg)
 void LocalChessGui::showSessionMessage(const QString& msg)
 {
    mainWindow_->console()->appendPlainText(msg);
+   mainWindow_->console()->moveCursor(QTextCursor::End);
+   mainWindow_->console()->ensureCursorVisible();
 }
 
 void LocalChessGui::showPlayerMessage(const QString& playerName, const QString& msg)

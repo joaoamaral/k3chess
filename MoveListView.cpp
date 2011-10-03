@@ -26,8 +26,6 @@ MoveListView::MoveListView(QWidget *parent) :
    QPlainTextEdit(parent)
 {
    setReadOnly(true);
-   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-   setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    setWordWrapMode(QTextOption::ManualWrap);
 }
 

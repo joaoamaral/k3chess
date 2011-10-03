@@ -4,12 +4,13 @@
 #include "GlobalStrings.h"
 #include "Settings.h"
 
+#include <QTextCodec>
 #include <fstream>
 
 namespace
 {
 
-enum TalkDirection { TO_ENGINE, FROM_ENGINE };
+enum TalkDirection { TO_ENGINE, FROM_ENGINE, COMMENT };
 
 void logEngineTalk(TalkDirection direction, const std::string& msg)
 {
@@ -22,8 +23,14 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
    noLog = out.fail(); // will fail if there is no 'logs' folder
    if(noLog) return;
    //
-   out << time.toString("HH:mm:ss.zzz").toStdString() << " "
-       << (direction==TO_ENGINE ? "-->" : "<--") << " " << msg << std::endl;
+   out << time.toString("HH:mm:ss.zzz").toStdString() << " ";
+   switch(direction)
+   {
+      case TO_ENGINE: out << "-->"; break;
+      case FROM_ENGINE: out << "<--"; break;
+      default: out << "###"; break;
+   }
+   out << " " << msg << std::endl;
    ++nCalls;
 }
 
@@ -44,9 +51,16 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info) :
    QObject::connect(&engineProcess_, SIGNAL(readyRead()),
                     this, SLOT(engineHasOutput()), Qt::UniqueConnection);
    //
+   performCleanup(); // remove log etc. files from the previous session
+   //
    QString workDir = extractFolderPath(info_.exePath);
    engineProcess_.setWorkingDirectory(workDir);
    engineProcess_.start(info_.exePath);
+}
+
+ChessPlayer_LocalEngine::~ChessPlayer_LocalEngine()
+{
+   performCleanup(); // remove log etc. files of the last session
 }
 
 void ChessPlayer_LocalEngine::getReady()
@@ -64,23 +78,20 @@ void ChessPlayer_LocalEngine::getReady()
 
 void ChessPlayer_LocalEngine::engineStarted()
 {
-   switch(info_.type)
+   if(info_.type==etDetect)
    {
-      case etXBoard:
-         tellEngine("xboard"); // required by some engines
-         break;
-      case etDetect:
-         // try to detect engine type by sending the "uci" command
-         // and waiting for "uciok" response
-         QObject::connect(&uciokTimer_, SIGNAL(timeout()), this,
-                          SLOT(uciokTimeout()), Qt::UniqueConnection);
-         tellEngine("uci");
-         //
-         uciokTimer_.setSingleShot(true);
-         uciokTimer_.start(cUciokTimeoutMs);
-         break;
-      default:
-         break;
+      // try to detect engine type by sending the "uci" command
+      // and waiting for "uciok" response
+      QObject::connect(&uciokTimer_, SIGNAL(timeout()), this,
+                       SLOT(uciokTimeout()), Qt::UniqueConnection);
+      tellEngine("uci");
+      //
+      uciokTimer_.setSingleShot(true);
+      uciokTimer_.start(cUciokTimeoutMs);
+   }
+   else
+   {
+      engineTypeDetected(false);
    }
 }
 
@@ -95,12 +106,51 @@ void ChessPlayer_LocalEngine::uciokTimeout()
    // uciok timed out, so consider this an XBoard-compatible engine
    //
    info_.type = etXBoard;
-   tellEngine("xboard"); // required by some engines
+   engineTypeDetected(true);
    //
    if(readyRequest_)
    {
       readyRequest_ = false;
       emit isReady();
+   }
+}
+
+void ChessPlayer_LocalEngine::engineTypeDetected(bool updateEngineIni)
+{
+   assert(info_.type!=etDetect);
+   //
+   if(updateEngineIni)
+   {
+      QString dir = extractFolderPath(info_.exePath);
+      QSettings ini(dir+QString("/engine.ini"), QSettings::IniFormat);
+      ini.setIniCodec(QTextCodec::codecForName("UTF-8"));
+      switch(info_.type)
+      {
+         case etUCI:
+            ini.setValue("EngineType", "UCI");
+            break;
+         case etXBoard:
+            ini.setValue("EngineType", "XBoard");
+         default:
+            break;
+      }
+   }
+   //
+   foreach(QString cmd, info_.startupCommands)
+   {
+      tellEngine(cmd.toStdString());
+   }
+   //
+   switch(info_.type)
+   {
+      case etXBoard:
+         tellEngine("xboard"); // required by some engines
+         break;
+      case etUCI:
+         setUCIPonderOption();
+         break;
+      default:
+         break;
    }
 }
 
@@ -201,9 +251,18 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
             if(lastMove.assigned())
             {
                tellEngine(lastMove.toString());
+
                if(inForceModeAfterTakeback_)
                {
                   inForceModeAfterTakeback_ = false;
+                  if(position.sideToMove()==pcWhite)
+                  {
+                     tellEngine("white");
+                  }
+                  else
+                  {
+                     tellEngine("black");
+                  }
                   tellEngine("go");
                }
             }
@@ -288,12 +347,10 @@ void ChessPlayer_LocalEngine::processEngineResponse(const std::string& str)
             std::string move_str = trim(str.substr(5));
             emit playerMoves(move_str);
          }
-         else if(str.find('{')!=std::string::npos)
+         else if(startsWith(str, "my move is "))
          {
-            // engine detected end-of-game, but it must be detected
-            // by game and/org game session
-            int x =0;
-            ++x;
+            std::string move_str = trim(str.substr(11));
+            emit playerMoves(move_str);
          }
          else if(startsWith(str, "offer draw"))
          {
@@ -308,7 +365,8 @@ void ChessPlayer_LocalEngine::processEngineResponse(const std::string& str)
          if(str.find("uciok")==0)
          {
             info_.type = etUCI;
-            setUCIPonderOption();
+            //
+            engineTypeDetected(true);
             //
             if(readyRequest_)
             {
@@ -404,4 +462,28 @@ void ChessPlayer_LocalEngine::opponentRequestsTakeback(bool &accept)
 void ChessPlayer_LocalEngine::opponentRequestsAbort(bool &accept)
 {
    accept = true;
+}
+
+void ChessPlayer_LocalEngine::performCleanup()
+{
+   if(info_.cleanUpMasks.isEmpty()) return;
+   //
+   QString folderPath = extractFolderPath(info_.exePath) + "/";
+   //
+   foreach(QString mask, info_.cleanUpMasks)
+   {
+      QDir dir(folderPath, mask.trimmed());
+      //
+      QStringList files = dir.entryList(QDir::Files);
+      //
+      foreach(QString file, files)
+      {
+         dir.remove(file);
+      }
+   }
+}
+
+void ChessPlayer_LocalEngine::illegalMove()
+{
+   logEngineTalk(COMMENT, std::string("Illegal or misinterpreted move"));
 }

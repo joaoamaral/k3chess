@@ -121,6 +121,7 @@ void GameSession::white_moves(const ChessMove& move)
    //
    if(!game_.applyMove(move))
    {
+      whitePlayer_->illegalMove();
       g_localChessGui.showSessionMessage(g_msg("IllegalMove").arg(move.toString().c_str()));
       requestMove(whitePlayer_);
    }
@@ -155,9 +156,9 @@ void GameSession::white_moves(const ChessMove& move)
    }
 }
 
-void GameSession::white_moves(const std::string& move)
+void GameSession::white_moves(const std::string& move_str)
 {
-   white_moves(game_.interpretSANMove(move));
+   white_moves(game_.interpretMoveString(move_str));
 }
 
 void GameSession::white_offersDraw()
@@ -215,6 +216,7 @@ void GameSession::black_moves(const ChessMove& move)
    //
    if(!game_.applyMove(move))
    {
+      blackPlayer_->illegalMove();
       g_localChessGui.showSessionMessage(g_msg("IllegalMove").arg(move.toString().c_str()));
       requestMove(blackPlayer_);
    }
@@ -256,9 +258,9 @@ void GameSession::black_moves(const ChessMove& move)
    }
 }
 
-void GameSession::black_moves(const std::string& move)
+void GameSession::black_moves(const std::string& move_str)
 {
-   black_moves(game_.interpretSANMove(move));
+   black_moves(game_.interpretMoveString(move_str));
 }
 
 void GameSession::black_offersDraw()

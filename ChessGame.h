@@ -47,7 +47,7 @@ public:
    const ChessMove& lastMove() const;            // returns last move
    const QString& lastSANMove() const; // last move in PGN notation
 
-   ChessMove interpretSANMove(const std::string& san); // among moves possible in the current position
+   ChessMove interpretMoveString(const std::string& move_str) const; // among moves possible in the current position
 
    const std::vector<ChessMove>& moves() const; // all game moves up to current position
    QString toPGN() const; // get all game in PGN notation

@@ -279,6 +279,16 @@ void GlobalUISession::keyPressed(Qt::Key key)
 void GlobalUISession::showNewGameMenu()
 {
    menuType_ = menuNewGame;
+   if(g_settings.engineInfo().name.isEmpty())
+   {
+      g_commandOptionDefs.newGameOptions().disable(cmd_NewGame_PlayerWhite);
+      g_commandOptionDefs.newGameOptions().disable(cmd_NewGame_PlayerBlack);
+   }
+   else
+   {
+      g_commandOptionDefs.newGameOptions().enable(cmd_NewGame_PlayerWhite);
+      g_commandOptionDefs.newGameOptions().enable(cmd_NewGame_PlayerBlack);
+   }
    offerChoice(g_commandOptionDefs.newGameOptions());
 }
 
