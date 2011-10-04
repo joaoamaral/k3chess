@@ -214,16 +214,16 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
 {
    if(move_str.length()<2 || move_str.length()>7) return CoordPair();
    //
-   if(startsWith(move_str, "O-O"))
-   {
-      RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
-      return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
-   }
-   else if(startsWith(move_str, "O-O-O"))
+   if(startsWith(move_str, "O-O-O"))
    {
       RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
       return CoordPair(ChessCoord(5, row), ChessCoord(3, row));
    }
+   else if(startsWith(move_str, "O-O"))
+   {
+      RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
+      return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
+   }   
    //
    unsigned i=0;
    //
