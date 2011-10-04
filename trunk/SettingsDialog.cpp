@@ -72,15 +72,10 @@ void SettingsDialog::loadValues()
    }
    //
    QStringList engineTimes;
-   engineTimes.append("0:10 1");
    engineTimes.append("0:10 2");
-   engineTimes.append("0:10 3");
-   engineTimes.append("0:10 4");
    engineTimes.append("0:10 5");
-   engineTimes.append("2 1");
    engineTimes.append("2 2");
    engineTimes.append("5 0");
-   engineTimes.append("5 1");
    engineTimes.append("5 2");
    engineTimes.append("10 0");
    engineTimes.append("15 0");
