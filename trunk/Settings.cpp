@@ -465,10 +465,16 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    ini.beginGroup("Description");
    QString name = ini.value("EngineName", QString()).toString();
    if(name.isEmpty()) return false;
-   QString exeName = ini.value("Executable", QString()).toString();
-   if(exeName.isEmpty()) return false;
-   if(exeName.startsWith("./") || exeName.startsWith(".\\"))
-      exeName = exeName.left(exeName.length()-2);
+   QString exePath = ini.value("Executable", QString()).toString();
+   if(exePath.isEmpty()) return false;
+   if(exePath.startsWith("./") || exePath.startsWith(".\\"))
+   {
+      exePath = extractFolderPath(engineIniFile)+exePath.mid(1);
+   }
+   else if(!exePath.contains('/') && !exePath.contains('\\'))
+   {
+      exePath = extractFolderPath(engineIniFile) + '/' + exePath;
+   }
    EngineType type = etDetect;
    QString typeStr = ini.value("EngineType", QString()).toString();
    if(typeStr.toLower()=="uci")
@@ -483,7 +489,7 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    ini.endGroup();
    //
    info.name = name;
-   info.exePath = extractFolderPath(engineIniFile) + '/' + exeName;
+   info.exePath = exePath;
    info.type = type;
    //
    ini.beginGroup("Startup");
