@@ -579,29 +579,41 @@ void ChessBoardView::drawPiece(QPainter& painter, const QRect& rect, ChessPiece 
 
 void ChessBoardView::drawBorder(QPainter& painter, const QRect& clipRect)
 {
-   if(padding_<=0) return;
-   //
-   QRect left(0, padding_, padding_, height()-padding_*2);
-   QRect right(width()-padding_, padding_, padding_, height()-padding_*2);
-   QRect top(0, 0, width(), padding_);
-   QRect bottom(0, height()-padding_, width(), padding_);
-   //
-   painter.setPen(Qt::NoPen);
-   painter.setBrush(borderBrush_);
-   if(top.intersects(clipRect)) painter.drawRect(top);
-   if(left.intersects(clipRect)) painter.drawRect(left);
-   if(bottom.intersects(clipRect)) painter.drawRect(bottom);
-   if(right.intersects(clipRect)) painter.drawRect(right);
-   //
-   QRect innerFrame(padding_-1, padding_-1, width()-(padding_-1)*2, height()-(padding_-1)*2);
-   //
-   painter.setPen(cBoardInnerFrameColor);
-   painter.setBrush(Qt::NoBrush);
-   painter.drawRect(innerFrame);
-   //
-   if(drawCoords_)
+   if(padding_>0)
    {
-      drawCoords(painter, clipRect);
+      //
+      QRect left(0, padding_, padding_, height()-padding_*2);
+      QRect right(width()-padding_, padding_, padding_, height()-padding_*2);
+      QRect top(0, 0, width(), padding_);
+      QRect bottom(0, height()-padding_, width(), padding_);
+      //
+      painter.setPen(Qt::NoPen);
+      painter.setBrush(borderBrush_);
+      if(top.intersects(clipRect)) painter.drawRect(top);
+      if(left.intersects(clipRect)) painter.drawRect(left);
+      if(bottom.intersects(clipRect)) painter.drawRect(bottom);
+      if(right.intersects(clipRect)) painter.drawRect(right);
+      //
+      QRect innerFrame(padding_-1, padding_-1, width()-(padding_-1)*2, height()-(padding_-1)*2);
+      //
+      painter.setPen(cBoardInnerFrameColor);
+      painter.setBrush(Qt::NoBrush);
+      painter.drawRect(innerFrame);
+      //
+      if(drawCoords_)
+      {
+         drawCoords(painter, clipRect);
+      }
+   }
+   else
+   {
+      QRect r(getCellRect(ChessCoord(1, 1)).united(
+                 getCellRect(ChessCoord(position_.maxCol(), position_.maxRow()))));
+      r.setRight(r.right()-1);
+      r.setBottom(r.bottom()-1);
+      painter.setPen(cBoardInnerFrameColor);
+      painter.setBrush(Qt::NoBrush);
+      painter.drawRect(r);
    }
 }
 
