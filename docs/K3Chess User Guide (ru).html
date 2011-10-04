@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1251">
+</HEAD>
+<BODY LANG="ru-RU">
+<P><FONT SIZE=5><SPAN LANG="en-US"><B>Инструкция к программе </B></SPAN></FONT><FONT FACE="Arial CYR"><FONT SIZE=5><B>K</B></FONT></FONT><FONT SIZE=5><SPAN LANG="en-US"><B>3</B></SPAN></FONT><FONT FACE="Arial CYR"><FONT SIZE=5><B>Chess</B></FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Введение </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>K3Chess &mdash; это
+графическая оболочка для игры в шахматы, оптимизированная для
+мобильных устройств и электронных книг.  K3Chess поддерживает
+шахматные программы (&laquo;движки&raquo;), работающие с протоколами
+UCI и XBoard. K3Chess позволяет играть против программы или второго
+игрока и сохранять игры в файле PGN. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=3><B>Окно K3Chess</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>После запуска
+K3Chess на экране устройства отображаются следующие элементы: </FONT></FONT>
+</P>
+<DL>
+	<DD><P>&#8226;<FONT FACE="Symbol">	</FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+	Шахматная доска с координатами</FONT></FONT></P>
+	<DD><P>&#8226;<FONT FACE="Symbol">	</FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+	Область меню (под шахматной доской) </FONT></FONT>
+	</P>
+	<DD><P>&#8226;<FONT FACE="Symbol">	</FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+	Окно консоли (слева внизу) </FONT></FONT>
+	</P>
+	<DD><P>&#8226;<FONT FACE="Symbol">	</FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+	Список ходов (справа внизу) </FONT></FONT>
+	</P>
+</DL>
+<P><FONT FACE="Arial CYR"><FONT SIZE=3><B>Область меню</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Область меню
+расположена непосредственно под шахматной доской.  Она используется
+для отображения доступных опций или команд и некоторых статических
+сообщений.  Для выбора пункта меню используются клавиши [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Влево</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+и [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Вправо</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>],
+назначенные при первом запуске программы. Как правило, клавиши
+управления курсором назначаются на 5-позиционный джойстик. Для выбора
+пункта меню нажмите клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Выбор</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+&mdash; как правило, это центральная кнопка 5-позиционного джойстика.
+Чтобы закрыть меню или отобразить дополнительное меню (если оно
+доступно), нажмите клавишу</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>
+</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>[</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Меню</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>.</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Примечание. </B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Для
+открытия /закрытия меню также можно использовать кнопку [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Back</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+или [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Esc</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>].
+Эта кнопка является дополнительной и не включается в число
+переназначаемых клавиш, поэтому она может работать не на всех
+устройствах. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=3><B>Окно консоли </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Окно консоли
+предназначено для вывода сообщений, относящихся к текущей игре.
+Например, в нём отображается информация о новой партии (имена игроков
+и их настройки времени), предложения ничьих и результат партии по её
+завершении. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=3><B>Список ходов </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>По мере того как
+игроки делают ходы, список ходов пополняется строками в формате SAN
+(стандартная арифметическая нотация). Этот формат является
+стандартным для большинства шахматных программ. Список ходов можно
+использовать для отслеживания хода игры и определения номера текущего
+хода. При откате последнего хода он исключается из списка ходов. В
+текущей версии K3Chess запись вариаций шахматной партии не
+поддерживается.</FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Переназначение клавиш </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>При первом запуске
+программы K3Chess пользователю предлагается переназначить клавиши,
+который будут использоваться для управления программой. Это позволяет
+настроить программу для работы на конкретном устройстве, а также
+учесть предпочтения пользователя. При появлении сообщения &laquo;Нажмите
+клавишу &lt;xxx&gt;&raquo; необходимо нажать на устройстве клавишу,
+которая соответствует функции &lt;xxx&gt;, например &laquo;влево&raquo;,
+&laquo;вправо&raquo;, &laquo;меню&raquo;, &laquo;выбор&raquo; и т.д.
+Управление курсором и выбор рекомендуется назначать на кнопки
+5-позиционного джойстика. Клавиша &laquo;Обновить&raquo;
+предназначена для принудительного обновления экрана e-Ink.</FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Примечание. </B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>При
+выборе клавиш рекомендуется не включать следующие клавиши: A, B, C,
+D, E, F, G, K, Q, R, I, N, P, поскольку они используются для быстрого
+выбора хода по горизонтальной координате шахматной доски (a&hellip;h)
+и по типу фигуры (k, q, r, i, n, p). </FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Если при
+переназначении клавиш была допущена ошибка или если нужно поменять
+назначенные клавиши, закройте программу, нажав сочетание [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Alt]
+</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>+
+[</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Back</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+(если это не удаётся сделать из-за переназначения одной из этих
+клавиш, перезагрузите устройство), затем удалите файл &laquo;keys.ini&raquo;,
+находящийся в каталоге программы K3Chess. При следующем запуске
+приглашение к переназначению клавиш будет отображено заново. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Как начать игру </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>После запуска
+программы K3Chess в области меню предлагаются следующие варианты:</FONT></FONT></P>
+<P>     <FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Новая игра
+белыми   Новая игра черными   Играть вдвоем</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Первые два варианта
+&mdash; это игра против шахматной программы (&laquo;движка&raquo;),
+последний вариант &mdash; это игра с другим человеком, когда K3Chess
+используется в качестве шахматной доски. Выберите нужный вариант
+клавишами [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Влево</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+и [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Вправо</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+и нажмите [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Выбор</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>],
+чтобы начать игру. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Как играть</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Для ввода ходов
+используются клавиши курсора и клавиша [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Выбор</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+и (или) буквенные клавиши. Последние предназначены для быстрого
+выбора хода с минимальным числом нажатий клавиш и перемещений курсора
+по доске, что особенно актуально для устройств с экранами e-Ink.
+Чтобы выбрать фигуру, расположенную в определенном столбце, нажмите
+клавишу этого этого столбца (</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>a
+</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>...
+</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>h).</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+Чтобы выбрать следующую фигуру в этом же столбце, нажмите клавишу
+столбца еще раз. Курсор будет устанавливаться только на те фигуры,
+для которых в текущей позиции есть ходы. Это служит для ускорения
+выбора нужного хода. Чтобы выбрать фигуру определенного номинала,
+нажмите клавишу: </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>K
+</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>для
+короля, Q для королевы</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>,
+R</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3> для
+ладьи, </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>I</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+для слона, </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>N</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+для коня, </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>P</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+для пешки. Чтобы выбрать следующую фигуру такого же номинала, нажмите
+соответствующую клавишу ещё раз.</FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Если на устройстве
+есть цифровые клавиши (или если они эмулируются), то можно также
+переходить к определенной строке по её номеру (</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>1
+... 8).</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>После того, как
+курсор установлен на нужную фигуру, нажмите клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Выбор</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>],
+чтобы перейти к выбору хода. Если в настройках включен режим
+&laquo;Показывать доступные ходы&raquo;, то все клетки, на которые
+возможен ход данной фигурой, будут отмечены маленькими кружками.
+Выбор клетки, на которую совершается ход, производится аналогично:
+можно использовать как клавиши управления курсором, так и буквенные
+клавиши. При этом клавиши </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>a
+... h </B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>по
+очереди устанавливают курсор на доступную клетку в соответствующем
+столбце (если таковая имеется), а клавиши </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>K,
+Q, R, I, N </B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>и
+</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>P</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+позволяют быстро выбрать ход со взятием, указав фигуру, которая будет
+взята.</FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Если для хода
+выбрана фигура, которая имеет только один разрешённый ход в текущей
+позиции и включен режим &laquo;Быстрый выбор единственного хода&raquo;,
+то ход будет выполняться сразу же после выбора самой этой фигуры.
+Если это поведение программы покажется недостаточно интуитивным, то
+следует отключить режим &laquo;Быстрый выбор единственного хода&raquo;
+в окне настроек. </FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Примечание.</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+Быстрый выбор хода ограничен только доступными ходами. Если при
+нажатии клавиши ничего не происходит, убедитесь, что ход, который вы
+хотите сделать, возможен в текущей позиции. В случае если для хода
+выбрана некоторая фигура, но вы передумали и хотите выбрать другую
+фигуру, подведите курсор к этой фигуре и нажмите клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Выбор</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>].
+Также можно отменить выбор фигуры, нажав клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Back</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+или [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Esc</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>],
+если эта клавиша поддерживается устройством.</FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Меню партии</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>В ходе партии
+доступно меню действий, которое активируется нажатием клавиши [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Меню</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>].
+В него входят следующие пункты:</FONT></FONT></P>
+<P>        <FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Вернуть
+ход    Ничья    Сдаться     Прервать игру</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Первая команда
+отменяет последний ход, вторая служит для того, чтобы предложить
+противнику ничью или принять его предложение ничьи, назначение
+остальных очевидно из их названия: это сдаться и завершить партию с
+результатом &laquo;поражение&raquo; и прервать игру без сохранения
+результата.</FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Обновление экрана</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Экраны e-Ink экраны
+требуют периодического обновления.  K3Chess не производит обновление
+экрана после каждого хода, поэтому по мере необходимости вы можете
+обновлять экран вручную нажатием клавиши [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Обновить</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>].
+Одним из допустимых вариантов назначения этой клавиши является
+клавиша &laquo;Пробел&raquo;, но вы можете выбрать любую другую
+клавишу по своему усмотрению.</FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Сохранение партии</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>После завершения
+партии отображается меню, в котором предлагается сохранить или не
+сохранять игру. Сохраненные игры помещаются в файл &laquo;games.pgn&raquo;,
+находящийся в папке программы K3Chess. Если этот файл не существует,
+то он создается динамически, а все новые сохраняемые игр дописываются
+в конец файла. Текущая версия K3Chess не позволяет просматривать
+файлы PGN, однако для просмотра сохраненных игр вы можете
+воспользоваться любой программой с данной функцией на компьютере или
+другом устройстве. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Изменение настроек
+программы </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>На начальном экране
+во время отображения меню новой партии нажмите клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Меню</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>.</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+При этом откроется дополнительное меню со следующими пунктами:</FONT></FONT></P>
+<P>      <FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Настройки  
+  Выход</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+</FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Выберите пункт меню
+&laquo;Настройки&raquo;, чтобы отобразить диалог настроек. В этом
+диалоге можно изменять различные параметры программы, включая стиль
+шахматных фигур, тип шахматной программы (&laquo;движка&raquo;),
+настройки времени партии для игрока и для программы и др. Чтобы
+закрыть диалог и применить настройки, нажмите клавишу [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Меню</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]
+(или [Back]/[Esc]). </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Примечание.</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+Кнопки &laquo;OK&raquo; и &laquo;Отмена&raquo; не предусмотрены,
+поэтому новые настройки будут применены немедленно. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Выход из программы </B></FONT></FONT>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Чтобы закрыть
+программу и вернуться к домашнему экрану устройства, нажмите
+сочетание клавиш [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Alt]
++ [Back]</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>.
+ Также можно выбрать пункт &laquo;Выход&raquo; из дополнительного
+меню, описанного выше. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Добавление пользовательских
+стилей фигур</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Внешний вид фигур и
+свободных клеток доски определяется файлом стиля, хранящимся в
+подпапке &laquo;pieces&raquo; папки K3Chess. Вы можете скопировать
+или отредактировать любой из файлов этой папки, для создания
+собственного стиля фигур. Не обязательно сохранять размер
+изображения, но нужно сохранить его пропорции (7x4) и порядок
+следования фигур и цветов клеток. Подпапка &laquo;pieces&raquo;
+сканируется при каждом запуске программы K3Chess. Поддерживаются
+изображения в форматах PNG, BMP и JPG. Выбор стиля фигур
+осуществляется в окне настроек.</FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Примечание.</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+Если в папке &laquo;pieces&raquo; будет несколько файлов с
+одинаковыми именами, отличающихся только расширениями, то из каждой
+такой группы файлов в окне настроек будет отображаться только один из
+файлов. В связи с этим рекомендуется давать файлам уникальные имена
+независимо от их расширения.</FONT></FONT></P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Добавление шахматных
+программ (&laquo;движков&raquo;)</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Шахматные программы
+представляют собой консольные приложения, запускаемые оболочкой и
+работающие в фоновом режиме. Шахматные программы отличаются
+особенностями игры и поддерживаемым протоколом. K3Chess позволяет
+загружать любые программы (&laquo;движки&raquo;), совместимые с
+протоколами UCI и XBoard и скомпилированные для работы на целевом
+устройстве. Чтобы добавить шахматную программу, откройте подпапку
+&laquo;engines&raquo; папки приложения K3Chess, создайте в ней новую
+подпапку для программы, например, &laquo;MyEngine&raquo;. Затем
+скопируйте исполняемый файл и файлы данных шахматной программы
+(&laquo;движка&raquo;) в эту папку и создайте там же файл
+&laquo;engine.ini&raquo; со следующим содержанием: </FONT></FONT>
+</P>
+<P>&nbsp;</P>
+<DL>
+	<DT> <FONT FACE="Courier New CYR"><FONT SIZE=2>[Description]</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>EngineName=имя шахматной
+	программы</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>Executable=имя
+	исполняемого файла программы</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>EngineType=тип программы
+	(UCI или XBoard)</FONT></FONT></DL>
+<P>
+ 
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Если вы не уверены,
+какой тип имеет программа, вы можете использовать следующее значение
+параметра:</FONT></FONT></P>
+<P> 
+</P>
+<DL>
+	<DT> <FONT FACE="Courier New CYR"><FONT SIZE=2>EngineType=Detect</FONT></FONT></DL>
+<P>
+&nbsp;</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>В этом случае
+K3Chess попытается определить тип программы автоматически при первом
+обращении к этой программе. Это может занять несколько секунд. Если
+шахматная программа уже установлена в другую папку, то можно не
+копировать ее в папку &laquo;engines/MyEngine&raquo;, а просто
+создать файл &laquo;engine.ini&raquo;, в котором указать в параметре
+</FONT></FONT><FONT FACE="Courier New CYR"><FONT SIZE=2>Executable</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+полный путь к шахматной программе.</FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Если при загрузке
+шахматной программы нужно передать ей серию команд, добавьте в файл
+&laquo;engine.ini&raquo; следующий раздел:</FONT></FONT></P>
+<P> 
+</P>
+<DL>
+	<DT> <FONT FACE="Courier New CYR"><FONT SIZE=2>[Startup]</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>CommandCount=количество
+	команд</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>Command1=команда 1</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>Command2=команда 2</FONT></FONT><DT>
+	 <FONT FACE="Courier New CYR"><FONT SIZE=2>...</FONT></FONT><DT>
+	&nbsp;</DL>
+<P>
+<FONT FACE="Times New Roman CYR"><FONT SIZE=3>Команды будут
+выполняться в порядке, соответствующем их нумерации. Некоторые
+шахматные программы создают в ходе работы файлы журналов и другие
+файлы. Если вы хотите, чтобы K3Chess удалял эти файлы автоматически,
+добавьте в файл &laquo;engine.ini&raquo; следующий раздел: </FONT></FONT>
+</P>
+<DL>
+	<DT> 
+	<DT><FONT FACE="Courier New CYR"><FONT SIZE=2>[Очистка]</FONT></FONT><DT>
+	<FONT FACE="Courier New CYR"><FONT SIZE=2>DeleteFiles=маски файлов</FONT></FONT></DL>
+<P>
+<FONT FACE="Times New Roman CYR"><FONT SIZE=3>например: </FONT></FONT>
+</P>
+<DL>
+	<DT>&nbsp;<DT>
+	<FONT FACE="Courier New CYR"><FONT SIZE=2>DeleteFiles=&quot;*.log;*.tmp&quot;</FONT></FONT></DL>
+<P>
+<FONT FACE="Arial CYR"><FONT SIZE=4><B>Локализация программы</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>Вы можете добавлять
+пользовательские локализации или редактировать существующие
+локализации, используемые K3Chess. Локализованные строки хранятся в
+подпапке &laquo;locales&raquo; папки K3Chess.  Каждая локализация
+представляет собой ini-файл определенного формата.  Чтобы создать
+новую локализацию, сделайте копию существующего файла локализации и
+отредактируйте ее.  Не забудьте изменить значение параметра
+</FONT></FONT><FONT FACE="Courier New CYR"><FONT SIZE=2>LocaleName</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+параметр в соответствии с целевым языком. Вновь созданный файл будет
+добавлен в список поддерживаемых языков интерфейса в меню настроек
+при следующем запуске программы. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Включение и отключение
+журналов</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>По умолчанию
+программа K3Chess создает журналы (&laquo;логи&raquo;) в подкаталоге
+&laquo;logs&raquo; папки K3Chess. В файлы журналов заносится
+информация о взаимодействии с шахматной программой и данные текущей
+партии (позиции и доступные ходы). Эта информация предназначена для
+отладки программы при обнаружении в ней ошибки. Если вы не хотите,
+чтобы журналы создавались, достаточно удалить папку &laquo;logs&raquo;.
+Если функция ведения журналов когда-нибудь понадобится снова,
+достаточно будет создать папку &laquo;logs&raquo; заново. Все новые
+журналы будут записываться в эту папку. </FONT></FONT>
+</P>
+<P><FONT FACE="Arial CYR"><FONT SIZE=4><B>Сообщения об ошибках в
+программе</B></FONT></FONT></P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=3>K3Chess является
+добровольным проектом. Если вы нашли ошибку или у вас есть
+предложение, вы можете сообщить о них на странице </FONT></FONT><A HREF="http://code.google.com/p/k3chess/issues"><FONT COLOR="#0000ff"><FONT FACE="Times New Roman CYR"><FONT SIZE=3><U>Issues</U></FONT></FONT></FONT></A><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+проекта. При отправке отчета об ошибке рекомендуется прикладывать
+содержимое папки &laquo;K3Chess/logs&raquo; в виде архива. Это
+поможет быстрее установить причину ошибки. Если у вас отключено
+ведение журналов и нет папки &laquo;K3Chess/logs&raquo;,
+рекомендуется создать эту папку заново и попытаться воспроизвести
+ошибку снова. Необходимо учесть, что при каждом запуске K3Chess
+удаляет старое содержимое журналов, поэтому желательно закрывать
+K3Chess сразу после обнаружения ошибки, чтобы сохранить актуальное
+содержимого файлов журналов. Для быстрого выхода из программы можно
+использовать сочетание клавиш [</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Alt</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>
++ </B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>[</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>Back</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>]</FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3><B>.</B></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+</FONT></FONT>
+</P>
+<P><BR><BR>
+</P>
+<P><FONT FACE="Times New Roman CYR"><FONT SIZE=2><I>Инструкция к
+программе K3Chess.</I></FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=3>
+ </FONT></FONT><FONT FACE="Times New Roman CYR"><FONT SIZE=2><I>Последнее
+обновление: 4 октября 2011 г.</I></FONT></FONT></BODY>
+</HTML>
