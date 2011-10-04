@@ -188,7 +188,7 @@ bool K3ChessSettings::autoSaveGames() const
 
 bool K3ChessSettings::canPonder() const
 {
-   return settings_.value("Game/Pondering", true).toBool();
+   return settings_.value("Game/Pondering", false).toBool();
 }
 
 bool K3ChessSettings::keyColumnSelect() const
