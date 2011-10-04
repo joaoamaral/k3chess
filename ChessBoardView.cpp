@@ -806,7 +806,7 @@ void ChessBoardView::select()
                   repaint(boardCellsRect());
                }
             }
-            else
+            else if(possibleMoves_.contains(move_))
             {
                lastCursorPos_ = move_.to;
                cellSelectMode_ = selectNone;
