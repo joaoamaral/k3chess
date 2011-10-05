@@ -66,9 +66,16 @@ void SettingsDialog::loadValues()
    playerTimes.append("30 0");
    playerTimes.append(g_label("Unlimited"));
    //
-   if(playerTimes.indexOf(g_settings.playerClockString())==-1)
+   ui->cmbPlayerTime->addItems(playerTimes);
+   //
+   int idx = playerTimes.indexOf(g_settings.playerClockString());
+   if(idx>=0)
    {
-      playerTimes.insert(0, g_settings.playerClockString());
+      ui->cmbPlayerTime->setCurrentIndex(idx);
+   }
+   else if(g_settings.playerClockString()=="--")
+   {
+      ui->cmbPlayerTime->setCurrentIndex(ui->cmbPlayerTime->count()-1);
    }
    //
    QStringList engineTimes;
@@ -79,16 +86,17 @@ void SettingsDialog::loadValues()
    engineTimes.append("5 2");
    engineTimes.append("10 0");
    engineTimes.append("15 0");
-   //
-   if(engineTimes.indexOf(g_settings.engineClockString())==-1)
-   {
-      engineTimes.insert(0, g_settings.engineClockString());
-   }
-   //
-   ui->cmbPlayerTime->addItems(playerTimes);
    ui->cmbEngineTime->addItems(engineTimes);
-   ui->cmbPlayerTime->setCurrentIndex(playerTimes.indexOf(g_settings.playerClockString()));
-   ui->cmbEngineTime->setCurrentIndex(engineTimes.indexOf(g_settings.engineClockString()));
+   //
+   int eidx = playerTimes.indexOf(g_settings.playerClockString());
+   if(eidx>=0)
+   {
+      ui->cmbEngineTime->setCurrentIndex(eidx);
+   }
+   else if(g_settings.engineClockString()=="--")
+   {
+      ui->cmbEngineTime->setCurrentIndex(ui->cmbEngineTime->count()-1);
+   }
    //
    isInitializing_ = false;
 }
@@ -113,6 +121,14 @@ void SettingsDialog::initializeLabels()
    ui->lPieceStyle->setText(g_label("PieceStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
+   //
+   if(ui->cmbPlayerTime->count()>0)
+   {
+      int idx = ui->cmbPlayerTime->currentIndex();
+      ui->cmbPlayerTime->removeItem(ui->cmbPlayerTime->count()-1);
+      ui->cmbPlayerTime->addItem(g_label("Unlimited"));
+      ui->cmbPlayerTime->setCurrentIndex(idx);
+   }
 }
 
 void SettingsDialog::adjustAppearance()
