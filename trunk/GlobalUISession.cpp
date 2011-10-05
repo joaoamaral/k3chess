@@ -6,6 +6,8 @@
 #include "Settings.h"
 #include "GlobalStrings.h"
 #include "KeyMapper.h"
+#include "GameSessionInfo.h"
+#include "StringUtils.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -43,7 +45,7 @@ void GlobalUISession::begin()
    {
       beginKeyRemapping();
    }
-   else
+   else if(!restoreLastGame())
    {
       preGame(); // begin by offering a game
    }
@@ -55,26 +57,41 @@ void GlobalUISession::preGame()
    showNewGameMenu();
 }
 
-void GlobalUISession::playGame(const GameProfile& profile)
+void GlobalUISession::playGame(GameType type,
+                               const ChessClock& wclock,
+                               const ChessClock& bclock)
+{
+   clearLastGame();
+   //
+   GameSessionInfo sessionInfo;
+   //
+   sessionInfo.profile.type = type;
+   sessionInfo.profile.whiteClock = wclock;
+   sessionInfo.profile.blackClock = bclock;
+   //
+   playGame(sessionInfo);
+}
+
+void GlobalUISession::playGame(const GameSessionInfo& sessionInfo)
 {
    assert(gameSession_==0);
    //
    // reset gui
    g_localChessGui.reset();
    //
-   switch(profile.type)
+   switch(sessionInfo.profile.type)
    {
       case gameComputerBlack:
          g_localChessGui.flipBoard(false);
-         gameSession_ = new GameSession(localHuman_, localEngine_, profile);
+         gameSession_ = new GameSession(localHuman_, localEngine_, sessionInfo);
          break;
       case gameComputerWhite:
          g_localChessGui.flipBoard(true);
-         gameSession_ = new GameSession(localEngine_, localHuman_, profile);
+         gameSession_ = new GameSession(localEngine_, localHuman_, sessionInfo);
          break;
       case gameTwoPlayers:
          g_localChessGui.flipBoard(false);
-         gameSession_ = new GameSession(localHuman1_, localHuman2_, profile);
+         gameSession_ = new GameSession(localHuman1_, localHuman2_, sessionInfo);
          break;
       case gameTwoEngines:
          assert(false); // @@note: not supported yet
@@ -119,13 +136,13 @@ void GlobalUISession::userChoice(int id)
    switch(id)
    {
       case cmd_NewGame_PlayerWhite:
-         playGame(GameProfile(gameComputerBlack, g_settings.playerClock(), g_settings.engineClock()));
+         playGame(gameComputerBlack, g_settings.playerClock(), g_settings.engineClock());
          break;
       case cmd_NewGame_PlayerBlack:
-         playGame(GameProfile(gameComputerWhite, g_settings.engineClock(), g_settings.playerClock()));
+         playGame(gameComputerWhite, g_settings.engineClock(), g_settings.playerClock());
          break;
       case cmd_NewGame_TwoPlayers:
-         playGame(GameProfile(gameTwoPlayers, g_settings.playerClock(), g_settings.playerClock()));
+         playGame(gameTwoPlayers, g_settings.playerClock(), g_settings.playerClock());
          break;
       //
       case cmd_ExtMenu_Settings:
@@ -151,6 +168,7 @@ void GlobalUISession::gameSessionEnded(GameSessionEndReason reason,
 {
    if(reason==reasonGameFinished)
    {
+      clearLastGame();
       // offer to save/discard/analyze game
       if(g_settings.autoSaveGames())
       {
@@ -162,8 +180,14 @@ void GlobalUISession::gameSessionEnded(GameSessionEndReason reason,
          offerChoice(g_commandOptionDefs.postGameOptions());
       }
    }
+   else if(reason==reasonGameAdjourned)
+   {
+      saveLastGame();
+      g_localChessGui.exitProgram();
+   }
    else
    {
+      clearLastGame();
       postGame();
    }
 }
@@ -183,7 +207,7 @@ void GlobalUISession::saveGameToPGN()
       // at least we don't lose any information, and the file can
       // be converted to another code page manually, if needed
       pgn.setCodec(QTextCodec::codecForName("UTF-8"));
-      pgn << gameSession_->pgn();
+      pgn << gameSession_->game().toPGN();
    }
    //
    pgnFile.close();
@@ -315,5 +339,30 @@ void GlobalUISession::nextKeyRemapPrompt()
       g_localChessGui.showStaticMessage(g_msg("PressKeyFor").arg(
          g_msg(g_keyMapper.keyDefs()[keyRemapIdx_].keyName)));
    }
+}
+
+bool GlobalUISession::restoreLastGame()
+{
+   GameSessionInfo sessionInfo;
+   if(!sessionInfo.loadFromFile(g_settings.lastGameFile())) return false;
+   //
+   playGame(sessionInfo);
+}
+
+void GlobalUISession::saveLastGame()
+{
+   if(!gameSession_)
+   {
+      // nothing to save
+      assert(false);
+      return;
+   }
+   gameSession_->sessionInfo().saveToFile(g_settings.lastGameFile());
+}
+
+void GlobalUISession::clearLastGame()
+{
+   QDir dir(extractFolderPath(g_settings.lastGameFile()));
+   dir.remove(g_settings.lastGameFile());
 }
 

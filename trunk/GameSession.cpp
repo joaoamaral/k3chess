@@ -35,18 +35,15 @@ QString gameResultToMessage(ChessGameResult result)
 }
 
 GameSession::GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
-                         const GameProfile& profile) :
+                         const GameSessionInfo& initialInfo) :
    whitePlayer_(whitePlayer), blackPlayer_(blackPlayer),
    game_(whitePlayer->name(), blackPlayer->name()),
-   whitePlayerReady_(false), blackPlayerReady_(false), profile_(profile),
-   whiteDrawOfferActive_(false), blackDrawOfferActive_(false),
+   whitePlayerReady_(false), blackPlayerReady_(false),
+   sessionInfo_(initialInfo), whiteDrawOfferActive_(false), blackDrawOfferActive_(false),
    canDrawByRepetition_(false)
 {
    QObject::connect(&getReadyTimer_, SIGNAL(timeout()), this, SLOT(getReadyTimeout()), Qt::UniqueConnection);
    QObject::connect(&clockUpdateTimer_, SIGNAL(timeout()), this, SLOT(clockUpdateTimer()), Qt::UniqueConnection);
-   //
-   connectPlayers();
-   connectGame();
 }
 
 void GameSession::begin()
@@ -101,7 +98,9 @@ void GameSession::getReadyTimeout()
 
 void GameSession::requestMove(ChessPlayer *player)
 {
-   player->makeMove(game_.position(), game_.lastMove(), profile_.whiteClock, profile_.blackClock);
+   player->makeMove(game_.position(), game_.lastMove(),
+                    sessionInfo_.profile.whiteClock,
+                    sessionInfo_.profile.blackClock);
 }
 
 void GameSession::white_isReady()
@@ -125,13 +124,6 @@ void GameSession::white_moves(const ChessMove& move)
       g_localChessGui.showSessionMessage(g_msg("IllegalMove").arg(move.toString().c_str()));
       requestMove(whitePlayer_);
    }
-   else if(checkRepetition())
-   {
-      whiteDrawOfferActive_ = false;
-      blackDrawOfferActive_ = false;
-      //
-      endGame(reasonGameFinished, resultDrawnByRepetition);
-   }
    else
    {
       if(blackDrawOfferActive_)
@@ -142,14 +134,14 @@ void GameSession::white_moves(const ChessMove& move)
       whiteDrawOfferActive_ = false;
       blackDrawOfferActive_ = false;
       //
-      profile_.whiteClock.remainingTime += profile_.whiteClock.moveIncrement;
+      sessionInfo_.profile.whiteClock.remainingTime += sessionInfo_.profile.whiteClock.moveIncrement;
       //
       outputLastMove();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       //
       blackPlayer_->opponentMoves(move);
-      if(game_.result()==resultNone && profile_.blackClock.remainingTime > 0)
+      if(game_.result()==resultNone && sessionInfo_.profile.blackClock.remainingTime > 0)
       {
          requestMove(blackPlayer_);
       }
@@ -220,13 +212,6 @@ void GameSession::black_moves(const ChessMove& move)
       g_localChessGui.showSessionMessage(g_msg("IllegalMove").arg(move.toString().c_str()));
       requestMove(blackPlayer_);
    }
-   else if(checkRepetition())
-   {
-      whiteDrawOfferActive_ = false;
-      blackDrawOfferActive_ = false;
-      //
-      endGame(reasonGameFinished, resultDrawnByRepetition);
-   }
    else
    {
       if(whiteDrawOfferActive_)
@@ -244,14 +229,14 @@ void GameSession::black_moves(const ChessMove& move)
       blackDrawOfferActive_ = false;
       whiteDrawOfferActive_ = false;
       //
-      profile_.blackClock.remainingTime += profile_.blackClock.moveIncrement;
+      sessionInfo_.profile.blackClock.remainingTime += sessionInfo_.profile.blackClock.moveIncrement;
       //
       outputLastMove();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       //
       whitePlayer_->opponentMoves(move);
-      if(game_.result()==resultNone && profile_.whiteClock.remainingTime > 0)
+      if(game_.result()==resultNone && sessionInfo_.profile.whiteClock.remainingTime > 0)
       {
          requestMove(whitePlayer_);
       }
@@ -333,6 +318,7 @@ void GameSession::connectPlayers()
    QObject::connect(whitePlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(white_says(const QString&)), Qt::UniqueConnection);
    QObject::connect(whitePlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(white_requestsTakeback()), Qt::UniqueConnection);
    QObject::connect(whitePlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(white_requestsAbort()), Qt::UniqueConnection);
+   QObject::connect(whitePlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(white_requestsAdjournment()), Qt::UniqueConnection);
    //
    QObject::connect(blackPlayer_, SIGNAL(isReady()), this, SLOT(black_isReady()), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(black_moves(ChessMove)), Qt::UniqueConnection);
@@ -342,27 +328,30 @@ void GameSession::connectPlayers()
    QObject::connect(blackPlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(black_says(const QString&)), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(black_requestsTakeback()), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(black_requestsAbort()), Qt::UniqueConnection);
+   QObject::connect(blackPlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(black_requestsAdjournment()), Qt::UniqueConnection);
 }
 
 void GameSession::disconnectPlayers()
 {
-   QObject::connect(whitePlayer_, SIGNAL(isReady()), this, SLOT(white_isReady()));
-   QObject::connect(whitePlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(white_moves(ChessMove)));
-   QObject::connect(whitePlayer_, SIGNAL(playerMoves(const std::string&)), this, SLOT(white_moves(const std::string&)));
-   QObject::connect(whitePlayer_, SIGNAL(playerOffersDraw()), this, SLOT(white_offersDraw()));
-   QObject::connect(whitePlayer_, SIGNAL(playerResigns()), this, SLOT(white_resigns()));
-   QObject::connect(whitePlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(white_says(const QString&)));
-   QObject::connect(whitePlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(white_requestsTakeback()));
-   QObject::connect(whitePlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(white_requestsAbort()));
+   QObject::disconnect(whitePlayer_, SIGNAL(isReady()), this, SLOT(white_isReady()));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(white_moves(ChessMove)));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerMoves(const std::string&)), this, SLOT(white_moves(const std::string&)));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerOffersDraw()), this, SLOT(white_offersDraw()));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerResigns()), this, SLOT(white_resigns()));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(white_says(const QString&)));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(white_requestsTakeback()));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(white_requestsAbort()));
+   QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(white_requestsAdjournment()));
    //
-   QObject::connect(blackPlayer_, SIGNAL(isReady()), this, SLOT(black_isReady()));
-   QObject::connect(blackPlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(black_moves(ChessMove)));
-   QObject::connect(blackPlayer_, SIGNAL(playerMoves(const std::string&)), this, SLOT(black_moves(const std::string&)));
-   QObject::connect(blackPlayer_, SIGNAL(playerOffersDraw()), this, SLOT(black_offersDraw()));
-   QObject::connect(blackPlayer_, SIGNAL(playerResigns()), this, SLOT(black_resigns()));
-   QObject::connect(blackPlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(black_says(const QString&)));
-   QObject::connect(blackPlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(black_requestsTakeback()));
-   QObject::connect(blackPlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(black_requestsAbort()));
+   QObject::disconnect(blackPlayer_, SIGNAL(isReady()), this, SLOT(black_isReady()));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(black_moves(ChessMove)));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerMoves(const std::string&)), this, SLOT(black_moves(const std::string&)));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerOffersDraw()), this, SLOT(black_offersDraw()));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerResigns()), this, SLOT(black_resigns()));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(black_says(const QString&)));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(black_requestsTakeback()));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(black_requestsAbort()));
+   QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(black_requestsAdjournment()));
 }
 
 void GameSession::connectGame()
@@ -392,15 +381,52 @@ void GameSession::verifyBothPlayersReady()
 
 void GameSession::startGame()
 {
-   g_localChessGui.beginNewGame(whitePlayer_->name(), blackPlayer_->name(), profile_);
+   g_localChessGui.beginNewGame(whitePlayer_->name(), blackPlayer_->name(), sessionInfo_.profile);
    //
-   whitePlayer_->beginGame(pcWhite, blackPlayer_->name(), profile_.whiteClock);
-   blackPlayer_->beginGame(pcBlack, whitePlayer_->name(), profile_.blackClock);
+   whitePlayer_->beginGame(pcWhite, blackPlayer_->name(), sessionInfo_.profile.whiteClock);
+   blackPlayer_->beginGame(pcBlack, whitePlayer_->name(), sessionInfo_.profile.blackClock);
    //
-   game_.start();
+   connectGame();
    //
-   addPositionOccurrence(game_.position()); // this is redundant if starting position is default
-                                             // but important if game is started from a custom position
+   game_.start(sessionInfo_.initialPosition); // start from the given initial position
+                                              // default position for standard chess
+                                              // but may be different for chess960
+   //
+   whitePlayer_->setInitialPosition(game_.position());
+   blackPlayer_->setInitialPosition(game_.position());
+   //
+   if(!sessionInfo_.moves.empty())
+   {
+      // replay moves one by one
+      //
+      std::vector<ChessMove>::const_iterator it = sessionInfo_.moves.begin(),
+                                             itEnd = sessionInfo_.moves.end();
+      for(;it!=itEnd;++it)
+      {
+         if(game_.position().sideToMove()==pcWhite)
+         {
+            whitePlayer_->replayMove(*it);
+         }
+         else
+         {
+            blackPlayer_->replayMove(*it);
+         }
+         //
+         bool moveOk = game_.applyMove(*it);
+         //
+         assert(moveOk);
+      }
+   }
+   //
+   if(game_.result()!=resultNone)
+   {
+      // a game end signal has come while replaying moves
+      return;
+   }
+   //
+   // finished setting up position, can actually start the game
+   //
+   connectPlayers();
    //
    counter_.restart();
    //
@@ -410,7 +436,10 @@ void GameSession::startGame()
    //
    g_localChessGui.updatePosition(game_.position(), game_.lastMove(), game_.possibleMoves());
    //
-   requestMove(whitePlayer_);
+   if(game_.position().sideToMove()==pcWhite)
+      requestMove(whitePlayer_);
+   else
+      requestMove(blackPlayer_);
    //
 }
 
@@ -429,8 +458,9 @@ QString GameSession::getResultMessage(GameSessionEndReason reason, ChessGameResu
           return g_msg("GameAborted");
        case reasonGameFinished:
           return gameResultToMessage(result);
+      default:
+          return QString();
     }
-    return QString();
 }
 
 void GameSession::endGame(GameSessionEndReason reason, ChessGameResult result)
@@ -466,48 +496,22 @@ void GameSession::clockUpdateTimer()
 {
    if(game_.position().sideToMove()==pcWhite)
    {
-      profile_.whiteClock.remainingTime -= counter_.elapsed();
-      if(profile_.whiteClock.remainingTime<=0)
+      sessionInfo_.profile.whiteClock.remainingTime -= counter_.elapsed();
+      if(sessionInfo_.profile.whiteClock.remainingTime<=0)
       {
          endGame(reasonGameFinished, resultBlackWonOnTime);
       }
    }
    else
    {
-      profile_.blackClock.remainingTime -= counter_.elapsed();
-      if(profile_.blackClock.remainingTime<=0)
+      sessionInfo_.profile.blackClock.remainingTime -= counter_.elapsed();
+      if(sessionInfo_.profile.blackClock.remainingTime<=0)
       {
          endGame(reasonGameFinished, resultWhiteWonOnTime);
       }
    }
    //
    counter_.restart();
-}
-
-QString GameSession::pgn() const
-{
-   return game_.toPGN();
-}
-
-unsigned GameSession::addPositionOccurrence(const ChessPosition& position)
-{
-   std::string pos_str = position.toString();
-   std::map<std::string, unsigned>::iterator it = positionOccurrences_.find(pos_str);
-   if(it==positionOccurrences_.end())
-   {
-      positionOccurrences_.insert(it, std::make_pair(pos_str, 1));
-      return 1;
-   }
-   else
-   {
-      ++it->second;
-      return it->second;
-   }
-}
-
-bool GameSession::checkRepetition()
-{
-   return addPositionOccurrence(game_.position())>=3;
 }
 
 void GameSession::white_requestsTakeback()
@@ -581,6 +585,36 @@ void GameSession::black_requestsAbort()
    if(accepted)
    {
       endGame(reasonGameAborted, resultNone);
+   }
+   else
+   {
+      requestMove(blackPlayer_);
+   }
+}
+
+void GameSession::white_requestsAdjournment()
+{
+   bool accepted = true;
+   if(game_.position().moveNumber()>1)
+      blackPlayer_->opponentRequestsAdjournment(accepted);
+   if(accepted)
+   {
+      endGame(reasonGameAdjourned, resultNone);
+   }
+   else
+   {
+      requestMove(whitePlayer_);
+   }
+}
+
+void GameSession::black_requestsAdjournment()
+{
+   bool accepted = true;
+   if(game_.position().moveNumber()>1)
+      whitePlayer_->opponentRequestsAdjournment(accepted);
+   if(accepted)
+   {
+      endGame(reasonGameAdjourned, resultNone);
    }
    else
    {

@@ -20,11 +20,14 @@ public:
    // requests (must implement)
    virtual void getReady() = 0; // tells the player to get ready
    virtual void beginGame(PieceColor color, const QString& opponentName,
-                          const ChessClock& clock) = 0; // tell player to begin game as white or black
+                          const ChessClock& clock) = 0; // tells player to begin game as white or black
+   virtual void setInitialPosition(const ChessPosition& position) = 0; // tells player to set up the given initial position
+   virtual void replayMove(const ChessMove& move) = 0; // after beginGame() and before the first makeMove() call, tells the player to replay the given move
    virtual void makeMove(const ChessPosition& position,
                          const ChessMove& lastMove,
                          const ChessClock& whiteClock,
-                         const ChessClock& blackClock) = 0;  // prompt player to make a move in the given position and given last opponent move (if any)
+                         const ChessClock& blackClock) = 0;  // prompts player to make a move in the given position and given last opponent move (if any)
+
    // notifications (optional processing)
    virtual void illegalMove() {}                          // informs the player that the move he attempted to make is an illegal move (makeMove() call will follow)
    virtual void opponentMoves(const ChessMove& move) {}   // inform player about opponent's next move
@@ -35,6 +38,7 @@ public:
    virtual void opponentSays(const QString& msg) {}       // player receives a message from opponent
    virtual void opponentRequestsTakeback(bool& accept);   // default behavior is reject
    virtual void opponentRequestsAbort(bool& accept);      // default behavior is reject
+   virtual void opponentRequestsAdjournment(bool& accept); // default behavior is reject
    virtual void gameResult(ChessGameResult result) {}     // notify player that the game was finished with the given result
                                                           // (resultNone means the game was aborted)
 
@@ -47,6 +51,7 @@ signals:
    void playerSays(const QString& msg);        // player sends a message to his opponent
    void playerRequestsTakeback();
    void playerRequestsAbort();
+   void playerRequestsAdjournment();
 
 private:
    QString name_;
@@ -60,6 +65,12 @@ void ChessPlayer::opponentRequestsTakeback(bool& accept)
 
 inline
 void ChessPlayer::opponentRequestsAbort(bool& accept)
+{
+   accept = false;
+}
+
+inline
+void ChessPlayer::opponentRequestsAdjournment(bool& accept)
 {
    accept = false;
 }

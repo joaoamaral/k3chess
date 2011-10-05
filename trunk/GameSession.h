@@ -2,8 +2,7 @@
 #define __GameSession_h
 
 #include "ChessPlayer.h"
-#include "ChessGame.h"
-#include "GameProfile.h"
+#include "GameSessionInfo.h"
 
 #include <QObject>
 #include <QTimer>
@@ -15,6 +14,7 @@ enum GameSessionEndReason { reasonWhitePlayerIsNotReady,
                             reasonBlackPlayerIsNotReady,
                             reasonBothPlayersIsNotReady,
                             reasonGameAborted,
+                            reasonGameAdjourned,
                             reasonGameFinished };
 
 // GameSession initiates and controls a specific game session
@@ -24,20 +24,22 @@ class GameSession : public QObject
    Q_OBJECT
 public:
    GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
-               const GameProfile& profile);
+               const GameSessionInfo& initialInfo);
    // @@note: chess player objects are not owned by game session
+   // @@note: initialInfo can contain a saved position
 
    void begin();
 
-   ChessClock whiteClock() const { return profile_.whiteClock; } // instant white clock value
-   ChessClock blackClock() const { return profile_.blackClock; } // instant black clock value
+   ChessClock whiteClock() const { return sessionInfo_.profile.whiteClock; } // instant white clock value
+   ChessClock blackClock() const { return sessionInfo_.profile.blackClock; } // instant black clock value
 
    const ChessPlayer *whitePlayer() const { return whitePlayer_; }
    const ChessPlayer *blackPlayer() const { return blackPlayer_; }
 
-   QString pgn() const;
+   const ChessGame& game() const { return game_; }
+   const GameSessionInfo& sessionInfo() const { return sessionInfo_; }
 
-   GameType type() const { return profile_.type; }
+   GameType type() const { return sessionInfo_.profile.type; }
 
 signals:
    void end(GameSessionEndReason reason, ChessGameResult result,
@@ -52,6 +54,7 @@ private slots:
    void white_says(const QString& msg);
    void white_requestsTakeback();
    void white_requestsAbort();
+   void white_requestsAdjournment();
 
    void black_isReady();
    void black_moves(const ChessMove& move);
@@ -61,6 +64,7 @@ private slots:
    void black_says(const QString& msg);
    void black_requestsTakeback();
    void black_requestsAbort();
+   void black_requestsAdjournment();
 
    void getReadyTimeout();
 
@@ -81,9 +85,6 @@ private:
    void startGame();
    void endGame(GameSessionEndReason reason, ChessGameResult result);
 
-   unsigned addPositionOccurrence(const ChessPosition& position);
-   bool checkRepetition();
-
    void requestMove(ChessPlayer *player);
    void outputLastMove();
 
@@ -96,8 +97,9 @@ private:
    bool whitePlayerReady_;
    bool blackPlayerReady_;
    //
+   GameSessionInfo sessionInfo_;
+   //
    QTime counter_;
-   GameProfile profile_;
    //
    QTimer getReadyTimer_;
    QTimer clockUpdateTimer_;
@@ -105,8 +107,6 @@ private:
    bool whiteDrawOfferActive_;
    bool blackDrawOfferActive_;
    bool canDrawByRepetition_;
-   //
-   std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection
 };
 
 #endif

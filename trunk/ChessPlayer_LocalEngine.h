@@ -22,10 +22,14 @@ public:
                          const ChessMove& lastMove,
                          const ChessClock& whiteClock,
                          const ChessClock& blackClock);
-   virtual void illegalMove();
 
+   virtual void setInitialPosition(const ChessPosition& position);
+   virtual void replayMove(const ChessMove& move);
+
+   virtual void illegalMove();
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);
+   virtual void opponentRequestsAdjournment(bool& accept);
 
    virtual void opponentOffersDraw();
    virtual void opponentAcceptsDraw();
@@ -58,7 +62,7 @@ private:
    EngineType type_;
    QTimer uciokTimer_;
    std::string incompleteLine_;
-   bool inForceModeAfterTakeback_; // for XBoard engines only
+   bool inForceMode_;   // (force mode is defined for XBoard engines only)
 };
 
 #endif

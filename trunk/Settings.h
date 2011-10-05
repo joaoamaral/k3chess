@@ -47,7 +47,6 @@ public:
    QString playerClockString() const;
    QString engineClockString() const;
 
-   QString defaultBoardSetup() const; // FEN string for default board setup
    bool drawCoordinates() const;  // show coordinates on board sides
    bool drawMoveArrow() const;    // mark last move with an 'arrow' on board
    bool showMoveHints() const; // draw hints on board squares that the current piece can move to
@@ -56,6 +55,7 @@ public:
    bool keyPieceSelect() const;   // pressing keys 'K', 'Q', 'R', 'B' ('I'), 'P' will select pieces of corresponding types
 
    QString keymapFile() const;
+   QString lastGameFile() const;
 
    bool autoSaveGames() const; // if true, games will be saved to pgn file automatically, without prompt
    bool canPonder() const; // global ponder setting (may be overridden by internal engine parameters)

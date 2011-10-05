@@ -41,7 +41,7 @@ const int cUciokTimeoutMs = 5000; // milliseconds to wait for 'uciok'
 
 ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info) :
    ChessPlayer(info.name), engineProcess_(this),
-   readyRequest_(false), info_(info), inForceModeAfterTakeback_(false)
+   readyRequest_(false), info_(info), inForceMode_(false)
 {
    QObject::connect(&engineProcess_, SIGNAL(started()),
                     this, SLOT(engineStarted()), Qt::UniqueConnection);
@@ -197,6 +197,10 @@ void ChessPlayer_LocalEngine::beginGame(PieceColor color,
          }
          tellEngine("nopost");
          tellEngine(clockToXBoardLevel(clock));
+         //
+         inForceMode_ = true;
+         tellEngine("force");
+         //
          break;
       case etDetect:
          assert(false);
@@ -251,23 +255,12 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
             if(lastMove.assigned())
             {
                tellEngine(lastMove.toString());
-
-               if(inForceModeAfterTakeback_)
-               {
-                  inForceModeAfterTakeback_ = false;
-                  if(position.sideToMove()==pcWhite)
-                  {
-                     tellEngine("white");
-                  }
-                  else
-                  {
-                     tellEngine("black");
-                  }
-                  tellEngine("go");
-               }
+               //
             }
-            else
+            //
+            if(inForceMode_)
             {
+               inForceMode_ = false;
                if(position.sideToMove()==pcWhite)
                {
                   tellEngine("white");
@@ -276,7 +269,6 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
                {
                   tellEngine("black");
                }
-               //
                tellEngine("go");
             }
          }
@@ -306,7 +298,7 @@ void ChessPlayer_LocalEngine::gameResult(ChessGameResult result)
          break;
       case etXBoard:
          // tell engine to forget about the previous game and prepare for a new game
-         inForceModeAfterTakeback_ = false;
+         inForceMode_ = false;
          tellEngine("force");
          break;
       case etDetect:
@@ -452,7 +444,7 @@ void ChessPlayer_LocalEngine::opponentRequestsTakeback(bool &accept)
          tellEngine("force");
          tellEngine("undo");
          tellEngine("undo");
-         inForceModeAfterTakeback_ = true;
+         inForceMode_ = true;
          break;
       default:
          break;
@@ -460,6 +452,11 @@ void ChessPlayer_LocalEngine::opponentRequestsTakeback(bool &accept)
 }
 
 void ChessPlayer_LocalEngine::opponentRequestsAbort(bool &accept)
+{
+   accept = true;
+}
+
+void ChessPlayer_LocalEngine::opponentRequestsAdjournment(bool &accept)
 {
    accept = true;
 }
@@ -487,3 +484,49 @@ void ChessPlayer_LocalEngine::illegalMove()
 {
    logEngineTalk(COMMENT, std::string("Illegal or misinterpreted move"));
 }
+
+void ChessPlayer_LocalEngine::setInitialPosition(const ChessPosition &position)
+{
+   if(info_.type==etXBoard && position.toString()!=cStandardInitialFen) return;
+   {
+      tellEngine("edit");
+      ChessCoord coord;
+      for(coord.row=1;coord.row<position.maxRow();++coord.row)
+      {
+         for(coord.col=1;coord.col<position.maxCol();++coord.col)
+         {
+            ChessPiece piece = position.cell(coord);
+            if(piece.type()==ptNone) continue;
+            if(piece.color()==pcWhite)
+            {
+               tellEngine(std::string(1, piece.toChar()) + coord.toString());
+            }
+         }
+      }
+      tellEngine("c");
+      for(coord.row=1;coord.row<position.maxRow();++coord.row)
+      {
+         for(coord.col=1;coord.col<position.maxCol();++coord.col)
+         {
+            ChessPiece piece = position.cell(coord);
+            if(piece.type()==ptNone) continue;
+            if(piece.color()==pcBlack)
+            {
+               tellEngine(std::string(1, ChessPiece(piece.type()|pcWhite).toChar()) +
+                          coord.toString());
+            }
+         }
+      }
+      tellEngine(".");
+   }
+}
+
+void ChessPlayer_LocalEngine::replayMove(const ChessMove &move)
+{
+   if(info_.type==etXBoard)
+   {
+      assert(inForceMode_);
+      tellEngine(move.toString());
+   }
+}
+

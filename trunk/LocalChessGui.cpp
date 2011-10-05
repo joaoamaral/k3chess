@@ -4,6 +4,7 @@
 #include "Settings.h"
 #include "SettingsDialog.h"
 
+
 LocalChessGui::LocalChessGui()
 {
    mainWindow_ = new K3ChessMainWindow;
@@ -12,7 +13,7 @@ LocalChessGui::LocalChessGui()
    updateInputMode();
    //
    mainWindow_->boardView()->updatePosition(
-               ChessPosition::fromString(g_settings.defaultBoardSetup().toStdString()));
+               ChessPosition::fromString(cStandardInitialFen));
    //
    if(g_settings.profile().contains("ebook")||
          g_settings.profile().contains("handheld"))
@@ -147,8 +148,9 @@ void LocalChessGui::reset()
 {
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
-   updatePosition(ChessPosition::fromString(
-      g_settings.defaultBoardSetup().toStdString()));
+   //
+   ChessPosition position = ChessPosition::fromString(cStandardInitialFen);
+   updatePosition(position);
 }
 
 void LocalChessGui::showSettingsDialog()

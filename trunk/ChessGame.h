@@ -29,7 +29,7 @@ public:
    const QString& blackPlayerName() const;
 
    void start(); // prepares default initial position and sets startTime
-   void start(const std::string& fen); // setups initial position and sets startTime
+   void start(const ChessPosition& position); // setups initial position and sets startTime
    void stop(ChessGameResult result, const QString& message);
 
    const GameProfile& profile() const; // current profile snapshot
@@ -57,12 +57,13 @@ public:
 signals:
    void checkmateDetected();
    void stalemateDetected();
-   void repetitionDetected(); // @@todo: implement
-   void fiftyMovesDetected(); // @@todo: implement
+   void repetitionDetected();
+   void fiftyMovesDetected();
 
 private:
    void recalcPossibleMoves();
    void appendSANMove();
+   unsigned addPositionOccurrence(const std::string &fen);
 
 private:
    QString whitePlayerName_;
@@ -79,6 +80,7 @@ private:
    std::vector<QString> sanMoves_;  // game moves in standard algebraic notation
 
    ChessMoveMap possibleMoves_; // precalculated possible moves from current position
+   std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection
 };
 
 #endif
