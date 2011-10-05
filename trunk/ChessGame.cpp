@@ -656,3 +656,8 @@ unsigned ChessGame::addPositionOccurrence(const std::string& fen)
       return it->second;
    }
 }
+
+const QStringList & ChessGame::sanMoves() const
+{
+   return sanMoves_;
+}

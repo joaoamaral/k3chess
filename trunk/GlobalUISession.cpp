@@ -24,6 +24,7 @@ GlobalUISession::GlobalUISession() :
    QObject::connect(&g_settings, SIGNAL(ponderingChanged()), this, SLOT(ponderingChanged()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(localeChanged()), this, SLOT(localeChanged()), Qt::UniqueConnection);
    QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this, SLOT(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(isExiting()), this, SLOT(isExiting()));
 }
 
 GlobalUISession::~GlobalUISession()
@@ -68,6 +69,7 @@ void GlobalUISession::playGame(GameType type,
    sessionInfo.profile.type = type;
    sessionInfo.profile.whiteClock = wclock;
    sessionInfo.profile.blackClock = bclock;
+   sessionInfo.initialPosition = cStandardInitialPosition;
    //
    playGame(sessionInfo);
 }
@@ -150,7 +152,7 @@ void GlobalUISession::userChoice(int id)
          showNewGameMenu();
          break;
       case cmd_ExtMenu_Quit:
-         g_localChessGui.exitProgram();
+         requestExit();
          break;
       //
       case cmd_PostGame_Save:
@@ -179,11 +181,6 @@ void GlobalUISession::gameSessionEnded(GameSessionEndReason reason,
       {
          offerChoice(g_commandOptionDefs.postGameOptions());
       }
-   }
-   else if(reason==reasonGameAdjourned)
-   {
-      saveLastGame();
-      g_localChessGui.exitProgram();
    }
    else
    {
@@ -346,18 +343,13 @@ bool GlobalUISession::restoreLastGame()
    GameSessionInfo sessionInfo;
    if(!sessionInfo.loadFromFile(g_settings.lastGameFile())) return false;
    //
-   playGame(sessionInfo);
-}
-
-void GlobalUISession::saveLastGame()
-{
-   if(!gameSession_)
-   {
-      // nothing to save
-      assert(false);
-      return;
-   }
-   gameSession_->sessionInfo().saveToFile(g_settings.lastGameFile());
+   QObject::connect(&startSavedGameTimer_, SIGNAL(timeout()),
+                    this, SLOT(startSavedGameTimeout()));
+   //
+   startSavedGameTimer_.setSingleShot(true);
+   startSavedGameTimer_.start(10); // any ridiculous amount will do
+   //
+   return true;
 }
 
 void GlobalUISession::clearLastGame()
@@ -366,3 +358,27 @@ void GlobalUISession::clearLastGame()
    dir.remove(g_settings.lastGameFile());
 }
 
+void GlobalUISession::requestExit()
+{
+   finalize();
+   g_localChessGui.exitProgram();
+}
+
+void GlobalUISession::startSavedGameTimeout()
+{
+   QObject::disconnect(&startSavedGameTimer_, SIGNAL(timeout()),
+                       this, SLOT(startSavedGameTimeout()));
+   GameSessionInfo sessionInfo;
+   sessionInfo.loadFromFile(g_settings.lastGameFile());
+   playGame(sessionInfo);
+}
+
+void GlobalUISession::isExiting()
+{
+   if(gameSession_ && gameSession_->game().result()==resultNone
+         && !gameSession_->game().moves().empty())
+   {
+      // save game (will be restored and continued on next program start)
+      gameSession_->sessionInfo().saveToFile(g_settings.lastGameFile());
+   }
+}

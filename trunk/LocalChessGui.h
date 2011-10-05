@@ -32,6 +32,7 @@ public:
                        const CoordPair& lastMove=CoordPair(),
                        const ChessMoveMap& possibleMoves=ChessMoveMap());
    void appendToMoveList(const QString& str);
+   void appendToMoveList(const QStringList& str);
    void offerChoice(const CommandOptions& options);
    void enableDefaultKeyProcessing(bool value);
    //
@@ -44,6 +45,7 @@ signals:
    void userMoves(const CoordPair& pair);
    void userChoice(int id);
    void keyPressed(Qt::Key key);  // for keys pressed while no control is active
+   void isExiting();
 
 private slots:
    void updateBoardStyle();

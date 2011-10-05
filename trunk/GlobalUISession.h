@@ -1,12 +1,13 @@
 #ifndef __GlobalUISession_h
 #define __GlobalUISession_h
 
-#include <QObject>
 #include "Singletons.h"
 #include "CommandOptions.h"
 #include "GameProfile.h"
 #include "GameSession.h"
 #include "Singletons.h"
+
+#include <QTimer>
 
 class ChessPlayer_LocalEngine;
 class ChessPlayer_LocalHuman;
@@ -39,6 +40,10 @@ private slots:
    void localeChanged();
    void keyPressed(Qt::Key key);
 
+   void startSavedGameTimeout();
+
+   void isExiting();
+
 private:
    void initialize();
    void preGame();
@@ -56,9 +61,10 @@ private:
    void showExtMenu();
 
    void saveGameToPGN();
-   void saveLastGame();
    bool restoreLastGame();
    void clearLastGame();
+
+   void requestExit();
 
 private:
    ChessPlayer_LocalHuman *localHuman_;
@@ -68,6 +74,7 @@ private:
    GameSession *gameSession_;
    int keyRemapIdx_;
    MenuType menuType_;
+   QTimer startSavedGameTimer_;
 };
 
 #endif

@@ -33,6 +33,7 @@ LocalChessGui::LocalChessGui()
    QObject::connect(mainWindow_->boardView(), SIGNAL(moveEntered(const CoordPair&)), this, SIGNAL(userMoves(const CoordPair&)), Qt::UniqueConnection);
    QObject::connect(mainWindow_->commandPanel(), SIGNAL(optionSelected(int)), this, SIGNAL(userChoice(int)), Qt::UniqueConnection);
    QObject::connect(mainWindow_, SIGNAL(keyPressed(Qt::Key)), this, SIGNAL(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(mainWindow_, SIGNAL(isClosing()), this, SIGNAL(isExiting()));
    //
    QObject::connect(&g_settings, SIGNAL(boardStyleChanged()), this, SLOT(updateBoardStyle()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(inputSettingsChanged()), this, SLOT(updateInputMode()), Qt::UniqueConnection);
@@ -130,6 +131,12 @@ void LocalChessGui::appendToMoveList(const QString& str)
    mainWindow_->moveList()->addMove(str);
 }
 
+void LocalChessGui::appendToMoveList(const QStringList& slist)
+{
+   if(!slist.empty())
+      mainWindow_->moveList()->addMoves(slist);
+}
+
 void LocalChessGui::offerChoice(const CommandOptions& options)
 {
    mainWindow_->commandPanel()->setCommandOptions(options);
@@ -172,6 +179,7 @@ void LocalChessGui::updateBoardStyle()
    mainWindow_->boardView()->setDrawMoveArrow(g_settings.drawMoveArrow());
    mainWindow_->boardView()->setDrawCoords(g_settings.drawCoordinates());
    mainWindow_->boardView()->setShowMoveHints(g_settings.showMoveHints());
+   mainWindow_->updateControlLayout();
 }
 
 void LocalChessGui::updateInputMode()

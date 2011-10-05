@@ -71,16 +71,7 @@ void ChessPlayer_LocalHuman::userChoice(int id)
                           SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
          break;
       case cmd_InGame_Resign:     emit playerResigns();  break;
-      case cmd_InGame_Abort:
-         mode_ = modeShowingAbortOptions;
-         offerChoice(g_commandOptionDefs.abortOptions());
-         break;
-      case cmd_Abort_ReturnToMenu:
-         emit playerRequestsAbort();
-         break;
-      case cmd_Abort_Adjourn:
-         emit playerRequestsAdjournment();
-         break;
+      case cmd_InGame_Abort:      emit playerRequestsAbort();  break;
    }
 }
 
@@ -120,8 +111,7 @@ void ChessPlayer_LocalHuman::keyPressed(Qt::Key key)
          switch(mode_)
          {
             case modeShowingInGameOptions:
-            case modeShowingAbortOptions:
-               mode_ = modeStandby;
+               mode_ = modeSelectingMove;
                g_localChessGui.beginMoveSelection();
                break;
             case modeSelectingMove:
@@ -156,7 +146,3 @@ void ChessPlayer_LocalHuman::opponentRequestsAbort(bool &accept)
    accept = true;
 }
 
-void ChessPlayer_LocalHuman::opponentRequestsAdjournment(bool &accept)
-{
-   accept = true;
-}

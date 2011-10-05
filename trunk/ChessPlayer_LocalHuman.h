@@ -10,8 +10,7 @@ class ChessPlayer_LocalHuman : public ChessPlayer
 
    enum Mode { modeStandby, modeSelectingMove,
                modeSelectingPromotion,
-               modeShowingInGameOptions,
-               modeShowingAbortOptions };
+               modeShowingInGameOptions };
 
 public:
    ChessPlayer_LocalHuman(const QString& name);
@@ -30,7 +29,6 @@ public:
    virtual void opponentOffersDraw();
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);
-   virtual void opponentRequestsAdjournment(bool& accept);
    virtual void gameResult(ChessGameResult result);
 
 private slots:

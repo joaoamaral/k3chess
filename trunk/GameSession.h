@@ -14,7 +14,6 @@ enum GameSessionEndReason { reasonWhitePlayerIsNotReady,
                             reasonBlackPlayerIsNotReady,
                             reasonBothPlayersIsNotReady,
                             reasonGameAborted,
-                            reasonGameAdjourned,
                             reasonGameFinished };
 
 // GameSession initiates and controls a specific game session
@@ -54,7 +53,6 @@ private slots:
    void white_says(const QString& msg);
    void white_requestsTakeback();
    void white_requestsAbort();
-   void white_requestsAdjournment();
 
    void black_isReady();
    void black_moves(const ChessMove& move);
@@ -64,7 +62,6 @@ private slots:
    void black_says(const QString& msg);
    void black_requestsTakeback();
    void black_requestsAbort();
-   void black_requestsAdjournment();
 
    void getReadyTimeout();
 
@@ -84,11 +81,13 @@ private:
    void verifyBothPlayersReady();
    void startGame();
    void endGame(GameSessionEndReason reason, ChessGameResult result);
+   QString getResultMessage(GameSessionEndReason reason, ChessGameResult result);
 
    void requestMove(ChessPlayer *player);
    void outputLastMove();
 
-   QString getResultMessage(GameSessionEndReason reason, ChessGameResult result);
+   void enableInGameCommands();
+   void updateSessionMoves();
 
 private:
    ChessPlayer *whitePlayer_;

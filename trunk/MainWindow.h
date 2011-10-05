@@ -24,9 +24,14 @@ public:
    CommandPanel *commandPanel() const { return commandPanel_; }
 
    void setCustomKeyboardMode(bool value);
+   void updateControlLayout();
+
+protected:
+   virtual void closeEvent(QCloseEvent*);
 
 signals:
    void keyPressed(Qt::Key key);
+   void isClosing();
 
 protected:
    virtual void resizeEvent(QResizeEvent*);
@@ -35,10 +40,6 @@ protected:
 private slots:
    void commandPanel_optionSelected(int id);
    void commandPanel_idleClick();
-   void boardStyleChanged();
-
-private:
-   void updateControlLayout();
 
 private:
    ChessBoardView *boardView_;

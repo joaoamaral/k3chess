@@ -32,6 +32,17 @@ QString gameResultToMessage(ChessGameResult result)
    return QString(); // dummy line to suppress compiler warning
 }
 
+QStringList moveListToStringList(const std::vector<ChessMove>& moves)
+{
+   QStringList slist;
+   slist.reserve(moves.size());
+   for(unsigned i=0;i<moves.size();++i)
+   {
+      slist.push_back(QString(moves[i].toString().c_str()));
+   }
+   return slist;
+}
+
 }
 
 GameSession::GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
@@ -44,6 +55,9 @@ GameSession::GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
 {
    QObject::connect(&getReadyTimer_, SIGNAL(timeout()), this, SLOT(getReadyTimeout()), Qt::UniqueConnection);
    QObject::connect(&clockUpdateTimer_, SIGNAL(timeout()), this, SLOT(clockUpdateTimer()), Qt::UniqueConnection);
+   //
+   connectPlayers();
+   connectGame();
 }
 
 void GameSession::begin()
@@ -126,6 +140,8 @@ void GameSession::white_moves(const ChessMove& move)
    }
    else
    {
+      updateSessionMoves();
+      //
       if(blackDrawOfferActive_)
       {
          blackPlayer_->opponentRejectsDraw();
@@ -214,6 +230,8 @@ void GameSession::black_moves(const ChessMove& move)
    }
    else
    {
+      updateSessionMoves();
+      //
       if(whiteDrawOfferActive_)
       {
          whitePlayer_->opponentRejectsDraw();
@@ -221,9 +239,7 @@ void GameSession::black_moves(const ChessMove& move)
       //
       if(game_.position().moveNumber()==2)
       {
-         g_commandOptionDefs.inGameOptions().enable(cmd_InGame_Takeback);
-         g_commandOptionDefs.inGameOptions().enable(cmd_InGame_OfferDraw);
-         g_commandOptionDefs.inGameOptions().enable(cmd_InGame_Resign);
+         enableInGameCommands();
       }
       //
       blackDrawOfferActive_ = false;
@@ -318,7 +334,6 @@ void GameSession::connectPlayers()
    QObject::connect(whitePlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(white_says(const QString&)), Qt::UniqueConnection);
    QObject::connect(whitePlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(white_requestsTakeback()), Qt::UniqueConnection);
    QObject::connect(whitePlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(white_requestsAbort()), Qt::UniqueConnection);
-   QObject::connect(whitePlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(white_requestsAdjournment()), Qt::UniqueConnection);
    //
    QObject::connect(blackPlayer_, SIGNAL(isReady()), this, SLOT(black_isReady()), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(black_moves(ChessMove)), Qt::UniqueConnection);
@@ -328,7 +343,6 @@ void GameSession::connectPlayers()
    QObject::connect(blackPlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(black_says(const QString&)), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(black_requestsTakeback()), Qt::UniqueConnection);
    QObject::connect(blackPlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(black_requestsAbort()), Qt::UniqueConnection);
-   QObject::connect(blackPlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(black_requestsAdjournment()), Qt::UniqueConnection);
 }
 
 void GameSession::disconnectPlayers()
@@ -341,7 +355,6 @@ void GameSession::disconnectPlayers()
    QObject::disconnect(whitePlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(white_says(const QString&)));
    QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(white_requestsTakeback()));
    QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(white_requestsAbort()));
-   QObject::disconnect(whitePlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(white_requestsAdjournment()));
    //
    QObject::disconnect(blackPlayer_, SIGNAL(isReady()), this, SLOT(black_isReady()));
    QObject::disconnect(blackPlayer_, SIGNAL(playerMoves(ChessMove)), this, SLOT(black_moves(ChessMove)));
@@ -351,7 +364,6 @@ void GameSession::disconnectPlayers()
    QObject::disconnect(blackPlayer_, SIGNAL(playerSays(const QString&)), this, SLOT(black_says(const QString&)));
    QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsTakeback()), this, SLOT(black_requestsTakeback()));
    QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsAbort()), this, SLOT(black_requestsAbort()));
-   QObject::disconnect(blackPlayer_, SIGNAL(playerRequestsAdjournment()), this, SLOT(black_requestsAdjournment()));
 }
 
 void GameSession::connectGame()
@@ -386,8 +398,6 @@ void GameSession::startGame()
    whitePlayer_->beginGame(pcWhite, blackPlayer_->name(), sessionInfo_.profile.whiteClock);
    blackPlayer_->beginGame(pcBlack, whitePlayer_->name(), sessionInfo_.profile.blackClock);
    //
-   connectGame();
-   //
    game_.start(sessionInfo_.initialPosition); // start from the given initial position
                                               // default position for standard chess
                                               // but may be different for chess960
@@ -403,14 +413,8 @@ void GameSession::startGame()
                                              itEnd = sessionInfo_.moves.end();
       for(;it!=itEnd;++it)
       {
-         if(game_.position().sideToMove()==pcWhite)
-         {
-            whitePlayer_->replayMove(*it);
-         }
-         else
-         {
-            blackPlayer_->replayMove(*it);
-         }
+         whitePlayer_->replayMove(*it);
+         blackPlayer_->replayMove(*it);
          //
          bool moveOk = game_.applyMove(*it);
          //
@@ -424,9 +428,17 @@ void GameSession::startGame()
       return;
    }
    //
-   // finished setting up position, can actually start the game
+   if(game_.position().moveNumber()>=2)
+   {
+      enableInGameCommands();
+   }
    //
-   connectPlayers();
+   if(!game_.moves().empty())
+   {
+      g_localChessGui.appendToMoveList(game_.sanMoves());
+   }
+   //6
+   // finished setting up position, can actually start the game
    //
    counter_.restart();
    //
@@ -466,6 +478,8 @@ QString GameSession::getResultMessage(GameSessionEndReason reason, ChessGameResu
 void GameSession::endGame(GameSessionEndReason reason, ChessGameResult result)
 {
    clockUpdateTimer_.stop();
+   //
+   sessionInfo_.moves = game_.moves();
    //
    if(reason==reasonGameFinished)
    {
@@ -529,6 +543,8 @@ void GameSession::white_requestsTakeback()
       if(accept)
       {
          game_.takebackOneFullMove();
+         updateSessionMoves();
+         //
          g_localChessGui.dropLastFullMove();
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
@@ -568,6 +584,8 @@ void GameSession::black_requestsTakeback()
       if(accept)
       {
          game_.takebackOneFullMove();
+         updateSessionMoves();
+         //
          g_localChessGui.dropLastFullMove();
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
@@ -592,32 +610,24 @@ void GameSession::black_requestsAbort()
    }
 }
 
-void GameSession::white_requestsAdjournment()
+void GameSession::enableInGameCommands()
 {
-   bool accepted = true;
-   if(game_.position().moveNumber()>1)
-      blackPlayer_->opponentRequestsAdjournment(accepted);
-   if(accepted)
-   {
-      endGame(reasonGameAdjourned, resultNone);
-   }
-   else
-   {
-      requestMove(whitePlayer_);
-   }
+   g_commandOptionDefs.inGameOptions().enable(cmd_InGame_Takeback);
+   g_commandOptionDefs.inGameOptions().enable(cmd_InGame_OfferDraw);
+   g_commandOptionDefs.inGameOptions().enable(cmd_InGame_Resign);
 }
 
-void GameSession::black_requestsAdjournment()
+void GameSession::updateSessionMoves()
 {
-   bool accepted = true;
-   if(game_.position().moveNumber()>1)
-      whitePlayer_->opponentRequestsAdjournment(accepted);
-   if(accepted)
+   size_t n = sessionInfo_.moves.size();
+   size_t m = game_.moves().size();
+   //
+   if(n==m) return;
+   sessionInfo_.moves.resize(m);
+   //
+   while(n<m)
    {
-      endGame(reasonGameAdjourned, resultNone);
-   }
-   else
-   {
-      requestMove(blackPlayer_);
+      sessionInfo_.moves[n] = game_.moves()[n];
+      ++n;
    }
 }
