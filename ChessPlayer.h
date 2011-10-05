@@ -22,7 +22,10 @@ public:
    virtual void beginGame(PieceColor color, const QString& opponentName,
                           const ChessClock& clock) = 0; // tells player to begin game as white or black
    virtual void setInitialPosition(const ChessPosition& position) = 0; // tells player to set up the given initial position
-   virtual void replayMove(const ChessMove& move) = 0; // after beginGame() and before the first makeMove() call, tells the player to replay the given move
+   virtual void replayMove(const ChessMove& move) = 0; // after beginGame() and before the first makeMove() call,
+                                                       // tells the player to replay the given move on his board
+                                                       // (this can be either his move or his opponent's move depending
+                                                       //  on whose turn it is)
    virtual void makeMove(const ChessPosition& position,
                          const ChessMove& lastMove,
                          const ChessClock& whiteClock,
@@ -38,7 +41,6 @@ public:
    virtual void opponentSays(const QString& msg) {}       // player receives a message from opponent
    virtual void opponentRequestsTakeback(bool& accept);   // default behavior is reject
    virtual void opponentRequestsAbort(bool& accept);      // default behavior is reject
-   virtual void opponentRequestsAdjournment(bool& accept); // default behavior is reject
    virtual void gameResult(ChessGameResult result) {}     // notify player that the game was finished with the given result
                                                           // (resultNone means the game was aborted)
 
@@ -51,7 +53,6 @@ signals:
    void playerSays(const QString& msg);        // player sends a message to his opponent
    void playerRequestsTakeback();
    void playerRequestsAbort();
-   void playerRequestsAdjournment();
 
 private:
    QString name_;
@@ -65,12 +66,6 @@ void ChessPlayer::opponentRequestsTakeback(bool& accept)
 
 inline
 void ChessPlayer::opponentRequestsAbort(bool& accept)
-{
-   accept = false;
-}
-
-inline
-void ChessPlayer::opponentRequestsAdjournment(bool& accept)
 {
    accept = false;
 }

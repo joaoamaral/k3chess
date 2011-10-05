@@ -38,7 +38,7 @@ bool GameSessionInfo::saveToFile(const QString& fileName) const
    out << profile.blackClock.moveIncrement << "\n";
    out << initialPosition.toString().c_str() << "\n";
    //
-   if(moves.empty())
+   if(!moves.empty())
    {
       for(unsigned i=0; i<moves.size(); ++i)
       {
@@ -47,8 +47,6 @@ bool GameSessionInfo::saveToFile(const QString& fileName) const
       //
       out << "\n";
    }
-   //
-   out << "-\n";
    //
    return true;
 }

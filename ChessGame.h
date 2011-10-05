@@ -8,6 +8,7 @@
 #include "GameProfile.h"
 
 #include <QDateTime>
+#include <QStringList>
 #include <vector>
 
 enum ChessGameResult { resultNone, // e.g. still under way, or canceled
@@ -50,6 +51,7 @@ public:
    ChessMove interpretMoveString(const std::string& move_str) const; // among moves possible in the current position
 
    const std::vector<ChessMove>& moves() const; // all game moves up to current position
+   const QStringList& sanMoves() const; // all game moves in SAN format up to current position
    QString toPGN() const; // get all game in PGN notation
 
    const ChessMoveMap& possibleMoves() const; // possible moves for current position
@@ -77,7 +79,7 @@ private:
 
    std::vector<std::string> positions_; // game positions in the form of fen strings
    std::vector<ChessMove> gameMoves_;   // game moves in coordinate algebraic form
-   std::vector<QString> sanMoves_;  // game moves in standard algebraic notation
+   QStringList sanMoves_;  // game moves in standard algebraic notation
 
    ChessMoveMap possibleMoves_; // precalculated possible moves from current position
    std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection

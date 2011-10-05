@@ -3,7 +3,6 @@
 
 #include <QPlainTextEdit>
 #include <QString>
-#include <vector>
 
 class MoveListView : public QPlainTextEdit
 {
@@ -12,6 +11,7 @@ public:
    explicit MoveListView(QWidget *parent = 0);
 
    void addMove(const QString& move);
+   void addMoves(const QStringList& moves);
    void dropMoves(unsigned count);
    void clearMoves();
 
@@ -23,7 +23,7 @@ private:
 
 private:
    QString lastLine_;
-   std::vector<QString> moves_;
+   QStringList moves_;
 };
 
 #endif // MOVELISTVIEW_H

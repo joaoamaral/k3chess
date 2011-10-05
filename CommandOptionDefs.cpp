@@ -9,8 +9,6 @@ const CommandOption cmdOption_InGame_Takeback(cmd_InGame_Takeback, "InGame_Takeb
 const CommandOption cmdOption_InGame_OfferDraw(cmd_InGame_OfferDraw, "InGame_OfferDraw", srtMenuVar, Qt::Key_D);
 const CommandOption cmdOption_InGame_Resign(cmd_InGame_Resign, "InGame_Resign", srtMenuVar, Qt::Key_R);
 const CommandOption cmdOption_InGame_Abort(cmd_InGame_Abort, "InGame_Abort", srtMenuVar, Qt::Key_R);
-const CommandOption cmdOption_Abort_ReturnToMenu(cmd_Abort_ReturnToMenu, "Abort_ReturnToMenu", srtMenuVar, Qt::Key_R);
-const CommandOption cmdOption_Abort_Adjourn(cmd_Abort_Adjourn, "Abort_Adjourn", srtMenuVar, Qt::Key_A);
 const CommandOption cmdOption_Promotion_Prompt(cmd_Promotion_Prompt, "Promotion_Prompt", srtMenuVar, Qt::Key_unknown);
 const CommandOption cmdOption_Promotion_Queen(cmd_Promotion_Queen, "Promotion_Queen", srtMenuVar, Qt::Key_Q);
 const CommandOption cmdOption_Promotion_Rook(cmd_Promotion_Rook, "Promotion_Rook", srtMenuVar, Qt::Key_R);
@@ -46,9 +44,6 @@ void CommandOptionDefs::initialize()
    inGameOptions_.add(cmdOption_InGame_OfferDraw);
    inGameOptions_.add(cmdOption_InGame_Resign);
    inGameOptions_.add(cmdOption_InGame_Abort);
-   //
-   abortOptions_.add(cmdOption_Abort_ReturnToMenu);
-   abortOptions_.add(cmdOption_Abort_Adjourn);
    //
    promotionOptions_.add(cmdOption_Promotion_Prompt);
    promotionOptions_.add(cmdOption_Promotion_Queen);

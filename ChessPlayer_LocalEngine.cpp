@@ -305,6 +305,7 @@ void ChessPlayer_LocalEngine::gameResult(ChessGameResult result)
          assert(false);
          break;
    }
+
 }
 
 void ChessPlayer_LocalEngine::tellEngine(const std::string& str)
@@ -456,11 +457,6 @@ void ChessPlayer_LocalEngine::opponentRequestsAbort(bool &accept)
    accept = true;
 }
 
-void ChessPlayer_LocalEngine::opponentRequestsAdjournment(bool &accept)
-{
-   accept = true;
-}
-
 void ChessPlayer_LocalEngine::performCleanup()
 {
    if(info_.cleanUpMasks.isEmpty()) return;
@@ -487,38 +483,36 @@ void ChessPlayer_LocalEngine::illegalMove()
 
 void ChessPlayer_LocalEngine::setInitialPosition(const ChessPosition &position)
 {
-   if(info_.type==etXBoard && position.toString()!=cStandardInitialFen) return;
+   if(info_.type!=etXBoard || position.toString()==cStandardInitialFen) return;
+   tellEngine("edit");
+   ChessCoord coord;
+   for(coord.row=1;coord.row<position.maxRow();++coord.row)
    {
-      tellEngine("edit");
-      ChessCoord coord;
-      for(coord.row=1;coord.row<position.maxRow();++coord.row)
+      for(coord.col=1;coord.col<position.maxCol();++coord.col)
       {
-         for(coord.col=1;coord.col<position.maxCol();++coord.col)
+         ChessPiece piece = position.cell(coord);
+         if(piece.type()==ptNone) continue;
+         if(piece.color()==pcWhite)
          {
-            ChessPiece piece = position.cell(coord);
-            if(piece.type()==ptNone) continue;
-            if(piece.color()==pcWhite)
-            {
-               tellEngine(std::string(1, piece.toChar()) + coord.toString());
-            }
+            tellEngine(std::string(1, piece.toChar()) + coord.toString());
          }
       }
-      tellEngine("c");
-      for(coord.row=1;coord.row<position.maxRow();++coord.row)
-      {
-         for(coord.col=1;coord.col<position.maxCol();++coord.col)
-         {
-            ChessPiece piece = position.cell(coord);
-            if(piece.type()==ptNone) continue;
-            if(piece.color()==pcBlack)
-            {
-               tellEngine(std::string(1, ChessPiece(piece.type()|pcWhite).toChar()) +
-                          coord.toString());
-            }
-         }
-      }
-      tellEngine(".");
    }
+   tellEngine("c");
+   for(coord.row=1;coord.row<position.maxRow();++coord.row)
+   {
+      for(coord.col=1;coord.col<position.maxCol();++coord.col)
+      {
+         ChessPiece piece = position.cell(coord);
+         if(piece.type()==ptNone) continue;
+         if(piece.color()==pcBlack)
+         {
+            tellEngine(std::string(1, ChessPiece(piece.type()|pcWhite).toChar()) +
+                       coord.toString());
+         }
+      }
+   }
+   tellEngine(".");
 }
 
 void ChessPlayer_LocalEngine::replayMove(const ChessMove &move)

@@ -2,6 +2,7 @@
 #include "Settings.h"
 #include "StyleSheets.h"
 #include "KeyMapper.h"
+#include <QCloseEvent>
 
 const int cDefaultCommandPanelHeight = 38;
 
@@ -34,8 +35,6 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
                     SLOT(commandPanel_optionSelected(int)), Qt::UniqueConnection);
    QObject::connect(commandPanel_, SIGNAL(idleClick()), this,
                     SLOT(commandPanel_idleClick()), Qt::UniqueConnection);
-   QObject::connect(&g_settings, SIGNAL(boardStyleChanged()), this,
-                    SLOT(boardStyleChanged()), Qt::UniqueConnection);
    //
    setMinimumSize(256, 256);
    setMaximumSize(4096, 4096);
@@ -173,12 +172,12 @@ void K3ChessMainWindow::updateControlLayout()
    moveList_->setGeometry(moveListRect);
 }
 
-void K3ChessMainWindow::boardStyleChanged()
-{
-   updateControlLayout();
-}
-
 void K3ChessMainWindow::setCustomKeyboardMode(bool value)
 {
    customKeyboardMode_ = value;
+}
+
+void K3ChessMainWindow::closeEvent(QCloseEvent*)
+{
+   emit isClosing();
 }

@@ -44,6 +44,19 @@ void MoveListView::addMove(const QString& move)
    regenerateLines();
 }
 
+void MoveListView::addMoves(const QStringList& moves)
+{
+   if(!moves.isEmpty())
+   {
+      foreach(QString move, moves)
+      {
+         QString s = getMoveString(moves_.size(), move);
+         moves_.push_back(s);
+      }
+      regenerateLines();
+   }
+}
+
 void MoveListView::clearMoves()
 {
    moves_.clear();
@@ -126,7 +139,11 @@ void MoveListView::dropMoves(unsigned count)
       clearMoves();
    else
    {
-      moves_.resize(moves_.size()-count);
+      while(count--)
+      {
+         moves_.removeLast();
+      }
+      //
       regenerateLines();
    }
 }

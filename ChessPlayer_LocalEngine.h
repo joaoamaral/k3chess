@@ -29,7 +29,6 @@ public:
    virtual void illegalMove();
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);
-   virtual void opponentRequestsAdjournment(bool& accept);
 
    virtual void opponentOffersDraw();
    virtual void opponentAcceptsDraw();

@@ -15,15 +15,13 @@ const int cmd_InGame_Takeback = 20;
 const int cmd_InGame_OfferDraw = 21;
 const int cmd_InGame_Resign = 22;
 const int cmd_InGame_Abort = 23;
-const int cmd_Abort_ReturnToMenu = 30;
-const int cmd_Abort_Adjourn = 31;
-const int cmd_Promotion_Prompt = -40; // id<0: static text
-const int cmd_Promotion_Queen = 40;
-const int cmd_Promotion_Rook = 41;
-const int cmd_Promotion_Bishop = 42;
-const int cmd_Promotion_Knight = 43;
-const int cmd_PostGame_Save = 50;
-const int cmd_PostGame_Discard = 52;
+const int cmd_Promotion_Prompt = -30; // id<0: static text
+const int cmd_Promotion_Queen = 30;
+const int cmd_Promotion_Rook = 31;
+const int cmd_Promotion_Bishop = 32;
+const int cmd_Promotion_Knight = 33;
+const int cmd_PostGame_Save = 40;
+const int cmd_PostGame_Discard = 42;
 
 class CommandOptionDefs : public QObject
 {
@@ -39,7 +37,6 @@ public:
    CommandOptions& newGameOptions() { return newGameOptions_; }
    CommandOptions& extMenuOptions() { return extMenuOptions_; }
    CommandOptions& inGameOptions() { return inGameOptions_; }
-   CommandOptions& abortOptions() { return abortOptions_; }
    CommandOptions& promotionOptions() { return promotionOptions_; }
    CommandOptions& postGameOptions() { return postGameOptions_; }
 
