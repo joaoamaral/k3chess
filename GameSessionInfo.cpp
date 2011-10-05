@@ -30,6 +30,11 @@ bool GameSessionInfo::saveToFile(const QString& fileName) const
    out.setCodec(QTextCodec::codecForName("UTF-8"));
    //
    out << (unsigned)profile.type << "\n";
+   //
+   out << (profile.whiteClock.untimed ? '0' : '1')
+       << (profile.blackClock.untimed ? '0' : '1')
+       << "\n";
+   //
    out << profile.whiteClock.initialTime << "\n";
    out << profile.whiteClock.remainingTime << "\n";
    out << profile.whiteClock.moveIncrement << "\n";
@@ -63,6 +68,11 @@ bool GameSessionInfo::loadFromFile(const QString& fileName)
    int stype;
    if(!readIntLine(in, stype)) return false;
    profile.type = (GameType)stype;
+   //
+   QString s = in.readLine();
+   //
+   profile.whiteClock.untimed = s.length()<1 || s[0]!='1';
+   profile.blackClock.untimed = s.length()<2 || s[1]!='1';
    //
    if(!readIntLine(in, profile.whiteClock.initialTime)) return false;
    if(!readIntLine(in, profile.whiteClock.remainingTime)) return false;

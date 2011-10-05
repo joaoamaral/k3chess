@@ -64,7 +64,7 @@ void SettingsDialog::loadValues()
    playerTimes.append("10 0");
    playerTimes.append("15 0");
    playerTimes.append("30 0");
-   playerTimes.append("60 0");
+   playerTimes.append(g_label("Unlimited"));
    //
    if(playerTimes.indexOf(g_settings.playerClockString())==-1)
    {
