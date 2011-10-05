@@ -42,7 +42,8 @@ private slots:
 private:
    void initialize();
    void preGame();
-   void playGame(const GameProfile& profile);
+   void playGame(const GameSessionInfo& sessionInfo);
+   void playGame(GameType type, const ChessClock& wclock, const ChessClock& bclock);
    void postGame();
    void finalize();
 
@@ -55,6 +56,9 @@ private:
    void showExtMenu();
 
    void saveGameToPGN();
+   void saveLastGame();
+   bool restoreLastGame();
+   void clearLastGame();
 
 private:
    ChessPlayer_LocalHuman *localHuman_;

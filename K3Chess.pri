@@ -24,7 +24,8 @@ SOURCES = ChessBoardView.cpp \
     MoveSelectionHelper.cpp \
     KeyMapper.cpp \
     KeyPreviewImpl.cpp \
-    GlobalStrings.cpp
+    GlobalStrings.cpp \
+    GameSessionInfo.cpp
 
 HEADERS = ChessBoardView.h \
     LocalChessGui.h \
@@ -55,7 +56,10 @@ HEADERS = ChessBoardView.h \
     EngineInfo.h \
     KeyMapper.h \
     KeyPreviewImpl.h \
-    GlobalStrings.h
+    GlobalStrings.h \
+    GameSessionInfo.h
 
 FORMS += \
     SettingsDialog.ui
+
+

@@ -76,4 +76,7 @@ private:
                                // was not for move 1
 };
 
+extern const std::string cStandardInitialFen;
+extern const ChessPosition cStandardInitialPosition;
+
 #endif

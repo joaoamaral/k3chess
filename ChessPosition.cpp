@@ -1,6 +1,10 @@
 #include "ChessPosition.h"
 #include "StringUtils.h"
 
+// must be in ChessRules, but for convenience is placed here
+const std::string cStandardInitialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const ChessPosition cStandardInitialPosition = ChessPosition::fromString(cStandardInitialFen);
+
 namespace
 {
 const unsigned cWhiteCanShortCastle = 1;

@@ -11,10 +11,10 @@
 
 const QString cK3ChessIniPath = "./K3Chess.ini";
 const QString cDefaultKeymapIniFile = "./keys.ini";
-const QString cDefaultBoardSetup = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const QString cDefaultPlayerClockSetup = "15 0";
 const QString cDefaultEngineClockSetup = "5 0";
 const QString cDefaultPgnFilePath = "./games.pgn";
+const QString cDefaultLastGameFile = "./lastgame.dat";
 const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "K3Chess game";
@@ -149,11 +149,6 @@ QString K3ChessSettings::playerName() const
 bool K3ChessSettings::drawMoveArrow() const
 {
    return settings_.value("Board/DrawMoveArrow", true).toBool();
-}
-
-QString K3ChessSettings::defaultBoardSetup() const
-{
-   return settings_.value("Board/DefaultSetup", cDefaultBoardSetup).toString();
 }
 
 bool K3ChessSettings::drawCoordinates() const
@@ -526,4 +521,9 @@ void K3ChessSettings::setQuickSingleMoveSelection(bool value)
    if(value==quickSingleMoveSelection()) return;
    settings_.setValue("QuickSingleMoveSelection", value);
    emit inputSettingsChanged();
+}
+
+QString K3ChessSettings::lastGameFile() const
+{
+   return cDefaultLastGameFile;
 }

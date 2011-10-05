@@ -7,6 +7,12 @@
 class ChessPlayer_LocalHuman : public ChessPlayer
 {
    Q_OBJECT
+
+   enum Mode { modeStandby, modeSelectingMove,
+               modeSelectingPromotion,
+               modeShowingInGameOptions,
+               modeShowingAbortOptions };
+
 public:
    ChessPlayer_LocalHuman(const QString& name);
 
@@ -18,10 +24,13 @@ public:
                          const ChessClock& whiteClock,
                          const ChessClock& blackClock);
 
-   virtual void illegalMove(const std::string &move_str);
+   virtual void setInitialPosition(const ChessPosition& position) {} // no action
+   virtual void replayMove(const ChessMove& move) {} // no action
+
    virtual void opponentOffersDraw();
    virtual void opponentRequestsTakeback(bool& accept);
    virtual void opponentRequestsAbort(bool& accept);
+   virtual void opponentRequestsAdjournment(bool& accept);
    virtual void gameResult(ChessGameResult result);
 
 private slots:
@@ -36,7 +45,7 @@ private:
    QString opponentName_;
    ChessPosition position_;
    CoordPair promotionMove_;
-   bool showingIngameOptions_;
+   Mode mode_;
 };
 
 #endif

@@ -223,7 +223,7 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
    {
       RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
       return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
-   }   
+   }
    //
    unsigned i=0;
    //
@@ -401,10 +401,10 @@ const QString& ChessGame::blackPlayerName() const
 
 void ChessGame::start()
 {
-   start(g_settings.defaultBoardSetup().toStdString());
+   start(cStandardInitialPosition);
 }
 
-void ChessGame::start(const std::string &fen)
+void ChessGame::start(const ChessPosition& position)
 {
    if(!startTime_.isNull())
    {
@@ -413,9 +413,11 @@ void ChessGame::start(const std::string &fen)
    }
    //
    positions_.clear();
-   positions_.push_back(fen);
+   positions_.push_back(position.toString());
    //
-   position_ = ChessPosition::fromString(fen);
+   addPositionOccurrence(positions_.back());
+   //
+   position_ = position;
    //
    gameMoves_.clear();
    sanMoves_.clear();
@@ -480,6 +482,11 @@ bool ChessGame::applyMove(const ChessMove& move)
    positions_.push_back(position_.toString());
    //
    recalcPossibleMoves();
+   //
+   if(addPositionOccurrence(positions_.back())>=3)
+   {
+      emit repetitionDetected();
+   }
    //
    if(position_.halfCount()>=100)
    {
@@ -635,3 +642,17 @@ ChessMove ChessGame::interpretMoveString(const std::string &move_str) const
    return move;
 }
 
+unsigned ChessGame::addPositionOccurrence(const std::string& fen)
+{
+   std::map<std::string, unsigned>::iterator it = positionOccurrences_.find(fen);
+   if(it==positionOccurrences_.end())
+   {
+      positionOccurrences_.insert(it, std::make_pair(fen, 1));
+      return 1;
+   }
+   else
+   {
+      ++it->second;
+      return it->second;
+   }
+}

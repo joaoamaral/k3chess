@@ -8,7 +8,7 @@
 */
 
 ChessPlayer_LocalHuman::ChessPlayer_LocalHuman(const QString& name)
-   : ChessPlayer(name), showingIngameOptions_(false)
+   : ChessPlayer(name), mode_(modeStandby)
 {
 }
 
@@ -29,6 +29,8 @@ void ChessPlayer_LocalHuman::makeMove(const ChessPosition& position,
                                       const ChessClock& whiteClock,
                                       const ChessClock& blackClock)
 {
+   mode_ = modeSelectingMove;
+   //
    position_ = position;
    //
    QObject::connect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this,
@@ -50,25 +52,35 @@ void ChessPlayer_LocalHuman::offerChoice(const CommandOptions& options)
 
 void ChessPlayer_LocalHuman::userChoice(int id)
 {
-   showingIngameOptions_ = false;
    QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
    QObject::disconnect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this, SLOT(userMoves(const CoordPair&)));
    //
+   mode_ = modeStandby;
+   //
    switch(id)
    {
-      case cmd_Promotion_Queen:   emit playerMoves(ChessMove(promotionMove_, ptQueen));   break;
-      case cmd_Promotion_Rook:    emit playerMoves(ChessMove(promotionMove_, ptRook));    break;
-      case cmd_Promotion_Bishop:  emit playerMoves(ChessMove(promotionMove_, ptBishop));  break;
-      case cmd_Promotion_Knight:  emit playerMoves(ChessMove(promotionMove_, ptKnight));  break;
-      //
-      case cmd_InGame_Takeback:   emit playerRequestsTakeback(); break;
-      case cmd_InGame_OfferDraw:  emit playerOffersDraw();
+      case cmd_Promotion_Queen:  emit playerMoves(ChessMove(promotionMove_, ptQueen)); break;
+      case cmd_Promotion_Rook:   emit playerMoves(ChessMove(promotionMove_, ptRook)); break;
+      case cmd_Promotion_Bishop: emit playerMoves(ChessMove(promotionMove_, ptBishop)); break;
+      case cmd_Promotion_Knight: emit playerMoves(ChessMove(promotionMove_, ptKnight)); break;
+      case cmd_InGame_Takeback:  emit playerRequestsTakeback(); break;
+      case cmd_InGame_OfferDraw: emit playerOffersDraw();
          // resume move selection
+         mode_ = modeSelectingMove;
          QObject::connect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this,
                           SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
          break;
       case cmd_InGame_Resign:     emit playerResigns();  break;
-      case cmd_InGame_Abort:      emit playerRequestsAbort(); break;
+      case cmd_InGame_Abort:
+         mode_ = modeShowingAbortOptions;
+         offerChoice(g_commandOptionDefs.abortOptions());
+         break;
+      case cmd_Abort_ReturnToMenu:
+         emit playerRequestsAbort();
+         break;
+      case cmd_Abort_Adjourn:
+         emit playerRequestsAdjournment();
+         break;
    }
 }
 
@@ -78,11 +90,13 @@ void ChessPlayer_LocalHuman::userMoves(const CoordPair &move)
    //
    if(g_chessRules.isPromotionMove(position_, move))
    {
+      mode_ = modeSelectingPromotion;
       promotionMove_ = move;
       offerChoice(g_commandOptionDefs.promotionOptions());
    }
    else
    {
+      mode_ = modeStandby;
       QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
       QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this, SLOT(keyPressed(Qt::Key)));
       //
@@ -103,15 +117,19 @@ void ChessPlayer_LocalHuman::keyPressed(Qt::Key key)
       case Qt::Key_Cancel:
       case Qt::Key_Escape:
       case Qt::Key_Menu:
-         if(showingIngameOptions_)
+         switch(mode_)
          {
-            showingIngameOptions_ = false;
-            g_localChessGui.beginMoveSelection();
-         }
-         else
-         {
-            showingIngameOptions_ = true;
-            offerChoice(g_commandOptionDefs.inGameOptions());
+            case modeShowingInGameOptions:
+            case modeShowingAbortOptions:
+               mode_ = modeStandby;
+               g_localChessGui.beginMoveSelection();
+               break;
+            case modeSelectingMove:
+               mode_ = modeShowingInGameOptions;
+               offerChoice(g_commandOptionDefs.inGameOptions());
+               break;
+            default:
+               break;
          }
          break;
       default:
@@ -121,7 +139,7 @@ void ChessPlayer_LocalHuman::keyPressed(Qt::Key key)
 
 void ChessPlayer_LocalHuman::gameResult(ChessGameResult result)
 {
-   showingIngameOptions_ = false;
+   mode_ = modeStandby;
    //
    QObject::disconnect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this, SLOT(userMoves(const CoordPair&)));
    QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
@@ -138,7 +156,7 @@ void ChessPlayer_LocalHuman::opponentRequestsAbort(bool &accept)
    accept = true;
 }
 
-void ChessPlayer_LocalHuman::illegalMove(const std::string &move_str)
+void ChessPlayer_LocalHuman::opponentRequestsAdjournment(bool &accept)
 {
+   accept = true;
 }
-

@@ -13,7 +13,6 @@ const ChessMoveType moveShortCastling = 2;
 const ChessMoveType moveLongCastling = 4;
 const ChessMoveType movePromotion = 8;
 
-
 class ChessRules
 {
    friend void Singletons::initialize();
