@@ -27,6 +27,18 @@ ChessClock stringToClock(const QString& s)
    int secs_per_game = 0;
    int secs_per_move = 0;
    //
+   if(s==g_label("Unlimited"))
+   {
+      // unlimited clock must still have some positive
+      // number for initial and remaining time
+      // however it won't be decuded during the game
+      clock.initialTime = 10*60*1000;
+      clock.remainingTime = clock.initialTime;
+      clock.moveIncrement = 0;
+      clock.untimed = true;
+      return clock;
+   }
+   //
    if(s.indexOf(' ')==0)
    {
       secs_per_game = s.toInt()*60000;
@@ -418,7 +430,10 @@ void K3ChessSettings::setPlayerName(const QString& name)
 void K3ChessSettings::setPlayerClock(const QString& str)
 {
    if(playerClockString()==str) return;
-   settings_.setValue("Game/PlayerClock", str);
+   if(str==g_label("Unlimited"))
+      settings_.setValue("Game/PlayerClock", "-");
+   else
+      settings_.setValue("Game/PlayerClock", str);
    emit timeSettingsChanged();
 }
 
