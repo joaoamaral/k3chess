@@ -9,6 +9,9 @@
 // by providing a file named "English.ini" in locales directory
 // with your own text strings for labels and messages
 
+namespace
+{
+
 const QString cK3ChessIniPath = "./K3Chess.ini";
 const QString cDefaultKeymapIniFile = "./keys.ini";
 const QString cDefaultPlayerClockSetup = "15 0";
@@ -20,6 +23,15 @@ const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "K3Chess game";
 const QString cDefaultSiteName = "?";
 
+bool containsDigits(const QString& s)
+{
+   foreach(QChar c, s)
+   {
+      if(c>='0' && c<='9') return true;
+   }
+   return false;
+}
+
 ChessClock stringToClock(const QString& s)
 {
    ChessClock clock;
@@ -27,7 +39,7 @@ ChessClock stringToClock(const QString& s)
    int secs_per_game = 0;
    int secs_per_move = 0;
    //
-   if(s==g_label("Unlimited"))
+   if(!containsDigits(s))
    {
       // unlimited clock must still have some positive
       // number for initial and remaining time
@@ -69,6 +81,8 @@ ChessClock stringToClock(const QString& s)
    clock.moveIncrement = secs_per_move*1000;
    //
    return clock;
+}
+
 }
 
 Profile Profile::fromString(const QString& str)
@@ -429,11 +443,12 @@ void K3ChessSettings::setPlayerName(const QString& name)
 
 void K3ChessSettings::setPlayerClock(const QString& str)
 {
-   if(playerClockString()==str) return;
-   if(str==g_label("Unlimited"))
-      settings_.setValue("Game/PlayerClock", "-");
-   else
-      settings_.setValue("Game/PlayerClock", str);
+   QString s;
+   if(containsDigits(str)) s = str;
+   else s = "--";
+   //
+   if(playerClockString()==s) return;
+   settings_.setValue("Game/PlayerClock", s);
    emit timeSettingsChanged();
 }
 
