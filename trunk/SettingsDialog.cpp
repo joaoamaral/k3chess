@@ -64,39 +64,36 @@ void SettingsDialog::loadValues()
    playerTimes.append("10 0");
    playerTimes.append("15 0");
    playerTimes.append("30 0");
-   playerTimes.append(g_label("Unlimited"));
+   playerTimes.append("60 0");
    //
-   ui->cmbPlayerTime->addItems(playerTimes);
-   //
-   int idx = playerTimes.indexOf(g_settings.playerClockString());
-   if(idx>=0)
+   if(playerTimes.indexOf(g_settings.playerClockString())==-1)
    {
-      ui->cmbPlayerTime->setCurrentIndex(idx);
-   }
-   else if(g_settings.playerClockString()=="--")
-   {
-      ui->cmbPlayerTime->setCurrentIndex(ui->cmbPlayerTime->count()-1);
+      playerTimes.insert(0, g_settings.playerClockString());
    }
    //
    QStringList engineTimes;
+   engineTimes.append("0:10 1");
    engineTimes.append("0:10 2");
+   engineTimes.append("0:10 3");
+   engineTimes.append("0:10 4");
    engineTimes.append("0:10 5");
+   engineTimes.append("2 1");
    engineTimes.append("2 2");
    engineTimes.append("5 0");
+   engineTimes.append("5 1");
    engineTimes.append("5 2");
    engineTimes.append("10 0");
    engineTimes.append("15 0");
-   ui->cmbEngineTime->addItems(engineTimes);
    //
-   int eidx = playerTimes.indexOf(g_settings.playerClockString());
-   if(eidx>=0)
+   if(engineTimes.indexOf(g_settings.engineClockString())==-1)
    {
-      ui->cmbEngineTime->setCurrentIndex(eidx);
+      engineTimes.insert(0, g_settings.engineClockString());
    }
-   else if(g_settings.engineClockString()=="--")
-   {
-      ui->cmbEngineTime->setCurrentIndex(ui->cmbEngineTime->count()-1);
-   }
+   //
+   ui->cmbPlayerTime->addItems(playerTimes);
+   ui->cmbEngineTime->addItems(engineTimes);
+   ui->cmbPlayerTime->setCurrentIndex(playerTimes.indexOf(g_settings.playerClockString()));
+   ui->cmbEngineTime->setCurrentIndex(engineTimes.indexOf(g_settings.engineClockString()));
    //
    isInitializing_ = false;
 }
@@ -121,14 +118,6 @@ void SettingsDialog::initializeLabels()
    ui->lPieceStyle->setText(g_label("PieceStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
-   //
-   if(ui->cmbPlayerTime->count()>0)
-   {
-      int idx = ui->cmbPlayerTime->currentIndex();
-      ui->cmbPlayerTime->removeItem(ui->cmbPlayerTime->count()-1);
-      ui->cmbPlayerTime->addItem(g_label("Unlimited"));
-      ui->cmbPlayerTime->setCurrentIndex(idx);
-   }
 }
 
 void SettingsDialog::adjustAppearance()
