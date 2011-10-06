@@ -46,7 +46,10 @@ LocalChessGui::~LocalChessGui()
 
 QString timeSetupToString(const ChessClock& clock)
 {
+   if(clock.untimed) return "--";
+   //
    QString s;
+   //
    s.reserve(32);
    s.append(QString::number(clock.initialTime/60000));
    if(clock.initialTime%60000 > 0)
@@ -60,14 +63,20 @@ QString timeSetupToString(const ChessClock& clock)
    return s;
 }
 
-QString getNewGameText(
+QString getGameAnnouncementText(
       const QString& whitePlayerName, const QString& blackPlayerName,
-      const GameProfile& profile)
+      const GameProfile& profile, bool isResumedGame)
 {
    QString s;
    s.reserve(128);
    //
-   s.append(g_msg("NewGamePlayerVsPlayer").arg(whitePlayerName, blackPlayerName));
+   QString format;
+   if(isResumedGame)
+      format = g_msg("ResumedGamePlayerVsPlayer");
+   else
+      format = g_msg("NewGamePlayerVsPlayer");
+   //
+   s.append(format.arg(whitePlayerName, blackPlayerName));
    //
    s.append("   ");
    s.append(timeSetupToString(profile.whiteClock));
@@ -82,15 +91,15 @@ QString getNewGameText(
    return s;
 }
 
-void LocalChessGui::beginNewGame(
+void LocalChessGui::beginGame(
       const QString& whitePlayerName, const QString& blackPlayerName,
-      const GameProfile& profile)
+      const GameProfile& profile, bool isResumedGame)
 {
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
    mainWindow_->boardView()->setInitialCursorPos(ChessCoord());
    mainWindow_->console()->appendPlainText(
-      getNewGameText(whitePlayerName, blackPlayerName, profile));
+      getGameAnnouncementText(whitePlayerName, blackPlayerName, profile, isResumedGame));
 }
 
 void LocalChessGui::beginMoveSelection()

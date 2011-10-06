@@ -65,17 +65,18 @@ void SettingsDialog::loadValues()
    playerTimes.append("15 0");
    playerTimes.append("30 0");
    playerTimes.append("60 0");
+   playerTimes.append(g_label("Unlimited"));
    //
-   if(playerTimes.indexOf(g_settings.playerClockString())==-1)
+   int idxPlayerTime = playerTimes.indexOf(g_settings.playerClockString());
+   //
+   if(idxPlayerTime==-1)
    {
-      playerTimes.insert(0, g_settings.playerClockString());
+      idxPlayerTime = playerTimes.count()-1;
    }
    //
    QStringList engineTimes;
    engineTimes.append("0:10 1");
    engineTimes.append("0:10 2");
-   engineTimes.append("0:10 3");
-   engineTimes.append("0:10 4");
    engineTimes.append("0:10 5");
    engineTimes.append("2 1");
    engineTimes.append("2 2");
@@ -85,15 +86,17 @@ void SettingsDialog::loadValues()
    engineTimes.append("10 0");
    engineTimes.append("15 0");
    //
-   if(engineTimes.indexOf(g_settings.engineClockString())==-1)
+   int idxEngineTime = engineTimes.indexOf(g_settings.engineClockString());
+   //
+   if(idxEngineTime==-1)
    {
-      engineTimes.insert(0, g_settings.engineClockString());
+      idxEngineTime = engineTimes.count()/2;
    }
    //
    ui->cmbPlayerTime->addItems(playerTimes);
    ui->cmbEngineTime->addItems(engineTimes);
-   ui->cmbPlayerTime->setCurrentIndex(playerTimes.indexOf(g_settings.playerClockString()));
-   ui->cmbEngineTime->setCurrentIndex(engineTimes.indexOf(g_settings.engineClockString()));
+   ui->cmbPlayerTime->setCurrentIndex(idxPlayerTime);
+   ui->cmbEngineTime->setCurrentIndex(idxEngineTime);
    //
    isInitializing_ = false;
 }
@@ -118,6 +121,11 @@ void SettingsDialog::initializeLabels()
    ui->lPieceStyle->setText(g_label("PieceStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
+   //
+   if(ui->cmbPlayerTime->count()>0)
+   {
+      ui->cmbPlayerTime->setItemText(ui->cmbPlayerTime->count()-1, g_label("Unlimited"));
+   }
 }
 
 void SettingsDialog::adjustAppearance()

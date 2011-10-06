@@ -23,9 +23,20 @@ const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "K3Chess game";
 const QString cDefaultSiteName = "?";
 
+bool containsDigits(const QString& s)
+{
+   for(unsigned i=0; i<s.length(); ++i)
+   {
+      if(s[i].isDigit()) return true;
+   }
+   return false;
+}
+
 ChessClock stringToClock(const QString& s)
 {
    ChessClock clock;
+   //
+   if(!containsDigits(s)) return clock;
    //
    int secs_per_game = 0;
    int secs_per_move = 0;
@@ -58,6 +69,8 @@ ChessClock stringToClock(const QString& s)
    clock.initialTime = secs_per_game*1000;
    clock.remainingTime = clock.initialTime;
    clock.moveIncrement = secs_per_move*1000;
+   //
+   clock.untimed = false;
    //
    return clock;
 }
@@ -422,7 +435,8 @@ void K3ChessSettings::setPlayerName(const QString& name)
 
 void K3ChessSettings::setPlayerClock(const QString& str)
 {
-   if(playerClockString()==str) return;
+   QString s = containsDigits(str) ? str : QString("--");
+   if(playerClockString()==s) return;
    settings_.setValue("Game/PlayerClock", str);
    emit timeSettingsChanged();
 }

@@ -140,7 +140,7 @@ void GameSession::white_moves(const ChessMove& move)
    }
    else
    {
-      updateSessionMoves();
+      updateSessionInfo();
       //
       if(blackDrawOfferActive_)
       {
@@ -150,7 +150,7 @@ void GameSession::white_moves(const ChessMove& move)
       whiteDrawOfferActive_ = false;
       blackDrawOfferActive_ = false;
       //
-      sessionInfo_.profile.whiteClock.remainingTime += sessionInfo_.profile.whiteClock.moveIncrement;
+      whiteClock_.remainingTime += whiteClock_.moveIncrement;
       //
       outputLastMove();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
@@ -230,7 +230,7 @@ void GameSession::black_moves(const ChessMove& move)
    }
    else
    {
-      updateSessionMoves();
+      updateSessionInfo();
       //
       if(whiteDrawOfferActive_)
       {
@@ -245,14 +245,14 @@ void GameSession::black_moves(const ChessMove& move)
       blackDrawOfferActive_ = false;
       whiteDrawOfferActive_ = false;
       //
-      sessionInfo_.profile.blackClock.remainingTime += sessionInfo_.profile.blackClock.moveIncrement;
+      blackClock_.remainingTime += blackClock_.moveIncrement;
       //
       outputLastMove();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       //
       whitePlayer_->opponentMoves(move);
-      if(game_.result()==resultNone && sessionInfo_.profile.whiteClock.remainingTime > 0)
+      if(game_.result()==resultNone && whiteClock_.remainingTime > 0)
       {
          requestMove(whitePlayer_);
       }
@@ -393,10 +393,28 @@ void GameSession::verifyBothPlayersReady()
 
 void GameSession::startGame()
 {
-   g_localChessGui.beginNewGame(whitePlayer_->name(), blackPlayer_->name(), sessionInfo_.profile);
+   whiteClock_ = sessionInfo_.profile.whiteClock;
+   blackClock_ = sessionInfo_.profile.blackClock;
    //
-   whitePlayer_->beginGame(pcWhite, blackPlayer_->name(), sessionInfo_.profile.whiteClock);
-   blackPlayer_->beginGame(pcBlack, whitePlayer_->name(), sessionInfo_.profile.blackClock);
+   if(whiteClock_.untimed)
+   {
+      whiteClock_.initialTime = 10*60*1000;
+      whiteClock_.remainingTime = whiteClock_.initialTime;
+      whiteClock_.moveIncrement = 0;
+   }
+   //
+   if(blackClock_.untimed)
+   {
+      blackClock_.initialTime = 10*60*1000;
+      blackClock_.remainingTime = blackClock_.initialTime;
+      blackClock_.moveIncrement = 0;
+   }
+   //
+   g_localChessGui.beginGame(whitePlayer_->name(), blackPlayer_->name(),
+                             sessionInfo_.profile, !sessionInfo_.moves.empty());
+   //
+   whitePlayer_->beginGame(pcWhite, blackPlayer_->name(), whiteClock_);
+   blackPlayer_->beginGame(pcBlack, whitePlayer_->name(), blackClock_);
    //
    game_.start(sessionInfo_.initialPosition); // start from the given initial position
                                               // default position for standard chess
@@ -437,8 +455,9 @@ void GameSession::startGame()
    {
       g_localChessGui.appendToMoveList(game_.sanMoves());
    }
-   //6
+   //
    // finished setting up position, can actually start the game
+   //
    //
    counter_.restart();
    //
@@ -510,16 +529,18 @@ void GameSession::clockUpdateTimer()
 {
    if(game_.position().sideToMove()==pcWhite)
    {
-      sessionInfo_.profile.whiteClock.remainingTime -= counter_.elapsed();
-      if(sessionInfo_.profile.whiteClock.remainingTime<=0)
+      if(whiteClock_.untimed) return;
+      whiteClock_.remainingTime -= counter_.elapsed();
+      if(whiteClock_.remainingTime<=0)
       {
          endGame(reasonGameFinished, resultBlackWonOnTime);
       }
    }
    else
    {
-      sessionInfo_.profile.blackClock.remainingTime -= counter_.elapsed();
-      if(sessionInfo_.profile.blackClock.remainingTime<=0)
+      if(blackClock_.untimed) return;
+      blackClock_.remainingTime -= counter_.elapsed();
+      if(blackClock_.remainingTime<=0)
       {
          endGame(reasonGameFinished, resultWhiteWonOnTime);
       }
@@ -543,7 +564,7 @@ void GameSession::white_requestsTakeback()
       if(accept)
       {
          game_.takebackOneFullMove();
-         updateSessionMoves();
+         updateSessionInfo();
          //
          g_localChessGui.dropLastFullMove();
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
@@ -584,7 +605,7 @@ void GameSession::black_requestsTakeback()
       if(accept)
       {
          game_.takebackOneFullMove();
-         updateSessionMoves();
+         updateSessionInfo();
          //
          g_localChessGui.dropLastFullMove();
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
@@ -617,7 +638,7 @@ void GameSession::enableInGameCommands()
    g_commandOptionDefs.inGameOptions().enable(cmd_InGame_Resign);
 }
 
-void GameSession::updateSessionMoves()
+void GameSession::updateSessionInfo()
 {
    size_t n = sessionInfo_.moves.size();
    size_t m = game_.moves().size();
@@ -630,4 +651,7 @@ void GameSession::updateSessionMoves()
       sessionInfo_.moves[n] = game_.moves()[n];
       ++n;
    }
+   //
+   sessionInfo_.profile.whiteClock = whiteClock_;
+   sessionInfo_.profile.blackClock = blackClock_;
 }

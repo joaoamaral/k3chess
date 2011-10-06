@@ -20,8 +20,8 @@ class LocalChessGui : public QObject
 
 public:
    void reset(); // resets gui to the initial state
-   void beginNewGame(const QString& whitePlayerName, const QString& blackPlayerName,
-                     const GameProfile& profile);
+   void beginGame(const QString& whitePlayerName, const QString& blackPlayerName,
+                     const GameProfile& profile, bool isResumedGame=false);
    void beginMoveSelection();
    void setInitialMoveCursorPos(ChessCoord coord);
    void showStaticMessage(const QString& msg);

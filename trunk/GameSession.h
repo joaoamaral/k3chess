@@ -29,8 +29,8 @@ public:
 
    void begin();
 
-   ChessClock whiteClock() const { return sessionInfo_.profile.whiteClock; } // instant white clock value
-   ChessClock blackClock() const { return sessionInfo_.profile.blackClock; } // instant black clock value
+   ChessClock whiteClock() const { return whiteClock_; } // instant white clock value
+   ChessClock blackClock() const { return blackClock_; } // instant black clock value
 
    const ChessPlayer *whitePlayer() const { return whitePlayer_; }
    const ChessPlayer *blackPlayer() const { return blackPlayer_; }
@@ -87,7 +87,7 @@ private:
    void outputLastMove();
 
    void enableInGameCommands();
-   void updateSessionMoves();
+   void updateSessionInfo();
 
 private:
    ChessPlayer *whitePlayer_;
@@ -96,8 +96,11 @@ private:
    bool whitePlayerReady_;
    bool blackPlayerReady_;
    //
-   GameSessionInfo sessionInfo_;
+   ChessClock whiteClock_;       // most current clocks
+   ChessClock blackClock_;
    //
+   GameSessionInfo sessionInfo_; // saveable data (can be used for restoring the game)
+                                 // updated once per move
    QTime counter_;
    GameProfile profile_;
    //
