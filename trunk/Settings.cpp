@@ -437,7 +437,7 @@ void K3ChessSettings::setPlayerClock(const QString& str)
 {
    QString s = containsDigits(str) ? str : QString("--");
    if(playerClockString()==s) return;
-   settings_.setValue("Game/PlayerClock", str);
+   settings_.setValue("Game/PlayerClock", s);
    emit timeSettingsChanged();
 }
 
