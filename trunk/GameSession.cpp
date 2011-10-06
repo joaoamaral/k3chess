@@ -529,20 +529,24 @@ void GameSession::clockUpdateTimer()
 {
    if(game_.position().sideToMove()==pcWhite)
    {
-      if(whiteClock_.untimed) return;
-      whiteClock_.remainingTime -= counter_.elapsed();
-      if(whiteClock_.remainingTime<=0)
+      if(!whiteClock_.untimed)
       {
-         endGame(reasonGameFinished, resultBlackWonOnTime);
+         whiteClock_.remainingTime -= counter_.elapsed();
+         if(whiteClock_.remainingTime<=0)
+         {
+            endGame(reasonGameFinished, resultBlackWonOnTime);
+         }
       }
    }
    else
    {
-      if(blackClock_.untimed) return;
-      blackClock_.remainingTime -= counter_.elapsed();
-      if(blackClock_.remainingTime<=0)
+      if(!blackClock_.untimed)
       {
-         endGame(reasonGameFinished, resultWhiteWonOnTime);
+         blackClock_.remainingTime -= counter_.elapsed();
+         if(blackClock_.remainingTime<=0)
+         {
+            endGame(reasonGameFinished, resultWhiteWonOnTime);
+         }
       }
    }
    //
