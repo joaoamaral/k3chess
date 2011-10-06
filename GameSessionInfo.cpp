@@ -49,8 +49,6 @@ bool GameSessionInfo::saveToFile(const QString& fileName) const
       {
          out << moves[i].toString().c_str() << "\n";
       }
-      //
-      out << "\n";
    }
    //
    return true;
