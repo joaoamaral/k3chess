@@ -47,7 +47,6 @@ private:
    CommandOptions newGameOptions_;
    CommandOptions extMenuOptions_;
    CommandOptions inGameOptions_;
-   CommandOptions abortOptions_;
    CommandOptions promotionOptions_;
    CommandOptions postGameOptions_;
 };

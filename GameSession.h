@@ -99,6 +99,7 @@ private:
    GameSessionInfo sessionInfo_;
    //
    QTime counter_;
+   GameProfile profile_;
    //
    QTimer getReadyTimer_;
    QTimer clockUpdateTimer_;
@@ -106,6 +107,8 @@ private:
    bool whiteDrawOfferActive_;
    bool blackDrawOfferActive_;
    bool canDrawByRepetition_;
+   //
+   std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection
 };
 
 #endif

@@ -510,8 +510,6 @@ void GameSession::clockUpdateTimer()
 {
    if(game_.position().sideToMove()==pcWhite)
    {
-      if(sessionInfo_.profile.whiteClock.untimed) return;
-      //
       sessionInfo_.profile.whiteClock.remainingTime -= counter_.elapsed();
       if(sessionInfo_.profile.whiteClock.remainingTime<=0)
       {
@@ -520,8 +518,6 @@ void GameSession::clockUpdateTimer()
    }
    else
    {
-      if(sessionInfo_.profile.blackClock.untimed) return;
-      //
       sessionInfo_.profile.blackClock.remainingTime -= counter_.elapsed();
       if(sessionInfo_.profile.blackClock.remainingTime<=0)
       {
