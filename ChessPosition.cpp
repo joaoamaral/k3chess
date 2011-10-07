@@ -104,9 +104,9 @@ bool ChessPosition::canLongCastle(PieceColor color) const
    return false;
 }
 
-ChessCoord ChessPosition::enpassant() const
+ChessCoord ChessPosition::pawnJump() const
 {
-   return enpassant_;
+   return pawnJump_;
 }
 
 unsigned ChessPosition::halfCount() const
@@ -246,9 +246,12 @@ std::string ChessPosition::toString() const
    }
    //
    fen.push_back(' ');
-   if(enpassant_!=ChessCoord())
+   if(pawnJump_!=ChessCoord())
    {
-      fen.append(enpassant_.toString());
+      if(sideToMove_==pcWhite)
+         fen.append(ChessCoord(pawnJump_.col, pawnJump_.row+1).toString());
+      else
+         fen.append(ChessCoord(pawnJump_.col, pawnJump_.row-1).toString());
    }
    else
    {
@@ -377,13 +380,17 @@ ChessPosition ChessPosition::fromString(const std::string& s)
    //
    if(s[pos]=='-')
    {
-      position.enpassant_ = ChessCoord();
+      position.pawnJump_ = ChessCoord();
       ++pos;
    }
    else if(pos+1<s.length())
    {
-      position.enpassant_ = ChessCoord::fromString(s.substr(pos, 2));
-      if(position.enpassant_==ChessCoord()) return ChessPosition();
+      ChessCoord enpassantTargetSquare = ChessCoord::fromString(s.substr(pos, 2));
+      if(enpassantTargetSquare==ChessCoord()) return ChessPosition();
+      if(position.sideToMove_==pcWhite)
+         position.pawnJump_ = ChessCoord(enpassantTargetSquare.col, enpassantTargetSquare.row-1);
+      else
+         position.pawnJump_ = ChessCoord(enpassantTargetSquare.col, enpassantTargetSquare.row+1);
       pos += 2;
    }
    else
@@ -471,7 +478,7 @@ void ChessPosition::setSideToMove(PieceColor color)
    sideToMove_ = color;
 }
 
-void ChessPosition::setEnpassant(ChessCoord coord)
+void ChessPosition::setPawnJump(ChessCoord coord)
 {
-   enpassant_ = coord;
+   pawnJump_ = coord;
 }

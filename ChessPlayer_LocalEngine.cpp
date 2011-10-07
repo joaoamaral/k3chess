@@ -61,6 +61,7 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info) :
 ChessPlayer_LocalEngine::~ChessPlayer_LocalEngine()
 {
    performCleanup(); // remove log etc. files of the last session
+   engineProcess_.kill();
 }
 
 void ChessPlayer_LocalEngine::getReady()

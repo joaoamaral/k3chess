@@ -35,7 +35,7 @@ public:
    static ChessPosition fromString(const std::string& s); // loads position from FEN string
    //
    PieceColor sideToMove() const;  // piece color of next move
-   ChessCoord enpassant() const;   // target square of last pawn double move
+   ChessCoord pawnJump() const;   // target square of last pawn double move
    unsigned halfCount() const;     // counter of half moves since last capture or pawn move
    unsigned moveNumber() const;    // next move ordinal number, starting from 1
    //
@@ -52,7 +52,7 @@ public:
    void prohibitLongCastling(PieceColor color);
    void prohibitCastling(PieceColor color);
    //
-   void setEnpassant(ChessCoord coord);
+   void setPawnJump(ChessCoord coord);
    //
 private:
    unsigned toIndex(ChessCoord c) const;
@@ -63,7 +63,7 @@ private:
    //
    PieceColor sideToMove_;
    unsigned castling_;
-   ChessCoord enpassant_;
+   ChessCoord pawnJump_;
    unsigned halfCount_;
    unsigned moveNumber_;
    //

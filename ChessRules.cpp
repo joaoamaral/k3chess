@@ -342,24 +342,24 @@ void appendKnightMoves(const ChessPosition& position, ChessCoord coord, MoveList
 inline
 void appendWhiteEnpassantCapture(const ChessPosition& position, ChessCoord coord, MoveList& moves)
 {
-   if(position.enpassant().row==coord.row &&
-      (position.enpassant().col==coord.col-1 ||
-       position.enpassant().col==coord.col+1) &&
-      position.cell(position.enpassant()).color() == pcBlack)
+   if(position.pawnJump().row==coord.row &&
+      (position.pawnJump().col==coord.col-1 ||
+       position.pawnJump().col==coord.col+1) &&
+      position.cell(position.pawnJump()).color() == pcBlack)
    {
-      moves.push_back(CoordPair(coord, ChessCoord(position.enpassant().col, coord.row+1)));
+      moves.push_back(CoordPair(coord, ChessCoord(position.pawnJump().col, coord.row+1)));
    }
 }
 
 inline
 void appendBlackEnpassantCapture(const ChessPosition& position, ChessCoord coord, MoveList& moves)
 {
-   if(position.enpassant().row==coord.row &&
-      (position.enpassant().col==coord.col-1 ||
-       position.enpassant().col==coord.col+1) &&
-      position.cell(position.enpassant()).color() == pcWhite)
+   if(position.pawnJump().row==coord.row &&
+      (position.pawnJump().col==coord.col-1 ||
+       position.pawnJump().col==coord.col+1) &&
+      position.cell(position.pawnJump()).color() == pcWhite)
    {
-      moves.push_back(CoordPair(coord, ChessCoord(position.enpassant().col, coord.row-1)));
+      moves.push_back(CoordPair(coord, ChessCoord(position.pawnJump().col, coord.row-1)));
    }
 }
 
@@ -659,7 +659,7 @@ bool isCellAttackedByWhitePawn(const ChessPosition& position, ChessCoord coord)
    if(position.inRange(right) && position.cell(right)==pawn) return true;
    //
    if(position.sideToMove()==pcWhite &&
-      position.enpassant()==coord)
+      position.pawnJump()==coord)
    {
       ChessCoord left(coord.col-1, coord.row);
       if(position.inRange(left) && position.cell(left)==pawn) return true;
@@ -683,7 +683,7 @@ bool isCellAttackedByBlackPawn(const ChessPosition& position, ChessCoord coord)
    if(position.inRange(right) && position.cell(right)==pawn) return true;
    //
    if(position.sideToMove()==pcBlack &&
-      position.enpassant()==coord)
+      position.pawnJump()==coord)
    {
       ChessCoord left(coord.col-1, coord.row);
       if(position.inRange(left) && position.cell(left)==pawn) return true;
@@ -816,8 +816,8 @@ ChessMoveType applyEnpassantCapture(ChessPosition& position, const CoordPair& mo
    //
    // @note: only 0 or moveCapture is returned
    //
-   if(position.enpassant()==ChessCoord() ||
-      position.cell(position.enpassant()).color()==position.sideToMove())
+   if(position.pawnJump()==ChessCoord() ||
+      position.cell(position.pawnJump()).color()==position.sideToMove())
    {
       return 0;
    }
@@ -828,10 +828,10 @@ ChessMoveType applyEnpassantCapture(ChessPosition& position, const CoordPair& mo
       return 0;
    }
    //
-   if(position.enpassant().row == move.from.row &&
-      position.enpassant().col == move.to.col)
+   if(position.pawnJump().row == move.from.row &&
+      position.pawnJump().col == move.to.col)
    {
-      position.setCell(position.enpassant(), ChessPiece());
+      position.setCell(position.pawnJump(), ChessPiece());
       return moveCapture;
    }
    else
@@ -973,11 +973,11 @@ ChessMoveType ChessRules::applyMove(ChessPosition &position, const ChessMove& mo
       //
       if(isPawnDouble)
       {
-         position.setEnpassant(move.to);
+         position.setPawnJump(move.to);
       }
       else
       {
-         position.setEnpassant(ChessCoord());
+         position.setPawnJump(ChessCoord());
       }
       //
       if(isPromotion)
