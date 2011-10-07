@@ -1,5 +1,6 @@
 #include "ChessPosition.h"
 #include "StringUtils.h"
+#include "Random.h"
 
 // must be in ChessRules, but for convenience is placed here
 const std::string cStandardInitialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -496,7 +497,7 @@ void ChessPosition::setPawnJump(ChessCoord coord)
    pawnJump_ = coord;
 }
 
-ChessCoord ChessPosition::initialQueenRookCoord() const
+ChessCoord ChessPosition::initialLeftRookCoord() const
 {
    switch(sideToMove_)
    {
@@ -505,7 +506,7 @@ ChessCoord ChessPosition::initialQueenRookCoord() const
    }
 }
 
-ChessCoord ChessPosition::initialKingRookCoord() const
+ChessCoord ChessPosition::initialRightRookCoord() const
 {
    switch(sideToMove_)
    {
@@ -521,4 +522,87 @@ ChessCoord ChessPosition::initialKingCoord() const
       case pcWhite:  return ChessCoord(initialKingCol_, 1); break;
       case pcBlack:  return ChessCoord(initialKingCol_, maxRow_); break;
    }
+}
+
+namespace
+{
+
+void placeOnRandomFreeCell(ChessPosition& position, int nRemainingFreeCells,
+                           ChessPiece piece)
+{
+   int n = g_random.get(0, nRemainingFreeCells+1);
+   for(ChessCoord coord(1, 1); coord.col<=position.maxCol(); ++coord.col)
+   {
+      if(position.cell(coord).type()==ptNone)
+      {
+         if(n==0)
+         {
+            position.setCell(coord, piece);
+            return;
+         }
+         else
+         {
+            --n;
+         }
+      }
+   }
+   //
+   assert(false); // error in nRemainingFreeCells (?)
+}
+
+ColValue placeOnFirstFreeCell(ChessPosition& position, ChessPiece piece)
+{
+   for(ChessCoord coord(1, 1); coord.col<=position.maxCol(); ++coord.col)
+   {
+      if(position.cell(coord).type()==ptNone)
+      {
+         position.setCell(coord, piece);
+         return coord.col;
+      }
+   }
+   //
+   assert(false); // no free cells found in row 1
+   return 0;
+}
+
+}
+
+ChessPosition ChessPosition::new960Position()
+{
+   ChessPosition position;
+   position.maxCol_ = 8;
+   position.maxRow_ = 8;
+   //
+   position.cells_.resize(position.maxRow_*position.maxCol_);
+   //
+   position.setCell(ChessCoord(g_random.get(0, 3)*2+1, 1), ptBishop | pcWhite);
+   position.setCell(ChessCoord(g_random.get(0, 3)*2+2, 1), ptBishop | pcWhite);
+   //
+   placeOnRandomFreeCell(position, 6, ptQueen | pcWhite);
+   placeOnRandomFreeCell(position, 5, ptKnight | pcWhite);
+   placeOnRandomFreeCell(position, 4, ptKnight | pcWhite);
+   //
+   position.initialLeftRookCol_ = placeOnFirstFreeCell(position, ptRook | pcWhite);
+   position.initialKingCol_ = placeOnFirstFreeCell(position, ptKing | pcWhite);
+   position.initialRightRookCol_ = placeOnFirstFreeCell(position, ptRook | pcWhite);
+   //
+   for(ChessCoord wcoord(1, 1), bcoord(1, position.maxRow_);
+       wcoord.col <= position.maxCol_; ++wcoord.col, ++bcoord.col)
+   {
+      position.setCell(bcoord, position.cell(wcoord).type() | pcBlack);
+   }
+   //
+   for(ChessCoord wcoord(1, 2), bcoord(1, position.maxRow_-1);
+       wcoord.col <= position.maxCol_; ++wcoord.col, ++bcoord.col)
+   {
+      position.setCell(wcoord, ptPawn | pcWhite);
+      position.setCell(bcoord, ptPawn | pcBlack);
+   }
+   //
+   position.castling_ = cWhiteCanShortCastle | cWhiteCanLongCastle |
+                        cBlackCanShortCastle | cBlackCanLongCastle;
+   //
+   position.moveNumber_ = 1;
+   //
+   return position;
 }

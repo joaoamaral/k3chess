@@ -31,6 +31,7 @@ public:
    //
    std::string toString() const; // returns FEN string for this position
    static ChessPosition fromString(const std::string& s); // loads position from FEN string
+   static ChessPosition new960Position(); // creates a new random chess960 position
    //
    PieceColor sideToMove() const;  // piece color of next move
    ChessCoord pawnJump() const;   // target square of last pawn double move if last move was a pawn double move
@@ -50,8 +51,8 @@ public:
    void prohibitLongCastling();
    void prohibitCastling();
    //
-   ChessCoord initialQueenRookCoord() const; // for the current side to move
-   ChessCoord initialKingRookCoord() const;
+   ChessCoord initialLeftRookCoord() const; // for the current side to move
+   ChessCoord initialRightRookCoord() const;
    ChessCoord initialKingCoord() const;
    //
    void setPawnJump(ChessCoord coord);

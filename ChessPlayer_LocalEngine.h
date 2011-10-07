@@ -35,9 +35,12 @@ public:
 
    virtual void gameResult(ChessGameResult result);
 
+   virtual bool setChess960(bool value);
+
+   const EngineInfo& info() const;
+
    void ponderingChanged(); // can be called manually to set/clear pondering mode
                             // when the corresponding GUI option changes
-
 signals:
    void engineProcessError(QProcess::ProcessError error);
 

@@ -43,6 +43,8 @@ public:
    virtual void opponentRequestsAbort(bool& accept);      // default behavior is reject
    virtual void gameResult(ChessGameResult result) {}     // notify player that the game was finished with the given result
                                                           // (resultNone means the game was aborted)
+   // additional commands
+   virtual bool setChess960(bool value); // must try to set mode to Chess960 if value=true, return true if supported, false otherwise, if false is passed, always return true
 
 signals:
    void isReady();                             // player notifies that he is ready to play
@@ -68,6 +70,12 @@ inline
 void ChessPlayer::opponentRequestsAbort(bool& accept)
 {
    accept = false;
+}
+
+inline
+bool ChessPlayer::setChess960(bool value)
+{
+   return !value; // there is no chess960 support by default
 }
 
 #endif

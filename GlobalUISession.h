@@ -38,7 +38,7 @@ private slots:
    void engineChanged();
    void ponderingChanged();
    void localeChanged();
-   void keyPressed(Qt::Key key);
+   void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
 
    void startSavedGameTimeout();
 
@@ -64,6 +64,8 @@ private:
    bool restoreLastGame();
    void clearLastGame();
 
+   void check960Support();
+
    void requestExit();
 
 private:
@@ -75,6 +77,7 @@ private:
    int keyRemapIdx_;
    MenuType menuType_;
    QTimer startSavedGameTimer_;
+   ChessPosition initialPosition_; // standard or 960 random (or last)
 };
 
 #endif

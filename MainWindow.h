@@ -30,7 +30,7 @@ protected:
    virtual void closeEvent(QCloseEvent*);
 
 signals:
-   void keyPressed(Qt::Key key);
+   void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
    void isClosing();
 
 protected:

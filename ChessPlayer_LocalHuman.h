@@ -31,10 +31,12 @@ public:
    virtual void opponentRequestsAbort(bool& accept);
    virtual void gameResult(ChessGameResult result);
 
+   virtual bool setChess960(bool value);
+
 private slots:
    void userMoves(const CoordPair& move); // user entered a move via GUI
    void userChoice(int id);
-   void keyPressed(Qt::Key key);
+   void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
 
 private:
    void offerChoice(const CommandOptions& options);

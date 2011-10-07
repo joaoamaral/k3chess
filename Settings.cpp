@@ -530,6 +530,11 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    if(!masks.isEmpty())
       info.cleanUpMasks = masks.split(';');
    //
+   ini.beginGroup("Modes");
+   //
+   info.commandStandard = ini.value("CommandStandard", QString()).toString();
+   info.command960 = ini.value("Command960", QString()).toString();
+   //
    ini.endGroup();
    return true;
 }
@@ -549,4 +554,14 @@ void K3ChessSettings::setQuickSingleMoveSelection(bool value)
 QString K3ChessSettings::lastGameFile() const
 {
    return cDefaultLastGameFile;
+}
+
+bool K3ChessSettings::isChess960() const
+{
+   return settings_.value("Chess960", false).toBool();
+}
+
+void K3ChessSettings::setChess960(bool value)
+{
+   settings_.setValue("Chess960", value);
 }

@@ -11,6 +11,7 @@ class KeyMapper;
 class CommandOptionDefs;
 class LocalChessGui;
 class GlobalUISession;
+class Random;
 
 namespace Singletons
 {
@@ -25,6 +26,7 @@ namespace Singletons
    KeyMapper& keyMapper();
    LocalChessGui& localChessGui();
    GlobalUISession& globalUISession();
+   Random& random();
 }
 
 #define g_globalStrings Singletons::globalStrings()
@@ -34,5 +36,6 @@ namespace Singletons
 #define g_commandOptionDefs Singletons::commandOptionDefs()
 #define g_localChessGui Singletons::localChessGui()
 #define g_globalUISession Singletons::globalUISession()
+#define g_random Singletons::random()
 
 #endif
