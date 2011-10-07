@@ -124,12 +124,12 @@ bool pathSafe(const ChessPosition& position, ChessCoord lo, ChessCoord hi)
 inline
 void appendCastlingMove(const ChessPosition& position, ChessCoord kingCoord, bool isShort, MoveList& moves)
 {
-   if((isShort && !position.canShortCastle(position.sideToMove())) ||
-      (!isShort && !position.canLongCastle(position.sideToMove()))) return; // rook or king has moved
+   if((isShort && !position.canShortCastle()) ||
+      (!isShort && !position.canLongCastle())) return; // rook or king has moved
    //
    ChessCoord kingTargetCoord(isShort ? position.maxCol()-1 : 3, kingCoord.row);
    //
-   ChessCoord rookCoord(isShort ? position.rightRookInitialCol() : position.leftRookInitialCol(), kingCoord.row);
+   ChessCoord rookCoord = isShort ? position.initialKingRookCoord() : position.initialQueenRookCoord();
    //
    ChessCoord lo(min_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
    ChessCoord hi(max_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
@@ -160,7 +160,7 @@ void appendCastlingMove(const ChessPosition& position, ChessCoord kingCoord, boo
 inline
 void appendCastlingMoves(const ChessPosition& position, ChessCoord coord, MoveList& moves)
 {
-   if(!position.canCastle(position.sideToMove())) return;
+   if(!position.canCastle()) return;
    //
    appendCastlingMove(position, coord, false, moves);
    appendCastlingMove(position, coord, true, moves);
@@ -767,7 +767,7 @@ inline
 ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
 {
    if(position.cell(move.from) == ChessPiece(ptKing|position.sideToMove()) &&
-      position.canCastle(position.sideToMove()) && move.from.row == move.to.row)
+      position.canCastle() && move.from.row == move.to.row)
    {
       if(position.maxCol()!=8 ||
             position.leftRookInitialCol()!=1 ||
@@ -775,17 +775,17 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
       {
          // chess variants castling: target move square is the rook to be moved
          if(move.to.col==position.leftRookInitialCol() &&
-            position.canLongCastle(position.sideToMove()))
+            position.canLongCastle())
          {
             applyCastlingMove(position, false, move.from);
-            position.prohibitCastling(position.sideToMove());
+            position.prohibitCastling();
             return moveLongCastling;
          }
          else if(move.to.col==position.rightRookInitialCol() &&
-                 position.canShortCastle(position.sideToMove()))
+                 position.canShortCastle())
          {
             applyCastlingMove(position, true, move.from);
-            position.prohibitCastling(position.sideToMove());
+            position.prohibitCastling();
             return moveShortCastling;
          }
       }
@@ -795,13 +795,13 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
          if(move.to.col==3)
          {
             applyCastlingMove(position, false, move.from);
-            position.prohibitCastling(position.sideToMove());
+            position.prohibitCastling();
             return moveLongCastling;
          }
          else if(move.to.col==position.maxCol()-1)
          {
             applyCastlingMove(position, true, move.from);
-            position.prohibitCastling(position.sideToMove());
+            position.prohibitCastling();
             return moveShortCastling;
          }
       }
@@ -841,20 +841,25 @@ ChessMoveType applyEnpassantCapture(ChessPosition& position, const CoordPair& mo
 }
 
 inline
-void adjustCastlingPossibility(ChessPosition& position, ChessCoord coord, ChessPiece piece)
+void adjustCastlingPossibility(ChessPosition& position, const CoordPair& move)
 {
-   switch(piece.type())
+   if(!position.canCastle()) return;
+   //
+   if(move.from==position.initialKingCoord())
    {
-      case ptRook:
-         if(coord.col==position.leftRookInitialCol())
-            position.prohibitLongCastling(position.sideToMove());
-         else if(coord.col==position.rightRookInitialCol())
-            position.prohibitShortCastling(position.sideToMove());
-         break;
-      case ptKing:
-         position.prohibitLongCastling(position.sideToMove());
-         position.prohibitShortCastling(position.sideToMove());
-         break;
+      position.prohibitCastling();
+   }
+   else if(position.canLongCastle() &&
+           (move.from==position.initialQueenRookCoord() ||
+            move.to==position.initialQueenRookCoord()))
+   {
+      position.prohibitLongCastling();
+   }
+   else if (position.canShortCastle() &&
+           (move.from==position.initialKingRookCoord() ||
+            move.to==position.initialKingRookCoord()))
+   {
+      position.prohibitShortCastling();
    }
 }
 
@@ -866,8 +871,7 @@ MoveType applyConventionalMove(ChessPosition& position, const CoordPair& move)
    ChessPiece movedPiece = position.cell(move.from);
    ChessPiece targetPiece = position.cell(move.to);
    //
-   if(!position.touched(move.from))
-      adjustCastlingPossibility(position, move.from, movedPiece);
+   adjustCastlingPossibility(position, move);
    //
    if(movedPiece.type()==ptNone || movedPiece.color()!=position.sideToMove())
    {

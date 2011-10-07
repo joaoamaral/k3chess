@@ -26,8 +26,6 @@ public:
    ChessPiece cell(ChessCoord c) const;
    void setCell(ChessCoord c, ChessPiece piece);
    //
-   bool touched(ChessCoord c) const; // warning! touched since position setup (if position is not start game position)
-   //
    ColValue leftRookInitialCol() const;  // for chess 960
    ColValue rightRookInitialCol() const;
    //
@@ -35,7 +33,7 @@ public:
    static ChessPosition fromString(const std::string& s); // loads position from FEN string
    //
    PieceColor sideToMove() const;  // piece color of next move
-   ChessCoord pawnJump() const;   // target square of last pawn double move
+   ChessCoord pawnJump() const;   // target square of last pawn double move if last move was a pawn double move
    unsigned halfCount() const;     // counter of half moves since last capture or pawn move
    unsigned moveNumber() const;    // next move ordinal number, starting from 1
    //
@@ -44,13 +42,17 @@ public:
    void increaseMoveNumber();
    void setSideToMove(PieceColor color);
    //
-   bool canShortCastle(PieceColor color) const;
-   bool canLongCastle(PieceColor color) const;
-   bool canCastle(PieceColor color) const;       // at least in one direction
+   bool canShortCastle() const;  // for the current side to move
+   bool canLongCastle() const;
+   bool canCastle() const;       // at least in one direction
    //
-   void prohibitShortCastling(PieceColor color);
-   void prohibitLongCastling(PieceColor color);
-   void prohibitCastling(PieceColor color);
+   void prohibitShortCastling(); // for the current side to move
+   void prohibitLongCastling();
+   void prohibitCastling();
+   //
+   ChessCoord initialQueenRookCoord() const; // for the current side to move
+   ChessCoord initialKingRookCoord() const;
+   ChessCoord initialKingCoord() const;
    //
    void setPawnJump(ChessCoord coord);
    //
@@ -67,13 +69,11 @@ private:
    unsigned halfCount_;
    unsigned moveNumber_;
    //
-   ColValue leftRookInitialCol_; // for chess 960 castling
-   ColValue rightRookInitialCol_;
+   ColValue initialKingCol_;     // for chess 960 castling
+   ColValue initialLeftRookCol_;
+   ColValue initialRightRookCol_;
+   //
    std::vector<ChessPiece> cells_;
-   std::vector<bool> touched_; // @@todo: check how vector<bool> behaves!
-                               // touched_ keeps track of cell touches since initial setup
-                               // it may not correspond to actual touches if the initial setup
-                               // was not for move 1
 };
 
 extern const std::string cStandardInitialFen;
