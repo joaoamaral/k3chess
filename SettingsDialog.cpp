@@ -44,15 +44,15 @@ void SettingsDialog::loadValues()
    ui->cbShowMoveHints->setChecked(g_settings.showMoveHints());
    //
    QStringList engineNames = g_settings.getEngineNames();
-   QStringList pieceStyleNames = g_settings.getPieceStyleNames();
+   QStringList piecesStyleNames = g_settings.getPiecesStyleNames();
    QStringList localeNames = g_settings.getLocaleNames();
    //
    ui->cmbEngine->addItems(engineNames);
-   ui->cmbPieceStyle->addItems(pieceStyleNames);
+   ui->cmbPiecesStyle->addItems(piecesStyleNames);
    ui->cmbInterfaceLanguage->addItems(localeNames);
    //
    ui->cmbEngine->setCurrentIndex(engineNames.indexOf(g_settings.engineInfo().name));
-   ui->cmbPieceStyle->setCurrentIndex(pieceStyleNames.indexOf(g_settings.pieceStyle()));
+   ui->cmbPiecesStyle->setCurrentIndex(piecesStyleNames.indexOf(g_settings.piecesStyle()));
    ui->cmbInterfaceLanguage->setCurrentIndex(localeNames.indexOf(g_settings.localeName()));
    //
    ui->edPlayerName->setText(g_settings.playerName());
@@ -118,7 +118,7 @@ void SettingsDialog::initializeLabels()
    ui->lInterfaceLanguage->setText(g_label("InterfaceLanguage"));
    ui->lPlayerName->setText(g_label("PlayerName"));
    ui->lEngine->setText(g_label("Engine"));
-   ui->lPieceStyle->setText(g_label("PieceStyle"));
+   ui->lPiecesStyle->setText(g_label("PiecesStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
    //
@@ -195,7 +195,7 @@ void SettingsDialog::applyChanges()
    //
    g_settings.setPlayerName(ui->edPlayerName->text().trimmed());
    g_settings.setEngineName(ui->cmbEngine->currentText());
-   g_settings.setPieceStyle(ui->cmbPieceStyle->currentText());
+   g_settings.setPiecesStyle(ui->cmbPiecesStyle->currentText());
    //
    g_settings.setPlayerClock(ui->cmbPlayerTime->currentText());
    g_settings.setEngineClock(ui->cmbEngineTime->currentText());

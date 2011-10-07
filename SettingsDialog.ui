@@ -58,7 +58,7 @@
     <locale language="English" country="UnitedStates"/>
    </property>
   </widget>
-  <widget class="QComboBox" name="cmbPieceStyle">
+  <widget class="QComboBox" name="cmbPiecesStyle">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -68,7 +68,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="lPieceStyle">
+  <widget class="QLabel" name="lPiecesStyle">
    <property name="geometry">
     <rect>
      <x>80</x>
@@ -349,8 +349,8 @@
   <zorder>layoutWidget</zorder>
   <zorder>lEngine</zorder>
   <zorder>cmbEngine</zorder>
-  <zorder>cmbPieceStyle</zorder>
-  <zorder>lPieceStyle</zorder>
+  <zorder>cmbPiecesStyle</zorder>
+  <zorder>lPiecesStyle</zorder>
   <zorder>lGameControl</zorder>
   <zorder>lPlayerTime</zorder>
   <zorder>lEngineTime</zorder>
@@ -367,7 +367,7 @@
  <tabstops>
   <tabstop>edPlayerName</tabstop>
   <tabstop>cmbEngine</tabstop>
-  <tabstop>cmbPieceStyle</tabstop>
+  <tabstop>cmbPiecesStyle</tabstop>
   <tabstop>cmbPlayerTime</tabstop>
   <tabstop>cmbEngineTime</tabstop>
   <tabstop>cbPondering</tabstop>

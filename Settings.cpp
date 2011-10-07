@@ -97,7 +97,7 @@ K3ChessSettings::K3ChessSettings() :
    profile_ = Profile::fromString(settings_.value("Profile", "Default").toString());
    // enumerate engines (must have "engine.ini"-files with descriptions)
    enumEngines(QDir("./engines"));
-   enumPieceStyles(QDir("./pieces"));
+   enumPiecesStyles(QDir("./pieces"));
    enumLocales(QDir("./locales"));
 }
 
@@ -132,13 +132,13 @@ QString K3ChessSettings::localeName() const
       return name;
 }
 
-QString K3ChessSettings::pieceStyle() const
+QString K3ChessSettings::piecesStyle() const
 {
-   QString name = settings_.value("Board/PieceStyle", QString()).toString();
-   if(pieceStyles_.find(name)==pieceStyles_.end())
+   QString name = settings_.value("Board/PiecesStyle", QString()).toString();
+   if(piecesStyles_.find(name)==piecesStyles_.end())
    {
-      if(pieceStyles_.empty()) return QString();
-      return pieceStyles_.begin()->first;
+      if(piecesStyles_.empty()) return QString();
+      return piecesStyles_.begin()->first;
    }
    else
       return name;
@@ -146,7 +146,7 @@ QString K3ChessSettings::pieceStyle() const
 
 QString K3ChessSettings::pieceImageFilePath() const
 {
-   return pieceImageFileFromName(pieceStyle());
+   return pieceImageFileFromName(piecesStyle());
 }
 
 QString K3ChessSettings::localeIniFilePath() const
@@ -252,7 +252,7 @@ void K3ChessSettings::enumEnginesProc(QDir dir)
    }
 }
 
-void K3ChessSettings::enumPieceStyles(QDir dir)
+void K3ChessSettings::enumPiecesStyles(QDir dir)
 {
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
@@ -261,7 +261,7 @@ void K3ChessSettings::enumPieceStyles(QDir dir)
       if(fi.isDir())
       {
          if(!fi.fileName().startsWith("."))
-            enumPieceStyles(fi.filePath());
+            enumPiecesStyles(fi.filePath());
       }
       else if(fi.fileName().contains('.'))
       {
@@ -269,16 +269,16 @@ void K3ChessSettings::enumPieceStyles(QDir dir)
          QString name = fi.fileName().left(fi.fileName().length()-ext.length()-1);
          if(ext=="png" || ext=="bmp" || ext=="jpg")
          {
-            pieceStyles_.insert(std::make_pair(name, fi.filePath()));
+            piecesStyles_.insert(std::make_pair(name, fi.filePath()));
          }
       }
    }
    //
-   if(!pieceStyles_.empty() &&
-         pieceStyles_.find(settings_.value("Board/PieceStyle",
-            QString()).toString())==pieceStyles_.end())
+   if(!piecesStyles_.empty() &&
+         piecesStyles_.find(settings_.value("Board/PiecesStyle",
+            QString()).toString())==piecesStyles_.end())
    {
-      settings_.setValue("Board/PieceStyle", pieceStyles_.begin()->first);
+      settings_.setValue("Board/PiecesStyle", piecesStyles_.begin()->first);
    }
 }
 
@@ -326,10 +326,10 @@ QStringList K3ChessSettings::getEngineNames() const
    return qsl;
 }
 
-QStringList K3ChessSettings::getPieceStyleNames() const
+QStringList K3ChessSettings::getPiecesStyleNames() const
 {
    QStringList qsl;
-   std::map<QString, QString>::const_iterator it = pieceStyles_.begin(), itEnd = pieceStyles_.end();
+   std::map<QString, QString>::const_iterator it = piecesStyles_.begin(), itEnd = piecesStyles_.end();
    for(;it!=itEnd;++it)
    {
       qsl.append(it->first);
@@ -354,8 +354,8 @@ QStringList K3ChessSettings::getLocaleNames() const
 
 QString K3ChessSettings::pieceImageFileFromName(const QString& name) const
 {
-   std::map<QString, QString>::const_iterator it = pieceStyles_.find(name);
-   if(it==pieceStyles_.end())
+   std::map<QString, QString>::const_iterator it = piecesStyles_.find(name);
+   if(it==piecesStyles_.end())
    {
       return QString();
    }
@@ -385,10 +385,10 @@ void K3ChessSettings::setEngineName(const QString& name)
    emit engineChanged();
 }
 
-void K3ChessSettings::setPieceStyle(const QString& name)
+void K3ChessSettings::setPiecesStyle(const QString& name)
 {
-   if(name==settings_.value("Board/PieceStyle").toString()) return;
-   settings_.setValue("Board/PieceStyle", name);
+   if(name==settings_.value("Board/PiecesStyle").toString()) return;
+   settings_.setValue("Board/PiecesStyle", name);
    emit boardStyleChanged();
 }
 
@@ -481,7 +481,11 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    if(name.isEmpty()) return false;
    QString exePath = ini.value("Executable", QString()).toString();
    if(exePath.isEmpty()) return false;
-   if(exePath.startsWith("./") || exePath.startsWith(".\\"))
+   if(exePath.startsWith("../") || exePath.startsWith("..\\"))
+   {
+      exePath = extractFolderPath(extractFolderPath(engineIniFile))+exePath.mid(2);
+   }
+   else if(exePath.startsWith("./") || exePath.startsWith(".\\"))
    {
       exePath = extractFolderPath(engineIniFile)+exePath.mid(1);
    }
