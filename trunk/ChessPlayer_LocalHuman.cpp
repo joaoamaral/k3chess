@@ -37,8 +37,8 @@ void ChessPlayer_LocalHuman::makeMove(const ChessPosition& position,
                     SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
    // connect to keyboard events to receive MENU key press
    // (for the in-game menu)
-   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this,
-                    SLOT(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key, Qt::KeyboardModifiers)), this,
+                    SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)), Qt::UniqueConnection);
    //
    g_localChessGui.beginMoveSelection();
 }
@@ -89,7 +89,8 @@ void ChessPlayer_LocalHuman::userMoves(const CoordPair &move)
    {
       mode_ = modeStandby;
       QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
-      QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this, SLOT(keyPressed(Qt::Key)));
+      QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key, Qt::KeyboardModifiers)),
+                                                   this, SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)));
       //
       emit playerMoves(ChessMove(move));
    }
@@ -101,7 +102,7 @@ void ChessPlayer_LocalHuman::opponentOffersDraw()
    // instead of making a move
 }
 
-void ChessPlayer_LocalHuman::keyPressed(Qt::Key key)
+void ChessPlayer_LocalHuman::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
 {
    switch(key)
    {
@@ -133,7 +134,8 @@ void ChessPlayer_LocalHuman::gameResult(ChessGameResult result)
    //
    QObject::disconnect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this, SLOT(userMoves(const CoordPair&)));
    QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
-   QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this, SLOT(keyPressed(Qt::Key)));
+   QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key, Qt::KeyboardModifiers)),
+                       this, SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)));
 }
 
 void ChessPlayer_LocalHuman::opponentRequestsTakeback(bool &accept)
@@ -144,5 +146,10 @@ void ChessPlayer_LocalHuman::opponentRequestsTakeback(bool &accept)
 void ChessPlayer_LocalHuman::opponentRequestsAbort(bool &accept)
 {
    accept = true;
+}
+
+bool ChessPlayer_LocalHuman::setChess960(bool value)
+{
+   return true; // human player is assumed to support chess 960 games
 }
 

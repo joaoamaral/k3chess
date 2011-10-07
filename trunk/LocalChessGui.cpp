@@ -32,7 +32,7 @@ LocalChessGui::LocalChessGui()
    //
    QObject::connect(mainWindow_->boardView(), SIGNAL(moveEntered(const CoordPair&)), this, SIGNAL(userMoves(const CoordPair&)), Qt::UniqueConnection);
    QObject::connect(mainWindow_->commandPanel(), SIGNAL(optionSelected(int)), this, SIGNAL(userChoice(int)), Qt::UniqueConnection);
-   QObject::connect(mainWindow_, SIGNAL(keyPressed(Qt::Key)), this, SIGNAL(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(mainWindow_, SIGNAL(keyPressed(Qt::Key,Qt::KeyboardModifiers)), this, SIGNAL(keyPressed(Qt::Key,Qt::KeyboardModifiers)), Qt::UniqueConnection);
    QObject::connect(mainWindow_, SIGNAL(isClosing()), this, SIGNAL(isExiting()));
    //
    QObject::connect(&g_settings, SIGNAL(boardStyleChanged()), this, SLOT(updateBoardStyle()), Qt::UniqueConnection);

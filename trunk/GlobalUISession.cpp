@@ -15,7 +15,8 @@
 
 GlobalUISession::GlobalUISession() :
    localHuman_(0), localEngine_(0), localHuman1_(0), localHuman2_(0),
-   gameSession_(0), keyRemapIdx_(-1), menuType_(menuNone)
+   gameSession_(0), keyRemapIdx_(-1), menuType_(menuNone),
+   initialPosition_(cStandardInitialPosition)
 {
    initialize();
    //
@@ -23,7 +24,7 @@ GlobalUISession::GlobalUISession() :
    QObject::connect(&g_settings, SIGNAL(engineChanged()), this, SLOT(engineChanged()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(ponderingChanged()), this, SLOT(ponderingChanged()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(localeChanged()), this, SLOT(localeChanged()), Qt::UniqueConnection);
-   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this, SLOT(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key,Qt::KeyboardModifiers)), this, SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)), Qt::UniqueConnection);
    QObject::connect(&g_localChessGui, SIGNAL(isExiting()), this, SLOT(isExiting()));
 }
 
@@ -38,6 +39,7 @@ void GlobalUISession::initialize()
    localHuman1_ = new ChessPlayer_LocalHuman("P1");   // @@todo: ask player names via UI before game starts
    localHuman2_ = new ChessPlayer_LocalHuman("P2");
    localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo());
+   check960Support();
 }
 
 void GlobalUISession::begin()
@@ -69,7 +71,7 @@ void GlobalUISession::playGame(GameType type,
    sessionInfo.profile.type = type;
    sessionInfo.profile.whiteClock = wclock;
    sessionInfo.profile.blackClock = bclock;
-   sessionInfo.initialPosition = cStandardInitialPosition;
+   sessionInfo.initialPosition = initialPosition_;
    //
    playGame(sessionInfo);
 }
@@ -221,6 +223,11 @@ void GlobalUISession::engineChanged()
    if(g_settings.engineInfo().name==localEngine_->name()) return;
    delete localEngine_; localEngine_ = 0;
    localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo());
+   check960Support();
+   if(g_settings.isChess960())
+   {
+      localEngine_->setChess960(true);
+   }
 }
 
 void GlobalUISession::playerNameChanged()
@@ -259,12 +266,12 @@ void GlobalUISession::beginKeyRemapping()
    keyRemapIdx_ = 0;
    g_keyMapper.clearMapping();
    g_localChessGui.enableDefaultKeyProcessing(false);
-   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key)), this,
-      SLOT(keyPressed(Qt::Key)), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key, Qt::KeyboardModifiers)), this,
+      SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)), Qt::UniqueConnection);
    nextKeyRemapPrompt();
 }
 
-void GlobalUISession::keyPressed(Qt::Key key)
+void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
 {
    if(keyRemapIdx_>=0)
    {
@@ -288,6 +295,30 @@ void GlobalUISession::keyPressed(Qt::Key key)
                else if(menuType_==menuExt)
                {
                   showNewGameMenu();
+               }
+            }
+            break;
+         case Qt::Key_Home:
+            if(gameSession_==0)
+            {
+               if(modifiers & Qt::ShiftModifier)
+               {
+                  // turn off chess 960 mode if it is on
+                  if(g_settings.isChess960())
+                  {
+                     g_settings.setChess960(false);
+                     initialPosition_ = cStandardInitialPosition;
+                     g_localChessGui.updatePosition(initialPosition_);
+                     if(localEngine_) localEngine_->setChess960(false);
+                  }
+               }
+               else if(localEngine_ && localEngine_->info().supports960())
+               {
+                  // prepare a new initial 960 position if current engine supports it
+                  g_settings.setChess960(true);
+                  initialPosition_ = ChessPosition::new960Position();
+                  g_localChessGui.updatePosition(initialPosition_);
+                  localEngine_->setChess960(true);
                }
             }
             break;
@@ -380,5 +411,19 @@ void GlobalUISession::isExiting()
    {
       // save game (will be restored and continued on next program start)
       gameSession_->sessionInfo().saveToFile(g_settings.lastGameFile());
+   }
+}
+
+void GlobalUISession::check960Support()
+{
+   if(!localEngine_) return;
+   if(!localEngine_->info().supports960())
+   {
+      if(g_settings.isChess960())
+      {
+         g_settings.setChess960(false);
+         initialPosition_ = cStandardInitialPosition;
+         g_localChessGui.updatePosition(initialPosition_);
+      }
    }
 }

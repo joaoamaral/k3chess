@@ -6,6 +6,7 @@
 #include "LocalChessGui.h"
 #include "GlobalUISession.h"
 #include "KeyMapper.h"
+#include "Random.h"
 
 #define __freeAndNil(T, p) { T *t = p; p = 0; delete t; }
 
@@ -19,12 +20,14 @@ GlobalStrings *globalStrings_ = 0;
 LocalChessGui *localChessGui_ = 0;
 GlobalUISession *globalUISession_ = 0;
 KeyMapper *keyMapper_ = 0;
+Random *random_ = 0;
 
 void initialize()
 {
    assert(settings_==0 && chessRules_==0 && commandOptionDefs_==0 &&
           globalStrings_==0 && localChessGui_==0 && globalUISession_==0);
    // singleton initialization with explicit order
+   random_ = new Random();
    settings_ = new K3ChessSettings();
    chessRules_ = new ChessRules();
    globalStrings_ = new GlobalStrings();
@@ -46,6 +49,7 @@ void finalize()
    __freeAndNil(GlobalStrings, globalStrings_);
    __freeAndNil(ChessRules, chessRules_);
    __freeAndNil(K3ChessSettings, settings_);
+   __freeAndNil(Random, random_);
 }
 
 const ChessRules& chessRules() { assert(chessRules_); return *chessRules_; }
@@ -55,5 +59,6 @@ K3ChessSettings& settings() { assert(settings_); return *settings_; }
 KeyMapper& keyMapper() { assert(keyMapper_); return *keyMapper_; }
 LocalChessGui& localChessGui() { assert(localChessGui_); return *localChessGui_; }
 GlobalUISession& globalUISession() { assert(globalUISession_); return *globalUISession_; }
+Random& random() { assert(random_); return *random_; }
 
 }

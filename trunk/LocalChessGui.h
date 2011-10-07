@@ -44,7 +44,7 @@ public:
 signals:
    void userMoves(const CoordPair& pair);
    void userChoice(int id);
-   void keyPressed(Qt::Key key);  // for keys pressed while no control is active
+   void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers); // for keys pressed while no control is active
    void isExiting();
 
 private slots:

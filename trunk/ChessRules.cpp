@@ -129,7 +129,7 @@ void appendCastlingMove(const ChessPosition& position, ChessCoord kingCoord, boo
    //
    ChessCoord kingTargetCoord(isShort ? position.maxCol()-1 : 3, kingCoord.row);
    //
-   ChessCoord rookCoord = isShort ? position.initialKingRookCoord() : position.initialQueenRookCoord();
+   ChessCoord rookCoord = isShort ? position.initialRightRookCoord() : position.initialLeftRookCoord();
    //
    ChessCoord lo(min_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
    ChessCoord hi(max_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
@@ -850,14 +850,14 @@ void adjustCastlingPossibility(ChessPosition& position, const CoordPair& move)
       position.prohibitCastling();
    }
    else if(position.canLongCastle() &&
-           (move.from==position.initialQueenRookCoord() ||
-            move.to==position.initialQueenRookCoord()))
+           (move.from==position.initialLeftRookCoord() ||
+            move.to==position.initialLeftRookCoord()))
    {
       position.prohibitLongCastling();
    }
    else if (position.canShortCastle() &&
-           (move.from==position.initialKingRookCoord() ||
-            move.to==position.initialKingRookCoord()))
+           (move.from==position.initialRightRookCoord() ||
+            move.to==position.initialRightRookCoord()))
    {
       position.prohibitShortCastling();
    }

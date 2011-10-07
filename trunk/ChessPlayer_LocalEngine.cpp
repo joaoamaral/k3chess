@@ -525,3 +525,22 @@ void ChessPlayer_LocalEngine::replayMove(const ChessMove &move)
    }
 }
 
+const EngineInfo& ChessPlayer_LocalEngine::info() const
+{
+   return info_;
+}
+
+bool ChessPlayer_LocalEngine::setChess960(bool value)
+{
+   if(!value)
+   {
+      if(info_.supports960())
+      {
+         tellEngine(info_.commandStandard.toStdString());
+      }
+   }
+   else if(info_.supports960())
+   {
+      tellEngine(info_.command960.toStdString());
+   }
+}

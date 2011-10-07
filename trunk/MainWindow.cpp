@@ -59,7 +59,7 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
    //
    if(customKeyboardMode_)
    {
-      emit keyPressed(Qt::Key(event->key()));
+      emit keyPressed(Qt::Key(event->key()), event->modifiers());
       return;
    }
    //
@@ -104,7 +104,7 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
             if(boardView_->processKey(key)) return;
          }
          //
-         emit keyPressed(key);
+         emit keyPressed(key, event->modifiers());
          //
          break;
    }
@@ -121,7 +121,7 @@ void K3ChessMainWindow::commandPanel_idleClick()
 {
    // allow entering menu by double-clicking on inactive/static command panel part
    // (this supports stylus/mouse operation, while GUI remains keyboard-oriented)
-   emit keyPressed(Qt::Key_Menu);
+   emit keyPressed(Qt::Key_Menu, 0);
 }
 
 void K3ChessMainWindow::updateControlLayout()

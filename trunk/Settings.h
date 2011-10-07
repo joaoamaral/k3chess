@@ -82,6 +82,9 @@ public:
    void setPlayerClock(const QString& str);
    void setEngineClock(const QString& str);
 
+   bool isChess960() const;
+   void setChess960(bool value);
+
    void flush();
 
 signals:
