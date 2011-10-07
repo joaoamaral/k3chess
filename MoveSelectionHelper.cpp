@@ -76,8 +76,8 @@ ChessMoveMap::const_iterator findMoveWithCondition(
 {
    if(range.first==range.second) return range.second;
    //
+   if(itStart==range.second) itStart = range.first;
    ChessMoveMap::const_iterator it = itStart;
-   if(it==range.second) it=range.first;
    //
    while(true)
    {

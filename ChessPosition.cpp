@@ -16,10 +16,10 @@ const unsigned cBlackCanLongCastle = 8;
 ChessPosition::ChessPosition() :
    maxCol_(8), maxRow_(8), sideToMove_(pcWhite),
    castling_(0), halfCount_(0), moveNumber_(0),
-   leftRookInitialCol_(0), rightRookInitialCol_(0)
+   initialKingCol_(0),
+   initialLeftRookCol_(0), initialRightRookCol_(0)
 {
    cells_.resize(maxCol_*maxRow_);
-   touched_.resize(cells_.size());
 }
 
 ColValue ChessPosition::maxCol() const
@@ -54,19 +54,14 @@ ChessPiece ChessPosition::cell(ChessCoord c) const
    return cells_[toIndex(c)];
 }
 
-bool ChessPosition::touched(ChessCoord c) const
-{
-   return touched_[toIndex(c)];
-}
-
 ColValue ChessPosition::leftRookInitialCol() const
 {
-   return leftRookInitialCol_;
+   return initialLeftRookCol_;
 }
 
 ColValue ChessPosition::rightRookInitialCol() const
 {
-   return rightRookInitialCol_;
+   return initialRightRookCol_;
 }
 
 PieceColor ChessPosition::sideToMove() const
@@ -74,9 +69,9 @@ PieceColor ChessPosition::sideToMove() const
    return sideToMove_;
 }
 
-bool ChessPosition::canCastle(PieceColor color) const
+bool ChessPosition::canCastle() const
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  return (castling_ & (cWhiteCanShortCastle|cWhiteCanLongCastle))!=0; break;
       case pcBlack:  return (castling_ & (cBlackCanShortCastle|cBlackCanLongCastle))!=0; break;
@@ -84,9 +79,9 @@ bool ChessPosition::canCastle(PieceColor color) const
    return false;
 }
 
-bool ChessPosition::canShortCastle(PieceColor color) const
+bool ChessPosition::canShortCastle() const
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  return (castling_ & cWhiteCanShortCastle)!=0; break;
       case pcBlack:  return (castling_ & cBlackCanShortCastle)!=0; break;
@@ -94,9 +89,9 @@ bool ChessPosition::canShortCastle(PieceColor color) const
    return false;
 }
 
-bool ChessPosition::canLongCastle(PieceColor color) const
+bool ChessPosition::canLongCastle() const
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  return (castling_ & cWhiteCanLongCastle)!=0; break;
       case pcBlack:  return (castling_ & cBlackCanLongCastle)!=0; break;
@@ -284,7 +279,6 @@ ChessPosition ChessPosition::fromString(const std::string& s)
    if(position.maxCol_==0) return ChessPosition();
    //
    position.cells_.resize(position.maxRow_*position.maxCol_);
-   position.touched_.resize(position.cells_.size(), false);
    // scan FEN rows one by one (starting from top row)
    for(ColValue i=position.maxRow_-1; i>=0; --i)
    {
@@ -333,40 +327,60 @@ ChessPosition ChessPosition::fromString(const std::string& s)
       ++pos;
    }
    //
+   // find coords for chess 960 castling
+   //
    if(position.castling_ & (cWhiteCanLongCastle | cWhiteCanShortCastle |
                              cBlackCanLongCastle | cBlackCanLongCastle))
    {
-      // find left and right rook initial coords (needed for chess 960)
+      // find initial left rook coord
       {
          ChessCoord coord;
          ChessPiece rook;
-         if(position.canLongCastle(pcWhite)) { coord = ChessCoord(1, 1); rook = ptRook | pcWhite; }
-         else if(position.canLongCastle(pcBlack)) { coord = ChessCoord(1, position.maxRow_); rook = ptRook | pcBlack; }
+         if(position.castling_ & cWhiteCanLongCastle) { coord = ChessCoord(1, 1); rook = ptRook | pcWhite; }
+         else if(position.castling_ & cBlackCanLongCastle) { coord = ChessCoord(1, position.maxRow_); rook = ptRook | pcBlack; }
          if(coord!=ChessCoord())
          {
             for(; coord.col<=position.maxCol_; ++coord.col)
             {
                if(position.cell(coord)==rook)
                {
-                  position.leftRookInitialCol_ = coord.col;
+                  position.initialLeftRookCol_ = coord.col;
                   break;
                }
             }
          }
       }
-      //
+      // find initial right rook coord
       {
          ChessCoord coord;
          ChessPiece rook;
-         if(position.canShortCastle(pcWhite)) { coord = ChessCoord(position.maxCol_, 1); rook = ptRook | pcWhite; }
-         else if(position.canShortCastle(pcBlack)) { coord = ChessCoord(position.maxCol_, position.maxRow_); rook = ptRook | pcBlack; }
+         if(position.castling_ & cWhiteCanShortCastle) { coord = ChessCoord(position.maxCol_, 1); rook = ptRook | pcWhite; }
+         else if(position.castling_ & cBlackCanShortCastle) { coord = ChessCoord(position.maxCol_, position.maxRow_); rook = ptRook | pcBlack; }
          if(coord!=ChessCoord())
          {
             for(; coord.col>=1; --coord.col)
             {
                if(position.cell(coord)==rook)
                {
-                  position.rightRookInitialCol_ = coord.col;
+                  position.initialRightRookCol_ = coord.col;
+                  break;
+               }
+            }
+         }
+      }
+      // find initial king coord
+      {
+         ChessCoord coord;
+         ChessPiece king;
+         if(position.castling_ & (cWhiteCanShortCastle | cWhiteCanLongCastle)) { coord = ChessCoord(1, 1); king = ptKing | pcWhite; }
+         else if(position.castling_ & (cBlackCanShortCastle | cBlackCanLongCastle)) { coord = ChessCoord(1, position.maxRow_); king = ptKing | pcBlack; }
+         if(coord!=ChessCoord())
+         {
+            for(; coord.col<=position.maxCol_; ++coord.col)
+            {
+               if(position.cell(coord)==king)
+               {
+                  position.initialKingCol_ = coord.col;
                   break;
                }
             }
@@ -423,27 +437,27 @@ ChessPosition ChessPosition::fromString(const std::string& s)
    return position;
 }
 
-void ChessPosition::prohibitShortCastling(PieceColor color)
+void ChessPosition::prohibitShortCastling()
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  castling_ &= ~cWhiteCanShortCastle; break;
       case pcBlack:  castling_ &= ~cBlackCanShortCastle; break;
    }
 }
 
-void ChessPosition::prohibitLongCastling(PieceColor color)
+void ChessPosition::prohibitLongCastling()
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  castling_ &= ~cWhiteCanLongCastle; break;
       case pcBlack:  castling_ &= ~cBlackCanLongCastle; break;
    }
 }
 
-void ChessPosition::prohibitCastling(PieceColor color)
+void ChessPosition::prohibitCastling()
 {
-   switch(color)
+   switch(sideToMove_)
    {
       case pcWhite:  castling_ &= ~(cWhiteCanShortCastle|cWhiteCanLongCastle); break;
       case pcBlack:  castling_ &= ~(cBlackCanShortCastle|cBlackCanLongCastle); break;
@@ -455,7 +469,6 @@ void ChessPosition::setCell(ChessCoord c, ChessPiece piece)
    unsigned idx = toIndex(c);
    ChessPiece prevPiece = cells_[idx];
    cells_[idx] = piece;
-   touched_[idx] = true;
 }
 
 void ChessPosition::increaseHalfCount()
@@ -481,4 +494,31 @@ void ChessPosition::setSideToMove(PieceColor color)
 void ChessPosition::setPawnJump(ChessCoord coord)
 {
    pawnJump_ = coord;
+}
+
+ChessCoord ChessPosition::initialQueenRookCoord() const
+{
+   switch(sideToMove_)
+   {
+      case pcWhite:  return ChessCoord(initialLeftRookCol_, 1); break;
+      case pcBlack:  return ChessCoord(initialLeftRookCol_, maxRow_); break;
+   }
+}
+
+ChessCoord ChessPosition::initialKingRookCoord() const
+{
+   switch(sideToMove_)
+   {
+      case pcWhite:  return ChessCoord(initialRightRookCol_, 1); break;
+      case pcBlack:  return ChessCoord(initialRightRookCol_, maxRow_); break;
+   }
+}
+
+ChessCoord ChessPosition::initialKingCoord() const
+{
+   switch(sideToMove_)
+   {
+      case pcWhite:  return ChessCoord(initialKingCol_, 1); break;
+      case pcBlack:  return ChessCoord(initialKingCol_, maxRow_); break;
+   }
 }
