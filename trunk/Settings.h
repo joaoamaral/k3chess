@@ -32,7 +32,7 @@ class K3ChessSettings : public QObject
 public:
 
    const EngineInfo& engineInfo() const;
-   QString pieceStyle() const;
+   QString piecesStyle() const;
    QString localeName() const;
 
    QString pieceImageFilePath() const;
@@ -65,11 +65,11 @@ public:
                                    // probe for keywords by calling profile().contains(keyword)
 
    QStringList getEngineNames() const;
-   QStringList getPieceStyleNames() const;
+   QStringList getPiecesStyleNames() const;
    QStringList getLocaleNames() const;
 
    void setEngineName(const QString& name);
-   void setPieceStyle(const QString& name);
+   void setPiecesStyle(const QString& name);
    void setLocaleName(const QString& name);
 
    void setCanPonder(bool value);
@@ -97,7 +97,7 @@ private:
    void enumEngines(QDir dir);
    void enumEnginesProc(QDir dir);
    bool readEngineInfo(const QString& engineIniFile, EngineInfo& info);
-   void enumPieceStyles(QDir dir);
+   void enumPiecesStyles(QDir dir);
    void enumLocales(QDir dir);
 
    QString pieceImageFileFromName(const QString& name) const;
@@ -111,7 +111,7 @@ private:
    ChessClock engineClock_;
    Profile profile_;
    std::map<QString, EngineInfo> engines_; // maps engine names to engine executable paths
-   std::map<QString, QString> pieceStyles_; // maps piece style names to piece image paths
+   std::map<QString, QString> piecesStyles_; // maps piece style names to piece image paths
    std::map<QString, QString> locales_; // maps locale names to locale ini files
 };
 
