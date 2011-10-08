@@ -13,7 +13,7 @@ LocalChessGui::LocalChessGui()
    updateInputMode();
    //
    mainWindow_->boardView()->updatePosition(
-               ChessPosition::fromString(cStandardInitialFen));
+               ChessPosition::fromString(g_settings.initialPositionFen().toStdString()));
    //
    if(g_settings.profile().contains("ebook")||
          g_settings.profile().contains("handheld"))

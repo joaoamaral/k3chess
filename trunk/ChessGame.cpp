@@ -599,7 +599,7 @@ QString ChessGame::toPGN() const
    {
       pgn.append("[Variant \"Chess960\"]\n");
       pgn.append("[FEN \"");
-      pgn.append(positions_[0]);
+      pgn.append(positions_[0].c_str());
       pgn.append("\"]\n");
    }
    //

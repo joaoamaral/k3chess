@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include "GlobalStrings.h"
 #include "StringUtils.h"
+#include "ChessPosition.h"
 #include "assert.h"
 
 #include <QTime>
@@ -639,3 +640,14 @@ bool K3ChessSettings::coordinateMoveInput() const
 {
    return settings_.value("CoordinateMoveInput", false).toBool();
 }
+
+QString K3ChessSettings::initialPositionFen() const
+{
+   return settings_.value("InitialPosition", QString(cStandardInitialFen.c_str())).toString();
+}
+
+void K3ChessSettings::setInitialPositionFen(const QString &fen)
+{
+   settings_.setValue("InitialPosition", fen);
+}
+

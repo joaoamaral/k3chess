@@ -90,6 +90,9 @@ public:
    bool isChess960() const;
    void setChess960(bool value);
 
+   QString initialPositionFen() const;
+   void setInitialPositionFen(const QString& fen);
+
    void flush();
 
 signals:
