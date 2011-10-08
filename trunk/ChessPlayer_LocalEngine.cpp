@@ -39,9 +39,11 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
 const int cUciokTimeoutMs = 5000; // milliseconds to wait for 'uciok'
 
 
-ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info) :
+ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
+                                                 const QString& profileName) :
    ChessPlayer(info.name), engineProcess_(this),
-   readyRequest_(false), info_(info), inForceMode_(false)
+   readyRequest_(false), info_(info), inForceMode_(false),
+   profileName_(profileName.isEmpty() ? QString("Default") : profileName)
 {
    QObject::connect(&engineProcess_, SIGNAL(started()),
                     this, SLOT(engineStarted()), Qt::UniqueConnection);
@@ -119,7 +121,7 @@ void ChessPlayer_LocalEngine::uciokTimeout()
 void ChessPlayer_LocalEngine::engineTypeDetected(bool updateEngineIni)
 {
    assert(info_.type!=etDetect);
-   //
+   //^
    if(updateEngineIni)
    {
       QString dir = extractFolderPath(info_.exePath);
@@ -137,9 +139,32 @@ void ChessPlayer_LocalEngine::engineTypeDetected(bool updateEngineIni)
       }
    }
    //
-   foreach(QString cmd, info_.startupCommands)
+   std::map<QString, QStringList>::const_iterator it = info_.startupCommands.find(profileName_);
+   //
+   const QStringList *commands = 0;
+   //
+   if(it==info_.startupCommands.end())
    {
-      tellEngine(cmd.toStdString());
+      if(!info_.startupCommands.empty() && !info_.profileNames.isEmpty())
+      {
+         it = info_.startupCommands.find(info_.profileNames[0]);
+         if(it!=info_.startupCommands.end())
+         {
+            commands = &(it->second);
+         }
+      }
+   }
+   else
+   {
+      commands = &(it->second);
+   }
+   //
+   if(commands)
+   {
+      foreach(QString cmd, *commands)
+      {
+         tellEngine(cmd.toStdString());
+      }
    }
    //
    switch(info_.type)
@@ -543,4 +568,9 @@ bool ChessPlayer_LocalEngine::setChess960(bool value)
    {
       tellEngine(info_.command960.toStdString());
    }
+}
+
+const QString& ChessPlayer_LocalEngine::profileName() const
+{
+   return profileName_;
 }

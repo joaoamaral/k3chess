@@ -160,13 +160,15 @@ void LocalChessGui::flipBoard(bool flipped)
    mainWindow_->boardView()->setFlipped(flipped);
 }
 
-void LocalChessGui::reset()
+void LocalChessGui::reset(const ChessPosition& position)
 {
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
    //
-   ChessPosition position = ChessPosition::fromString(cStandardInitialFen);
-   updatePosition(position);
+   if(position.isEmpty())
+      updatePosition(cStandardInitialPosition);
+   else
+      updatePosition(position);
 }
 
 void LocalChessGui::showSettingsDialog()
@@ -193,6 +195,7 @@ void LocalChessGui::updateBoardStyle()
 
 void LocalChessGui::updateInputMode()
 {
+   mainWindow_->boardView()->setDirectCoordinateInput(g_settings.coordinateMoveInput());
    mainWindow_->boardView()->setKeyCoordSelect(g_settings.keyColumnSelect());
    mainWindow_->boardView()->setKeyPieceSelect(g_settings.keyPieceSelect());
    mainWindow_->boardView()->setQuickSingleMoveSelection(g_settings.quickSingleMoveSelection());

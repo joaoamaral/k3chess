@@ -35,6 +35,9 @@ public:
    QString piecesStyle() const;
    QString localeName() const;
 
+   const EngineInfo& engineInfo(const QString& engineName) const;
+   QString currentEngineProfile() const;
+
    QString pieceImageFilePath() const;
    QString localeIniFilePath() const;
 
@@ -50,6 +53,7 @@ public:
    bool drawCoordinates() const;  // show coordinates on board sides
    bool drawMoveArrow() const;    // mark last move with an 'arrow' on board
    bool showMoveHints() const; // draw hints on board squares that the current piece can move to
+   bool coordinateMoveInput() const; // moves are selected by entering direct coordinates in col-row form (e.g. e2e4)
    bool quickSingleMoveSelection() const; // if selected piece has only one allowed move, make that move
    bool keyColumnSelect() const;  // pressing keys 'a'..'h' will select pieces on corresponding columns
    bool keyPieceSelect() const;   // pressing keys 'K', 'Q', 'R', 'B' ('I'), 'P' will select pieces of corresponding types
@@ -68,7 +72,7 @@ public:
    QStringList getPiecesStyleNames() const;
    QStringList getLocaleNames() const;
 
-   void setEngineName(const QString& name);
+   void setEngine(const QString& engineName, const QString& profileName);
    void setPiecesStyle(const QString& name);
    void setLocaleName(const QString& name);
 
@@ -76,6 +80,7 @@ public:
    void setDrawCoordinates(bool value);
    void setDrawMoveArrow(bool value);
    void setShowMoveHints(bool value);
+   void setCoordinateMoveInput(bool value);
    void setQuickSingleMoveSelection(bool value);
    void setAutoSaveGames(bool value);
    void setPlayerName(const QString& name);

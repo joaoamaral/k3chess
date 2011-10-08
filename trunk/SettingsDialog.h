@@ -24,10 +24,10 @@ protected:
 private slots:
 
    void on_cmbInterfaceLanguage_currentIndexChanged(QString );
-
    void on_SettingsDialog_accepted();
-
    void on_SettingsDialog_rejected();
+
+   void on_cmbEngine_currentIndexChanged(QString );
 
 private:
    void initializeLabels();
@@ -36,6 +36,11 @@ private:
    void applyChanges();
 
    void installChildEventFilter();
+   void updateEngineProfilesCombo();
+
+   QString getCanonizedProfileName() const;
+   QString getLocalizedProfileName(const QString& profileName) const;
+   QStringList getLocalizedProfileNames() const;
 
    virtual bool keyPreview(int key, Qt::KeyboardModifiers modifiers,
                            bool pressed);

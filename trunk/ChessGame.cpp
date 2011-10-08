@@ -208,7 +208,7 @@ CoordPair findPieceMove(const ChessMoveMap& possibleMoves,
    return CoordPair(); // no such move!
 }
 
-CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
+ChessMove findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
                       const std::string& move_str)
 
 {
@@ -216,13 +216,31 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
    //
    if(startsWith(move_str, "O-O-O"))
    {
-      RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
-      return CoordPair(ChessCoord(5, row), ChessCoord(3, row));
+      if(position.isChess960())
+      {
+         ChessCoord targetKingCoord(position.initialLeftRookCoord().col,
+                                    position.initialKingCoord().row);
+         return CoordPair(position.initialKingCoord(), targetKingCoord);
+      }
+      else
+      {
+         RowValue row = position.initialKingCoord().row;
+         return CoordPair(ChessCoord(5, row), ChessCoord(3, row));
+      }
    }
    else if(startsWith(move_str, "O-O"))
    {
-      RowValue row = position.sideToMove()==pcWhite ? 1 : 8;
-      return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
+      if(position.isChess960())
+      {
+         ChessCoord targetKingCoord(position.initialRightRookCoord().col,
+                                    position.initialKingCoord().row);
+         return CoordPair(position.initialKingCoord(), targetKingCoord);
+      }
+      else
+      {
+         RowValue row = position.initialKingCoord().row;
+         return CoordPair(ChessCoord(5, row), ChessCoord(7, row));
+      }
    }
    //
    unsigned i=0;
@@ -254,7 +272,8 @@ CoordPair findSANMove(const ChessMoveMap& moves, const ChessPosition& position,
             rows.push_back(row);
          else
          {
-            promotion = ChessPiece::fromChar(c).type();
+            PieceType pt = ChessPiece::fromChar(c).type();
+            if(pt!=ptNone) promotion = pt;
          }
       }
    }
@@ -575,6 +594,14 @@ QString ChessGame::toPGN() const
    pgn.append("[Termination \"");
    pgn.append(getPgnResultMessage(result_));
    pgn.append("\"]\n");
+   //
+   if(position_.isChess960())
+   {
+      pgn.append("[Variant \"Chess960\"]\n");
+      pgn.append("[FEN \"");
+      pgn.append(positions_[0]);
+      pgn.append("\"]\n");
+   }
    //
    for(unsigned i=0; i<sanMoves_.size(); ++i)
    {

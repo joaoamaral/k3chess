@@ -25,7 +25,8 @@ SOURCES = ChessBoardView.cpp \
     KeyMapper.cpp \
     KeyPreviewImpl.cpp \
     GlobalStrings.cpp \
-    GameSessionInfo.cpp
+    GameSessionInfo.cpp \
+    Random.cpp
 
 HEADERS = ChessBoardView.h \
     LocalChessGui.h \
@@ -57,9 +58,8 @@ HEADERS = ChessBoardView.h \
     KeyMapper.h \
     KeyPreviewImpl.h \
     GlobalStrings.h \
-    GameSessionInfo.h
+    GameSessionInfo.h \
+    Random.h
 
 FORMS += \
     SettingsDialog.ui
-
-

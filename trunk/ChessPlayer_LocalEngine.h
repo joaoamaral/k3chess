@@ -12,7 +12,7 @@ class ChessPlayer_LocalEngine : public ChessPlayer
    Q_OBJECT
 
 public:
-   ChessPlayer_LocalEngine(const EngineInfo& info);
+   ChessPlayer_LocalEngine(const EngineInfo& info, const QString& profileName);
    virtual ~ChessPlayer_LocalEngine();
 
    virtual void getReady();
@@ -38,6 +38,7 @@ public:
    virtual bool setChess960(bool value);
 
    const EngineInfo& info() const;
+   const QString& profileName() const;
 
    void ponderingChanged(); // can be called manually to set/clear pondering mode
                             // when the corresponding GUI option changes
@@ -65,6 +66,7 @@ private:
    QTimer uciokTimer_;
    std::string incompleteLine_;
    bool inForceMode_;   // (force mode is defined for XBoard engines only)
+   QString profileName_;
 };
 
 #endif

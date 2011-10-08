@@ -42,6 +42,7 @@ void SettingsDialog::loadValues()
    ui->cbPondering->setChecked(g_settings.canPonder());
    ui->cbQuickSingleMoveSelection->setChecked(g_settings.quickSingleMoveSelection());
    ui->cbShowMoveHints->setChecked(g_settings.showMoveHints());
+   ui->cbCoordinateMoveInput->setChecked(g_settings.coordinateMoveInput());
    //
    QStringList engineNames = g_settings.getEngineNames();
    QStringList piecesStyleNames = g_settings.getPiecesStyleNames();
@@ -98,6 +99,8 @@ void SettingsDialog::loadValues()
    ui->cmbPlayerTime->setCurrentIndex(idxPlayerTime);
    ui->cmbEngineTime->setCurrentIndex(idxEngineTime);
    //
+   updateEngineProfilesCombo();
+   //
    isInitializing_ = false;
 }
 
@@ -112,12 +115,14 @@ void SettingsDialog::initializeLabels()
    ui->cbShowMoveHints->setText(g_label("ShowMoveHints"));
    ui->cbQuickSingleMoveSelection->setText(g_label("QuickSingleMoveSelection"));
    ui->cbPondering->setText(g_label("Pondering"));
+   ui->cbCoordinateMoveInput->setText(g_label("CoordinateMoveInput"));
    ui->lGeneralSettings->setText(g_label("GeneralSettings"));
    ui->lGameControl->setText(g_label("GameControl"));
    ui->lOtherSettings->setText(g_label("OtherSettings"));
    ui->lInterfaceLanguage->setText(g_label("InterfaceLanguage"));
    ui->lPlayerName->setText(g_label("PlayerName"));
    ui->lEngine->setText(g_label("Engine"));
+   ui->lEngineProfile->setText(g_label("EngineProfile"));
    ui->lPiecesStyle->setText(g_label("PiecesStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
@@ -192,11 +197,66 @@ void SettingsDialog::applyChanges()
    g_settings.setCanPonder(ui->cbPondering->isChecked());
    g_settings.setQuickSingleMoveSelection(ui->cbQuickSingleMoveSelection->isChecked());
    g_settings.setShowMoveHints(ui->cbShowMoveHints->isChecked());
+   g_settings.setCoordinateMoveInput(ui->cbCoordinateMoveInput->isChecked());
    //
    g_settings.setPlayerName(ui->edPlayerName->text().trimmed());
-   g_settings.setEngineName(ui->cmbEngine->currentText());
+   g_settings.setEngine(ui->cmbEngine->currentText(), getCanonizedProfileName());
+   //
    g_settings.setPiecesStyle(ui->cmbPiecesStyle->currentText());
    //
    g_settings.setPlayerClock(ui->cmbPlayerTime->currentText());
    g_settings.setEngineClock(ui->cmbEngineTime->currentText());
+}
+
+QString SettingsDialog::getCanonizedProfileName() const
+{
+   const QStringList& profileNames = g_settings.engineInfo(ui->cmbEngine->currentText()).profileNames;
+   QString selectedProfileName = ui->cmbEngineProfile->currentText();
+   if(selectedProfileName.isEmpty()) return
+         g_settings.currentEngineProfile();
+   //
+   if(selectedProfileName==g_label("Default")) selectedProfileName = "Default";
+   else if(selectedProfileName==g_label("Weak")) selectedProfileName = "Weak";
+   //
+   if(profileNames.contains(selectedProfileName))
+      return selectedProfileName;
+   else if(profileNames.isEmpty())
+      return "Default";
+   else
+      return profileNames[0];
+}
+
+QString SettingsDialog::getLocalizedProfileName(const QString& profileName) const
+{
+   if(profileName=="Default") return g_label("Default");
+   else if(profileName=="Weak") return g_label("Weak");
+   else return profileName;
+}
+
+QStringList SettingsDialog::getLocalizedProfileNames() const
+{
+   QStringList localized;
+   const QStringList& profileNames = g_settings.engineInfo(ui->cmbEngine->currentText()).profileNames;
+   foreach(QString profileName, profileNames)
+   {
+      localized.push_back(getLocalizedProfileName(profileName));
+   }
+   return localized;
+}
+
+void SettingsDialog::updateEngineProfilesCombo()
+{
+   QString currentProfile = getCanonizedProfileName();
+   QStringList profileNames = getLocalizedProfileNames();
+   currentProfile = getLocalizedProfileName(currentProfile);
+   //
+   ui->cmbEngineProfile->clear();
+   ui->cmbEngineProfile->addItems(profileNames);
+   ui->cmbEngineProfile->setCurrentIndex(profileNames.indexOf(currentProfile));
+}
+
+void SettingsDialog::on_cmbEngine_currentIndexChanged(QString)
+{
+    if(isInitializing_) return;
+    updateEngineProfilesCombo();
 }

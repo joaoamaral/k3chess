@@ -34,6 +34,7 @@ ChessBoardView::ChessBoardView(QWidget *parent) :
    keyCoordSelect_(false),
    keyPieceSelect_(false),
    quickSingleMoveSelection_(false),
+   directCoordinateInput_(false),
    lastKeyType_(ktOther)
 {
    setMinimumSize(128, 128);
@@ -131,6 +132,7 @@ void ChessBoardView::beginMoveSelection()
    QRect repaintRect(getMoveRect(move_));
    //
    cellSelectMode_ = selectSource;
+   lastKeyType_ = ktOther;
    //
    if(lastCursorPos_!=ChessCoord() &&
        position_.inRange(lastCursorPos_))
@@ -351,7 +353,7 @@ bool ChessBoardView::checkColumnSelectionKey(Qt::Key key)
       case Qt::Key_H:  columnSelect(8);  break;
       default:
          return false;
-      }
+   }
    return true;
 }
 
@@ -394,10 +396,197 @@ bool ChessBoardView::checkPieceSelectionKey(Qt::Key key)
 
 bool ChessBoardView::processKey(Qt::Key key)
 {
-   lastKeyType_ = ktOther;
-   //
    if(cellSelectMode_==selectNone) return false;
    //
+   if(directCoordinateInput_)
+   {
+      return processDirectCoordinateKey(key);
+   }
+   else
+   {
+      return processStandardModeKey(key);
+   }
+   //
+   lastKeyType_ = ktOther;
+   //
+   return false;
+}
+
+bool ChessBoardView::expectDirectColKey(Qt::Key key, ChessCoord& coord)
+{
+   switch(key)
+   {
+      case Qt::Key_A:   coord.col = 1;  break;
+      case Qt::Key_B:   coord.col = 2;  break;
+      case Qt::Key_C:   coord.col = 3;  break;
+      case Qt::Key_D:   coord.col = 4;  break;
+      case Qt::Key_E:   coord.col = 5;  break;
+      case Qt::Key_F:   coord.col = 6;  break;
+      case Qt::Key_G:   coord.col = 7;  break;
+      case Qt::Key_H:   coord.col = 8;  break;
+      default:
+         return false;
+   }
+   //
+   lastKeyType_ = ktColumn;
+   //
+   return true;
+}
+
+bool ChessBoardView::expectDirectRowKey(Qt::Key key, ChessCoord &coord)
+{
+   switch(key)
+   {
+      case Qt::Key_Q:
+      case Qt::Key_1:   coord.row = 1;  break;
+      case Qt::Key_W:
+      case Qt::Key_2:   coord.row = 2;  break;
+      case Qt::Key_E:
+      case Qt::Key_3:   coord.row = 3;  break;
+      case Qt::Key_R:
+      case Qt::Key_4:   coord.row = 4;  break;
+      case Qt::Key_T:
+      case Qt::Key_5:   coord.row = 5;  break;
+      case Qt::Key_Y:
+      case Qt::Key_6:   coord.row = 6;  break;
+      case Qt::Key_U:
+      case Qt::Key_7:   coord.row = 7;  break;
+      case Qt::Key_I:
+      case Qt::Key_8:   coord.row = 8;  break;
+      default:
+         return false;
+   }
+   //
+   lastKeyType_ = ktRow;
+   //
+   return true;
+}
+
+QRect ChessBoardView::getBaseRect(ColValue col)
+{
+   return getCellRect(ChessCoord(col, flipped_ ? position_.maxRow() : 1));
+}
+
+bool ChessBoardView::processDirectCoordinateSource(Qt::Key key)
+{
+   switch(lastKeyType_)
+   {
+      case ktOther:
+         if(expectDirectColKey(key, move_.from))
+         {
+            QRect fromBaseRect = getBaseRect(move_.from.col);
+            repaint(fromBaseRect);
+         }
+         else
+            return false;
+         break;
+      case ktColumn:
+         {
+            QRect oldFromBaseRect = getBaseRect(move_.from.col);
+            if(expectDirectRowKey(key, move_.from))
+            {
+               ChessPiece piece = position_.cell(move_.from);
+               if(piece.type()!=ptNone && piece.color()==position_.sideToMove())
+               {
+                  lastKeyType_ = ktOther;
+                  cellSelectMode_ = selectTarget;
+                  repaint(getCellRect(move_.from).united(oldFromBaseRect));
+               }
+               else
+               {
+                  if(quickSingleMoveSelection_)
+                  {
+                     CoordPair move;
+                     if(possibleMoves_.getUniqueMove(move_.from, move))
+                     {
+                        cellSelectMode_ = selectNone;
+                        emit moveEntered(move);
+                        return true;
+                     }
+                  }
+                  lastKeyType_ = ktOther;
+                  repaint(oldFromBaseRect);
+               }
+            }
+            else
+               return false;
+         }
+         break;
+      default:
+         {
+            QRect fromBaseRect = getBaseRect(move_.from.col);
+            lastKeyType_ = ktOther;
+            repaint(fromBaseRect);
+         }
+         return false;
+   }
+   //
+   return true;
+}
+
+bool ChessBoardView::processDirectCoordinateTarget(Qt::Key key)
+{
+   switch(lastKeyType_)
+   {
+      case ktOther:
+         if(expectDirectColKey(key, move_.to))
+         {
+            QRect toBaseRect = getBaseRect(move_.to.col);
+            repaint(toBaseRect);
+         }
+         else
+            return false;
+         break;
+      case ktColumn:
+         {
+            QRect oldToBaseRect = getBaseRect(move_.to.col);
+            if(expectDirectRowKey(key, move_.to))
+            {
+               if(possibleMoves_.contains(move_))
+               {
+                  cellSelectMode_ = selectNone;
+                  emit moveEntered(move_);
+                  return true;
+               }
+               else
+               {
+                  cellSelectMode_ = selectSource;
+                  lastKeyType_ = ktOther;
+                  repaint(getCellRect(move_.from).united(oldToBaseRect));
+               }
+            }
+            else
+               return false;
+         }
+         break;
+      default:
+         {
+            QRect oldToBaseRect = getBaseRect(move_.to.col);
+            lastKeyType_ = ktOther;
+            repaint(getCellRect(move_.from).united(oldToBaseRect));
+            break;
+         }
+         return false;
+   }
+   //
+   return true;
+}
+
+bool ChessBoardView::processDirectCoordinateKey(Qt::Key key)
+{
+   switch(cellSelectMode_)
+   {
+      case selectSource:
+         return processDirectCoordinateSource(key);
+      case selectTarget:
+         return processDirectCoordinateTarget(key);
+   }
+   //
+   return false;
+}
+
+bool ChessBoardView::processStandardModeKey(Qt::Key key)
+{
    switch(key)
    {
       case Qt::Key_Left:  moveCursor(cursorLeft); break;
@@ -431,6 +620,9 @@ bool ChessBoardView::processKey(Qt::Key key)
          }
          return false;
    }
+   //
+   lastKeyType_ = ktOther;
+   //
    return true;
 }
 
@@ -490,6 +682,16 @@ void ChessBoardView::resizeEvent(QResizeEvent *)
    scaledPieces_.clear(); // will be updated on next paint
 }
 
+void ChessBoardView::drawColumnHighlight(QPainter& painter, ColValue col, const QRect& clipRect)
+{
+   QRect rect = getBaseRect(col);
+   if(!rect.intersects(clipRect)) return;
+   rect.setTop(rect.bottom()-4);
+   painter.setBrush(Qt::black);
+   painter.setPen(Qt::NoPen);
+   painter.drawRect(rect);
+}
+
 void ChessBoardView::drawBoard(QPainter& painter, const QRect& clipRect)
 {
    if(scaledPieces_.empty())
@@ -510,22 +712,52 @@ void ChessBoardView::drawBoard(QPainter& painter, const QRect& clipRect)
       }
    }
    //
-   if(cellSelectMode_!=selectNone)
+   if(directCoordinateInput_)
    {
-      if(move_.from != ChessCoord() && move_.from != move_.to)
+      switch(cellSelectMode_)
       {
-         QRect cellRect = getCellRect(move_.from);
-         if(cellRect.intersects(clipRect))
-         {
-            drawCellHighlight(painter, cellRect, false);
-         }
+         case selectSource:
+            if(lastKeyType_==ktColumn)
+            {
+               drawColumnHighlight(painter, move_.from.col, clipRect);
+            }
+            break;
+         case selectTarget:
+            {
+               QRect cellRect = getCellRect(move_.from);
+               if(cellRect.intersects(clipRect))
+               {
+                 drawCellHighlight(painter, cellRect, true);
+               }
+               if(lastKeyType_==ktColumn)
+               {
+                  drawColumnHighlight(painter, move_.to.col, clipRect);
+               }
+            }
+            break;
+         default:
+            break;
       }
-      if(move_.to != ChessCoord())
+   }
+   else
+   {
+      if(cellSelectMode_!=selectNone)
       {
-         QRect cellRect = getCellRect(move_.to);
-         if(cellRect.intersects(clipRect))
+         if(move_.from != ChessCoord() && move_.from != move_.to)
          {
-            drawCellHighlight(painter, cellRect, true);
+            QRect cellRect = getCellRect(move_.from);
+            if(cellRect.intersects(clipRect))
+            {
+               drawCellHighlight(painter, cellRect, false);
+            }
+         }
+         if(move_.to != ChessCoord())
+         {
+            QRect cellRect = getCellRect(move_.to);
+            if(cellRect.intersects(clipRect))
+            {
+               drawCellHighlight(painter, cellRect, true);
+            }
          }
       }
    }
@@ -940,4 +1172,9 @@ void ChessBoardView::setQuickSingleMoveSelection(bool value)
 void ChessBoardView::setInitialCursorPos(ChessCoord coord)
 {
    lastCursorPos_ = coord;
+}
+
+void ChessBoardView::setDirectCoordinateInput(bool value)
+{
+   directCoordinateInput_ = value;
 }

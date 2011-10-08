@@ -104,36 +104,56 @@ device, it is not always convenient to enter moves with the 5-way
 controller. To ease up move selection the following techniques
 can be used.
 
+<h3>Coordinate move input</h3>
+
+This mode is activated by selecting the "Coordinate move input" option
+in the settings dialog. In this mode moves are entered in a straightforward
+coordinate manner. Simply press col-row-col-row (or file-rank-file-rank), e.g.
+e2e4, or b1c3. If you entered a move that is not allowed in current position,
+the input will be ignored and you will be able to try again. When you press
+a column key, the corresponding column is underlined. Then you press a row
+key, and the corresponding square in this column is selected. 
+The keys used for columns are <b>a...h</b>, and the keys used for rows are
+either <b>1...8</b> or <b>q, w, e, r, t, y, u, i</b> (this allows support
+of devices without digit keys).<br/>
+
+<h3>Smart move input</h3>
+
+Smart move input takes into account possible moves for every piece. The following
+idea is used: at any given time only a limited number of moves is available,
+so pressing only certain keys can help select a move quickly. The techniques are
+summed up below.
+<br/>
 To select a piece that is on a certain file (column):
-
+<br/>
 &nbsp;&nbsp;&nbsp;Press the key for that column (<b>a</b>-<b>h</b>)
-
+<br/>
 To select next movable piece in the same column:
-
+<br/>
 &nbsp;&nbsp;&nbsp;Press the key for that column again
-
+<br/>
 To select a piece with a certain value:
-
+<br/>
 &nbsp;&nbsp;&nbsp;Press <b>K</b> for King, <b>Q</b> for Queen,
 <b>R</b> for Rook, <b>I</b> for bIshop, <b>N</b> for kNight, <b>P</b> for Pawn.
-
+<br/>
 To select next piece with the given value:
-
+<br/>
 &nbsp;&nbsp;&nbsp;Press the piece key once again
-
+<br/>
 <b>Note:</b> Piece and column keys are case-insensitive.
-
+<br/>
 To move cursor to a specific rank:
-
+<br/>
 &nbsp;&nbsp;&nbsp;Press the rank number <b>1..8</b> (if your device has numerical keys or can emulate them)
-
+<br/>
 After you have selected the starting square, you can use the same techniques to select the target
 square by pressing the corresponding file/column key (one or more times), rank/row key, or piece key
 (in which case it selects the piece to be captured). If a piece is selected that has only one allowed
 move and the "Allow quick selection of single moves" option is enabled, the move will be performed
 right away without the need to select the target square. If this behavior seems not intuitive to you,
 turn off the "Allow quick selection of single moves" option in the settings dialog. 
-
+<br/>
 <b>Note:</b> Only allowed moves can be selected using quick selection techniques. If you press a key
 and nothing happens, please make sure that the move is legal in the current position. You can use
 the move hints option to display small marks in the squares to which the selected piece can be
@@ -192,6 +212,16 @@ To close the program and return to your device's home screen press
 the <b>Alt+Back</b> key combination. You can also select 'Quit' from
 the additional menu described above.
 
+<h2>Chess960 support</h2>
+K3Chess supports chess960 games with engines that support this chess variant
+(e.g. Glaurung). Initially K3Chess starts in standard chess mode, but you
+can switch to Chess960, if the currently selected engine supports it, by
+pressing the [b]Home[/b] button. A new random initial position will be
+generated and you can proceed to play games starting with that position.
+Any new game will start with exactly the same initial position, but you
+can press the [b]Home[/b] button again (if you are not in the process of
+playing a game) to switch to the next random initial position.
+
 <h2>Adding custom chess piece styles</h2>
 
 Chess pieces and unoccupied board cells are drawn using the an
@@ -240,19 +270,24 @@ location, you do not need to copy it to the engines folder, simply
 specify the full path to the executable in the <code>Executable</code>
 parameter of the 'engine.ini' file.
 
-If you want to send the engine some commands immediately after its
-startup, add the following section to the 'engine.ini' file:
+You can specify various engine profiles by adding [ProfileN] sections
+to the 'engine.ini' file (where N is an number from 1 and above).
 
 <pre>
-[Startup]
+[Profile1]
+Name=Default
 CommandCount=number of commands
 Command1=command 1 text
 Command2=command 2 text
 ...
 </pre>
 
-The commands will be executed in the order that corresponds to their
-numbering.
+The commands will be executed immediately after the engine is started 
+in the order that corresponds to their numbering.
+
+All profiles defined will be added to the 'Engine profile' combobox in the
+settings dialog for that particular engine. Profiles may be used for
+limiting an engine's strength, adjusting its playing style, etc.
 
 Some chess engines leave log files and history files in the engine directory.
 If you want K3Chess to remove those files automatically, add the following

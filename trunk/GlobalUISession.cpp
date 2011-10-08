@@ -38,7 +38,7 @@ void GlobalUISession::initialize()
    localHuman_ = new ChessPlayer_LocalHuman(g_settings.playerName());
    localHuman1_ = new ChessPlayer_LocalHuman("P1");   // @@todo: ask player names via UI before game starts
    localHuman2_ = new ChessPlayer_LocalHuman("P2");
-   localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo());
+   localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo(), g_settings.currentEngineProfile());
    check960Support();
 }
 
@@ -81,7 +81,7 @@ void GlobalUISession::playGame(const GameSessionInfo& sessionInfo)
    assert(gameSession_==0);
    //
    // reset gui
-   g_localChessGui.reset();
+   g_localChessGui.reset(initialPosition_);
    //
    switch(sessionInfo.profile.type)
    {
@@ -220,9 +220,10 @@ void GlobalUISession::engineChanged()
       assert(false);  // attempt to change engine while playing: not supported
       return;
    }
-   if(g_settings.engineInfo().name==localEngine_->name()) return;
+   if(g_settings.engineInfo().name==localEngine_->name()
+      && g_settings.currentEngineProfile()==localEngine_->profileName()) return;
    delete localEngine_; localEngine_ = 0;
-   localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo());
+   localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo(), g_settings.currentEngineProfile());
    check960Support();
    if(g_settings.isChess960())
    {
@@ -359,7 +360,7 @@ void GlobalUISession::nextKeyRemapPrompt()
       // proceed to preGame
       g_keyMapper.saveKeyMapping();
       g_localChessGui.enableDefaultKeyProcessing(true);
-      g_localChessGui.reset();
+      g_localChessGui.reset(initialPosition_);
       preGame();
    }
    else

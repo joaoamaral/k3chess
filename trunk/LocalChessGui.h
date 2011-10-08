@@ -19,7 +19,7 @@ class LocalChessGui : public QObject
    ~LocalChessGui();
 
 public:
-   void reset(); // resets gui to the initial state
+   void reset(const ChessPosition& position = ChessPosition()); // resets gui to the initial state (showing the given position)
    void beginGame(const QString& whitePlayerName, const QString& blackPlayerName,
                      const GameProfile& profile, bool isResumedGame=false);
    void beginMoveSelection();

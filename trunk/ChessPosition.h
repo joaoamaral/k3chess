@@ -55,6 +55,9 @@ public:
    ChessCoord initialRightRookCoord() const;
    ChessCoord initialKingCoord() const;
    //
+   bool isChess960() const;
+   void setChess960(bool value); // force 960 value (true or false)
+   //
    void setPawnJump(ChessCoord coord);
    //
 private:
@@ -73,6 +76,8 @@ private:
    ColValue initialKingCol_;     // for chess 960 castling
    ColValue initialLeftRookCol_;
    ColValue initialRightRookCol_;
+   //
+   bool isChess960_;
    //
    std::vector<ChessPiece> cells_;
 };
