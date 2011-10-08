@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include "GlobalStrings.h"
 #include "StringUtils.h"
+#include "assert.h"
 
 #include <QTime>
 #include <QTextCodec>
@@ -378,13 +379,6 @@ QString K3ChessSettings::localeIniFilePathFromName(const QString& name) const
    }
 }
 
-void K3ChessSettings::setEngineName(const QString& name)
-{
-   if(name==settings_.value("Engine").toString()) return;
-   settings_.setValue("Engine", name);
-   emit engineChanged();
-}
-
 void K3ChessSettings::setPiecesStyle(const QString& name)
 {
    if(name==settings_.value("Board/PiecesStyle").toString()) return;
@@ -510,21 +504,47 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    info.exePath = exePath;
    info.type = type;
    //
-   ini.beginGroup("Startup");
-   //
-   int nStartupCommands = ini.value("CommandCount", 0).toInt();
-   if(nStartupCommands)
+   QStringList groupNames = ini.childGroups();
+   foreach(QString groupName, groupNames)
    {
-      info.startupCommands.reserve(nStartupCommands);
-      for(int i=1; i<=nStartupCommands; ++i)
+      if(groupName.startsWith("Profile"))
       {
-         QString cmdVar = QString("Command") + QString::number(i);
-         QString cmd = ini.value(cmdVar, QString()).toString();
-         if(!cmd.isEmpty()) info.startupCommands.push_back(cmd);
+         ini.beginGroup(groupName);
+         //
+         QString profileName = ini.value("Name", QString()).toString();
+         //
+         QStringList& commands = info.startupCommands[profileName];
+         commands.clear();
+         //
+         int nStartupCommands = ini.value("CommandCount", 0).toInt();
+         if(nStartupCommands)
+         {
+            commands.reserve(nStartupCommands);
+            for(int i=1; i<=nStartupCommands; ++i)
+            {
+               QString cmdVar = QString("Command") + QString::number(i);
+               QString cmd = ini.value(cmdVar, QString()).toString();
+               if(!cmd.isEmpty()) commands.push_back(cmd);
+            }
+         }
+         //
+         ini.endGroup();
+         //
+         if(commands.isEmpty())
+         {
+            info.startupCommands.erase(info.startupCommands.find(groupName));
+         }
+         else
+         {
+            info.profileNames.push_back(profileName);
+         }
       }
    }
    //
-   ini.endGroup();
+   if(info.profileNames.isEmpty())
+   {
+      info.profileNames.push_back("Default");
+   }
    //
    QString masks = ini.value("Cleanup/DeleteFiles", QString()).toString().trimmed();
    if(!masks.isEmpty())
@@ -564,4 +584,58 @@ bool K3ChessSettings::isChess960() const
 void K3ChessSettings::setChess960(bool value)
 {
    settings_.setValue("Chess960", value);
+}
+
+QString K3ChessSettings::currentEngineProfile() const
+{
+   return settings_.value("EngineProfile", "Default").toString();
+}
+
+void K3ChessSettings::setEngine(const QString& engineName, const QString& profileName)
+{
+   bool changed = false;
+   if(engineName!=settings_.value("Engine").toString())
+   {
+      settings_.setValue("Engine", engineName);
+      changed = true;
+   }
+   //
+   if(profileName!=currentEngineProfile())
+   {
+      if(engineInfo().startupCommands.find(profileName)==engineInfo().startupCommands.end())
+      {
+         assert(false);
+         return; // attempt to set a non-existing profile
+      }
+      settings_.setValue("EngineProfile", profileName);
+      changed = true;
+   }
+   //
+   if(changed) emit engineChanged();
+}
+
+const EngineInfo& K3ChessSettings::engineInfo(const QString &engineName) const
+{
+   std::map<QString, EngineInfo>::const_iterator it = engines_.find(engineName);
+   if(it==engines_.end())
+   {
+      static const EngineInfo dummy;
+      return dummy;
+   }
+   else
+   {
+      return it->second;
+   }
+}
+
+void K3ChessSettings::setCoordinateMoveInput(bool value)
+{
+   if(coordinateMoveInput()==value) return;
+   settings_.setValue("CoordinateMoveInput", value);
+   emit inputSettingsChanged();
+}
+
+bool K3ChessSettings::coordinateMoveInput() const
+{
+   return settings_.value("CoordinateMoveInput", false).toBool();
 }

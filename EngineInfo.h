@@ -10,7 +10,8 @@ struct EngineInfo
    QString name;
    QString exePath;
    EngineType type;
-   QStringList startupCommands;
+   std::map<QString, QStringList> startupCommands; // for various profiles
+   QStringList profileNames;
    QStringList cleanUpMasks;  // which files to clean up between sessions
    QString commandStandard; // command to switch engine from chess variant to standard chess
    QString command960; // command to switch the engine into playing chess 960

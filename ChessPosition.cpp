@@ -18,7 +18,8 @@ ChessPosition::ChessPosition() :
    maxCol_(8), maxRow_(8), sideToMove_(pcWhite),
    castling_(0), halfCount_(0), moveNumber_(0),
    initialKingCol_(0),
-   initialLeftRookCol_(0), initialRightRookCol_(0)
+   initialLeftRookCol_(0), initialRightRookCol_(0),
+   isChess960_(false)
 {
    cells_.resize(maxCol_*maxRow_);
 }
@@ -530,7 +531,7 @@ namespace
 void placeOnRandomFreeCell(ChessPosition& position, int nRemainingFreeCells,
                            ChessPiece piece)
 {
-   int n = g_random.get(0, nRemainingFreeCells+1);
+   int n = g_random.get(0, nRemainingFreeCells-1);
    for(ChessCoord coord(1, 1); coord.col<=position.maxCol(); ++coord.col)
    {
       if(position.cell(coord).type()==ptNone)
@@ -567,9 +568,17 @@ ColValue placeOnFirstFreeCell(ChessPosition& position, ChessPiece piece)
 
 }
 
+bool ChessPosition::isChess960() const
+{
+   return isChess960_;
+}
+
 ChessPosition ChessPosition::new960Position()
 {
    ChessPosition position;
+   //
+   position.isChess960_ = true;
+   //
    position.maxCol_ = 8;
    position.maxRow_ = 8;
    //
@@ -605,4 +614,9 @@ ChessPosition ChessPosition::new960Position()
    position.moveNumber_ = 1;
    //
    return position;
+}
+
+void ChessPosition::setChess960(bool value)
+{
+   isChess960_ = value;
 }

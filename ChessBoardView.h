@@ -14,8 +14,6 @@ class ChessBoardView : public QWidget
 {
    Q_OBJECT
 
-   enum LastKeyType { ktColumn, ktRow, ktPiece, ktOther };
-
 public:
    ChessBoardView(QWidget *parent);
 
@@ -33,6 +31,7 @@ public:
    void setDrawMoveArrow(bool value);
    void setShowMoveHints(bool value);
    void setQuickSingleMoveSelection(bool value); // if selected piece has only one allowed move, make that move
+   void setDirectCoordinateInput(bool value);
 
    bool hasCursor() const;
    bool enter();  // to return to active board with suspended selection, returns false if board is not active
@@ -63,10 +62,12 @@ private:
 
    enum CursorDirection { cursorLeft, cursorUp, cursorDown, cursorRight };
    enum CellSelectMode { selectNone, selectSource, selectTarget };
+   enum LastKeyType { ktColumn, ktRow, ktPiece, ktOther };
 
    QRect getMoveRect(const CoordPair& move) const;
    QRect getCellRect(ChessCoord coord) const;
-   QRect boardCellsRect() const; // returns a rect encompassing all cells on the board (excluding board border)
+   QRect boardCellsRect() const; // returns a rect encompassing all cells on the board (excluding the border)
+   QRect getBaseRect(ColValue col); // gets visible bottom cell rect for the given col
 
    ChessCoord chessCoordFromPoint(const QPoint& p) const;
 
@@ -78,6 +79,7 @@ private:
    void drawBoard(QPainter& painter, const QRect& clipRect);
    void drawPiece(QPainter& painter, const QRect& rect, ChessPiece piece, bool blackCell);
    void drawCellHighlight(QPainter& painter, const QRect& rect, bool bold);
+   void drawColumnHighlight(QPainter& painter, ColValue col, const QRect& clipRect);
    void drawMoveArrow(QPainter& painter, const QRect& fromRect, const QRect& toRect);
    void drawMoveHints(QPainter& painter, ChessCoord& coord, const QRect& clipRect);
    void drawBorder(QPainter& painter, const QRect& clipRect);
@@ -87,6 +89,13 @@ private:
    void select();
    bool cancel();
    void advanceCoord(ChessCoord& coord, CursorDirection dir);
+
+   bool processDirectCoordinateKey(Qt::Key key);
+   bool processDirectCoordinateSource(Qt::Key key);
+   bool processDirectCoordinateTarget(Qt::Key key);
+   bool expectDirectColKey(Qt::Key key, ChessCoord &coord);
+   bool expectDirectRowKey(Qt::Key key, ChessCoord &coord);
+   bool processStandardModeKey(Qt::Key key);
 
    bool checkColumnSelectionKey(Qt::Key key);
    bool checkRowSelectionKey(Qt::Key key);
@@ -117,6 +126,7 @@ private:
    bool keyCoordSelect_;
    bool keyPieceSelect_;
    bool quickSingleMoveSelection_;
+   bool directCoordinateInput_;
    LastKeyType lastKeyType_;
    std::vector<QImage> scaledPieces_;
 };
