@@ -15,10 +15,12 @@
 
 GlobalUISession::GlobalUISession() :
    localHuman_(0), localEngine_(0), localHuman1_(0), localHuman2_(0),
-   gameSession_(0), keyRemapIdx_(-1), menuType_(menuNone),
-   initialPosition_(cStandardInitialPosition)
+   gameSession_(0), keyRemapIdx_(-1), menuType_(menuNone)
 {
    initialize();
+   //
+   initialPosition_ = ChessPosition::fromString(g_settings.initialPositionFen().toStdString());
+   initialPosition_.setChess960(g_settings.isChess960());
    //
    QObject::connect(&g_settings, SIGNAL(playerNameChanged()), this, SLOT(playerNameChanged()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(engineChanged()), this, SLOT(engineChanged()), Qt::UniqueConnection);
@@ -225,10 +227,6 @@ void GlobalUISession::engineChanged()
    delete localEngine_; localEngine_ = 0;
    localEngine_ = new ChessPlayer_LocalEngine(g_settings.engineInfo(), g_settings.currentEngineProfile());
    check960Support();
-   if(g_settings.isChess960())
-   {
-      localEngine_->setChess960(true);
-   }
 }
 
 void GlobalUISession::playerNameChanged()
@@ -311,6 +309,7 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
                      initialPosition_ = cStandardInitialPosition;
                      g_localChessGui.updatePosition(initialPosition_);
                      if(localEngine_) localEngine_->setChess960(false);
+                     g_settings.setInitialPositionFen(cStandardInitialFen.c_str());
                   }
                }
                else if(localEngine_ && localEngine_->info().supports960())
@@ -319,6 +318,7 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
                   g_settings.setChess960(true);
                   initialPosition_ = ChessPosition::new960Position();
                   g_localChessGui.updatePosition(initialPosition_);
+                  g_settings.setInitialPositionFen(initialPosition_.toString().c_str());
                   localEngine_->setChess960(true);
                }
             }
@@ -424,7 +424,13 @@ void GlobalUISession::check960Support()
       {
          g_settings.setChess960(false);
          initialPosition_ = cStandardInitialPosition;
+         g_settings.setInitialPositionFen(cStandardInitialFen.c_str());
          g_localChessGui.updatePosition(initialPosition_);
       }
+   }
+   //
+   if(g_settings.isChess960())
+   {
+      localEngine_->setChess960(true);
    }
 }

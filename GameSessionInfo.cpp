@@ -84,7 +84,7 @@ bool GameSessionInfo::loadFromFile(const QString& fileName)
    initialPosition = ChessPosition::fromString(fen.toStdString());
    if(initialPosition.isEmpty()) return false;
    //
-   initialPosition.setChess960(fen!=cStandardInitialFen);
+   initialPosition.setChess960(fen.toStdString()!=cStandardInitialFen);
    //
    moves.clear();
    //

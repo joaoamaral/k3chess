@@ -478,7 +478,9 @@ bool ChessBoardView::processDirectCoordinateSource(Qt::Key key)
             repaint(fromBaseRect);
          }
          else
+         {
             return false;
+         }
          break;
       case ktColumn:
          {
@@ -490,10 +492,6 @@ bool ChessBoardView::processDirectCoordinateSource(Qt::Key key)
                {
                   lastKeyType_ = ktOther;
                   cellSelectMode_ = selectTarget;
-                  repaint(getCellRect(move_.from).united(oldFromBaseRect));
-               }
-               else
-               {
                   if(quickSingleMoveSelection_)
                   {
                      CoordPair move;
@@ -504,12 +502,28 @@ bool ChessBoardView::processDirectCoordinateSource(Qt::Key key)
                         return true;
                      }
                   }
+                  //
                   lastKeyType_ = ktOther;
+                  //
+                  if(showMoveHints_)
+                  {
+                     repaint(boardCellsRect());
+                  }
+                  else
+                  {
+                     repaint(getCellRect(move_.from).united(oldFromBaseRect));
+                  }
+               }
+               else
+               {
                   repaint(oldFromBaseRect);
                }
             }
             else
-               return false;
+            {
+               lastKeyType_ = ktOther;
+               repaint(oldFromBaseRect);
+            }
          }
          break;
       default:
