@@ -216,11 +216,14 @@ the additional menu described above.
 K3Chess supports chess960 games with engines that support this chess variant
 (e.g. Glaurung). Initially K3Chess starts in standard chess mode, but you
 can switch to Chess960, if the currently selected engine supports it, by
-pressing the [b]Home[/b] button. A new random initial position will be
+pressing the <b>Home</b> button. A new random initial position will be
 generated and you can proceed to play games starting with that position.
 Any new game will start with exactly the same initial position, but you
-can press the [b]Home[/b] button again (if you are not in the process of
-playing a game) to switch to the next random initial position.
+can press the <b>Home</b> button again (if you are not in the process of
+playing a game) to switch to the next random initial position. Press <b>
+Shift+Home</b> to return to standard chess mode.<br/>
+<b>Note:</b>If you select a chess engine which does not support Chess960,
+K3Chess will automatically switch back to standard chess mode.
 
 <h2>Adding custom chess piece styles</h2>
 
@@ -275,7 +278,7 @@ to the 'engine.ini' file (where N is an number from 1 and above).
 
 <pre>
 [Profile1]
-Name=Default
+Name=profile name
 CommandCount=number of commands
 Command1=command 1 text
 Command2=command 2 text
