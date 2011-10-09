@@ -3,12 +3,18 @@
 #include "StringUtils.h"
 #include "GlobalStrings.h"
 #include "Settings.h"
+#include "Random.h"
 
 #include <QTextCodec>
 #include <fstream>
 
 namespace
 {
+
+const int cUciokTimeoutMs = 5000; // milliseconds to wait for 'uciok'
+const int cDefaultUciForceMoveTimeout = 3000;
+const int cEasyModeUciMoveTimeout = 1000;
+const bool cRandomizeMoveTimeout = true;
 
 enum TalkDirection { TO_ENGINE, FROM_ENGINE, COMMENT };
 
@@ -36,15 +42,15 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
 
 }
 
-const int cUciokTimeoutMs = 5000; // milliseconds to wait for 'uciok'
-
-
 ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
                                                  const QString& profileName) :
    ChessPlayer(info.name), engineProcess_(this),
    readyRequest_(false), info_(info), inForceMode_(false),
-   profileName_(profileName.isEmpty() ? QString("Default") : profileName)
+   profileName_(profileName.isEmpty() ? QString("Default") : profileName),
+   forceMoveTimeout_(cDefaultUciForceMoveTimeout),
+   randomizeMoveTimeout_(cRandomizeMoveTimeout)
 {
+   //
    QObject::connect(&engineProcess_, SIGNAL(started()),
                     this, SLOT(engineStarted()), Qt::UniqueConnection);
    QObject::connect(&engineProcess_, SIGNAL(error(QProcess::ProcessError)),
@@ -54,6 +60,15 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
                     this, SLOT(engineHasOutput()), Qt::UniqueConnection);
    //
    performCleanup(); // remove log etc. files from the previous session
+   //
+   if(profileName_.toLower()=="weak"||profileName_.toLower()=="easy")
+   {
+      forceMoveTimeout_ = cEasyModeUciMoveTimeout;
+   }
+   //
+   forceMoveTimer_.setSingleShot(true);
+   forceMoveTimer_.blockSignals(true);
+   QObject::connect(&forceMoveTimer_, SIGNAL(timeout()), this, SLOT(forceMoveTimeout()));
    //
    QString workDir = extractFolderPath(info_.exePath);
    engineProcess_.setWorkingDirectory(workDir);
@@ -261,6 +276,12 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
             cmd.append(" binc ");
             cmd.append(uintToStr(blackClock.moveIncrement));
             tellEngine(cmd);
+            //
+            forceMoveTimer_.blockSignals(false);
+            int timeout = forceMoveTimeout_;
+            if(randomizeMoveTimeout_)
+               timeout += g_random.get(-timeout/3, +timeout/3);
+            forceMoveTimer_.start(timeout);
          }
          break;
       case etXBoard:
@@ -353,6 +374,9 @@ void ChessPlayer_LocalEngine::processEngineResponse(const std::string& str)
       case etUCI:
          if(str.find("bestmove ")==0)
          {
+            forceMoveTimer_.blockSignals(true);
+            forceMoveTimer_.stop();
+            //
             size_t pos = str.find(' ', 9);
             if(pos==std::string::npos) pos = str.length();
             std::string move_str = str.substr(9, pos-9);
@@ -573,4 +597,13 @@ bool ChessPlayer_LocalEngine::setChess960(bool value)
 const QString& ChessPlayer_LocalEngine::profileName() const
 {
    return profileName_;
+}
+
+void ChessPlayer_LocalEngine::forceMoveTimeout()
+{
+   forceMoveTimer_.blockSignals(true);
+   if(info_.type==etUCI)
+   {
+      tellEngine("stop"); // force engine to move immediately
+   }
 }
