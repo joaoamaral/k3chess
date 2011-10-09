@@ -28,6 +28,7 @@ public:
    //
    ColValue leftRookInitialCol() const;  // for chess 960
    ColValue rightRookInitialCol() const;
+   ColValue kingInitialCol() const;
    //
    std::string toString() const; // returns FEN string for this position
    static ChessPosition fromString(const std::string& s); // loads position from FEN string
