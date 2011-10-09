@@ -48,7 +48,7 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
    readyRequest_(false), info_(info), inForceMode_(false),
    profileName_(profileName.isEmpty() ? QString("Default") : profileName),
    forceMoveTimeout_(cDefaultUciForceMoveTimeout),
-   randomizeMoveTimeout_(cRandomizeMoveTimeout)
+   randomizeMoveTimeout_(cRandomizeMoveTimeout), weakMode_(false)
 {
    //
    QObject::connect(&engineProcess_, SIGNAL(started()),
@@ -63,6 +63,7 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
    //
    if(profileName_.toLower()=="weak"||profileName_.toLower()=="easy")
    {
+      weakMode_ = true;
       forceMoveTimeout_ = cEasyModeUciMoveTimeout;
    }
    //
@@ -275,6 +276,10 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
             cmd.append(uintToStr(whiteClock.moveIncrement));
             cmd.append(" binc ");
             cmd.append(uintToStr(blackClock.moveIncrement));
+            if(weakMode_)
+            {
+               cmd.append(" depth 5");
+            }
             tellEngine(cmd);
             //
             forceMoveTimer_.blockSignals(false);
