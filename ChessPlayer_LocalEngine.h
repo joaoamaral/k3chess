@@ -49,6 +49,7 @@ private slots:
    void engineStarted();
    void engineHasOutput();
    void uciokTimeout();
+   void forceMoveTimeout();
 
 private:
    void tellEngine(const std::string& str);
@@ -67,6 +68,9 @@ private:
    std::string incompleteLine_;
    bool inForceMode_;   // (force mode is defined for XBoard engines only)
    QString profileName_;
+   QTimer forceMoveTimer_;
+   int forceMoveTimeout_;
+   bool randomizeMoveTimeout_;
 };
 
 #endif
