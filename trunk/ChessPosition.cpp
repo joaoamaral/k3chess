@@ -66,6 +66,11 @@ ColValue ChessPosition::rightRookInitialCol() const
    return initialRightRookCol_;
 }
 
+ColValue ChessPosition::kingInitialCol() const
+{
+   return initialKingCol_;
+}
+
 PieceColor ChessPosition::sideToMove() const
 {
    return sideToMove_;

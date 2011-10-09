@@ -128,24 +128,28 @@ void appendCastlingMove(const ChessPosition& position, ChessCoord kingCoord, boo
       (!isShort && !position.canLongCastle())) return; // rook or king has moved
    //
    ChessCoord kingTargetCoord(isShort ? position.maxCol()-1 : 3, kingCoord.row);
+   ChessCoord rookTargetCoord(isShort ? position.maxCol()-2 : 4, kingCoord.row);
    //
    ChessCoord rookCoord = isShort ? position.initialRightRookCoord() : position.initialLeftRookCoord();
    //
-   ChessCoord lo(min_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
-   ChessCoord hi(max_of_three(kingCoord.col, rookCoord.col, kingTargetCoord.col), kingCoord.row);
+   ChessCoord check_lo(qMin(kingCoord.col, kingTargetCoord.col), kingCoord.row);
+   ChessCoord check_hi(qMin(kingCoord.col, kingTargetCoord.col), kingCoord.row);
+   ChessCoord way_lo(min_of_three(check_lo.col, rookCoord.col, rookTargetCoord.col), kingCoord.row);
+   ChessCoord way_hi(max_of_three(check_hi.col, rookCoord.col, rookTargetCoord.col), kingCoord.row);
    //
    // check that there are no pieces other than one rook and one king within (lo, hi) range
    //
-   if(!oneKingOneRook(position, lo, hi)) return;
+   if(!oneKingOneRook(position, way_lo, way_hi)) return;
    //
    // check that the cells between kingCoord and kingTargetCoord are not under attack
    //
-   if((isShort && !pathSafe(position, kingCoord, kingTargetCoord)) ||
-      (!isShort && !pathSafe(position, kingTargetCoord, kingCoord))) return;
+   if(!pathSafe(position, check_lo, check_hi)) return;
    //
    // castling possible, generate move
    //
-   if(position.maxCol()!=8 || position.leftRookInitialCol()!=1 || position.rightRookInitialCol() != position.maxCol())
+   if(position.maxCol()!=8 || position.leftRookInitialCol()!=1 ||
+      position.rightRookInitialCol() != position.maxCol() ||
+      position.kingInitialCol() != 5)
    {
       // chess variants castling: target move square is the rook to be moved
       moves.push_back(CoordPair(kingCoord, rookCoord));
