@@ -71,6 +71,7 @@ private:
    QTimer forceMoveTimer_;
    int forceMoveTimeout_;
    bool randomizeMoveTimeout_;
+   bool weakMode_;
 };
 
 #endif
