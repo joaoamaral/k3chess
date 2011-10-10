@@ -773,9 +773,7 @@ ChessMoveType applyCastlingMove(ChessPosition& position, const CoordPair& move)
    if(position.cell(move.from) == ChessPiece(ptKing|position.sideToMove()) &&
       position.canCastle() && move.from.row == move.to.row)
    {
-      if(position.maxCol()!=8 ||
-            position.leftRookInitialCol()!=1 ||
-            position.rightRookInitialCol() != position.maxCol())
+      if(position.isChess960())
       {
          // chess variants castling: target move square is the rook to be moved
          if(move.to.col==position.leftRookInitialCol() &&

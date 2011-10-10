@@ -637,9 +637,12 @@ bool ChessGame::takebackOneFullMove()
 {
    if(positions_.size()<=2) return false; // nothing to take back
    //
+   bool isChess960 = position_.isChess960();
+   //
    positions_.pop_back();
    positions_.pop_back();
    position_ = ChessPosition::fromString(positions_.back());
+   position_.setChess960(isChess960);
    //
    gameMoves_.pop_back();
    gameMoves_.pop_back();
