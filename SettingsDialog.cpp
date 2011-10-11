@@ -104,8 +104,11 @@ void SettingsDialog::loadValues()
    isInitializing_ = false;
 }
 
-void SettingsDialog::initializeLabels()
+void SettingsDialog::initializeLabels(const QString& engineProfile)
 {
+   bool prevIsInitializing = isInitializing_;
+   isInitializing_ = true;
+   //
    QSettings ini(g_settings.localeIniFilePath(), QSettings::IniFormat);
    ini.setIniCodec(QTextCodec::codecForName("UTF-8"));
    //
@@ -129,8 +132,16 @@ void SettingsDialog::initializeLabels()
    //
    if(ui->cmbPlayerTime->count()>0)
    {
-      ui->cmbPlayerTime->setItemText(ui->cmbPlayerTime->count()-1, g_label("Unlimited"));
+      int k = ui->cmbPlayerTime->count()-1;
+      bool lastSelected = ui->cmbPlayerTime->currentIndex()==k;
+      ui->cmbPlayerTime->setItemText(k, g_label("Unlimited"));
+      if(lastSelected)
+         ui->cmbPlayerTime->setCurrentIndex(k);
    }
+   //
+   updateEngineProfilesCombo(engineProfile);
+   //
+   isInitializing_ = prevIsInitializing;
 }
 
 void SettingsDialog::adjustAppearance()
@@ -175,8 +186,9 @@ void SettingsDialog::on_cmbInterfaceLanguage_currentIndexChanged(QString localeN
 {
    if(isInitializing_) return;
    if(localeName==g_settings.localeName()) return;
+   QString engineProfile = getCanonizedProfileName();
    g_settings.setLocaleName(localeName);
-   initializeLabels();
+   initializeLabels(engineProfile);
 }
 
 void SettingsDialog::on_SettingsDialog_accepted()
@@ -244,15 +256,21 @@ QStringList SettingsDialog::getLocalizedProfileNames() const
    return localized;
 }
 
-void SettingsDialog::updateEngineProfilesCombo()
+void SettingsDialog::updateEngineProfilesCombo(const QString& engineProfile)
 {
-   QString currentProfile = getCanonizedProfileName();
+   bool prevIsInitializing = isInitializing_;
+   isInitializing_ = true;
+   //
+   QString currentProfile = engineProfile.isEmpty() ?
+            getCanonizedProfileName() : engineProfile;
    QStringList profileNames = getLocalizedProfileNames();
    currentProfile = getLocalizedProfileName(currentProfile);
    //
    ui->cmbEngineProfile->clear();
    ui->cmbEngineProfile->addItems(profileNames);
    ui->cmbEngineProfile->setCurrentIndex(profileNames.indexOf(currentProfile));
+   //
+   isInitializing_ = prevIsInitializing;
 }
 
 void SettingsDialog::on_cmbEngine_currentIndexChanged(QString)

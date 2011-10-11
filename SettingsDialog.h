@@ -30,13 +30,13 @@ private slots:
    void on_cmbEngine_currentIndexChanged(QString );
 
 private:
-   void initializeLabels();
+   void initializeLabels(const QString& engineProfile=QString());
    void adjustAppearance();
    void loadValues();
    void applyChanges();
 
    void installChildEventFilter();
-   void updateEngineProfilesCombo();
+   void updateEngineProfilesCombo(const QString& engineProfile=QString());
 
    QString getCanonizedProfileName() const;
    QString getLocalizedProfileName(const QString& profileName) const;
