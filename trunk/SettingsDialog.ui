@@ -269,7 +269,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>708</y>
+     <y>700</y>
      <width>241</width>
      <height>16</height>
     </rect>
@@ -289,8 +289,8 @@
   <widget class="QComboBox" name="cmbInterfaceLanguage">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>702</y>
+     <x>300</x>
+     <y>694</y>
      <width>231</width>
      <height>30</height>
     </rect>
@@ -336,8 +336,8 @@
   <widget class="QCheckBox" name="cbCoordinateMoveInput">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>572</y>
+     <x>80</x>
+     <y>582</y>
      <width>491</width>
      <height>24</height>
     </rect>
@@ -349,8 +349,8 @@
   <widget class="QCheckBox" name="cbDrawCoordinates">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>478</y>
+     <x>80</x>
+     <y>518</y>
      <width>491</width>
      <height>23</height>
     </rect>
@@ -362,8 +362,8 @@
   <widget class="QCheckBox" name="cbDrawMoveArrow">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>445</y>
+     <x>80</x>
+     <y>485</y>
      <width>491</width>
      <height>23</height>
     </rect>
@@ -375,8 +375,8 @@
   <widget class="QCheckBox" name="cbAutoSaveGames">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>640</y>
+     <x>80</x>
+     <y>650</y>
      <width>501</width>
      <height>23</height>
     </rect>
@@ -388,8 +388,8 @@
   <widget class="QCheckBox" name="cbQuickSingleMoveSelection">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>606</y>
+     <x>80</x>
+     <y>616</y>
      <width>491</width>
      <height>23</height>
     </rect>
@@ -401,8 +401,8 @@
   <widget class="QCheckBox" name="cbShowMoveHints">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>511</y>
+     <x>80</x>
+     <y>551</y>
      <width>491</width>
      <height>23</height>
     </rect>
@@ -411,17 +411,53 @@
     <string>Show move hints</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="cbShowGameClock">
+  <widget class="QLabel" name="lBoardMargins">
    <property name="geometry">
     <rect>
-     <x>81</x>
-     <y>542</y>
-     <width>491</width>
-     <height>23</height>
+     <x>80</x>
+     <y>446</y>
+     <width>291</width>
+     <height>16</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="locale">
+    <locale language="English" country="UnitedStates"/>
+   </property>
    <property name="text">
-    <string>Show game clock</string>
+    <string>Board margins</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBoardMargins">
+   <property name="geometry">
+    <rect>
+     <x>394</x>
+     <y>439</y>
+     <width>131</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="readOnly">
+    <bool>false</bool>
+   </property>
+   <property name="buttonSymbols">
+    <enum>QAbstractSpinBox::UpDownArrows</enum>
+   </property>
+   <property name="maximum">
+    <number>100</number>
+   </property>
+   <property name="singleStep">
+    <number>4</number>
+   </property>
+   <property name="value">
+    <number>28</number>
    </property>
   </widget>
  </widget>
@@ -433,10 +469,10 @@
   <tabstop>cmbPlayerTime</tabstop>
   <tabstop>cmbEngineTime</tabstop>
   <tabstop>cbPondering</tabstop>
+  <tabstop>spinBoardMargins</tabstop>
   <tabstop>cbDrawMoveArrow</tabstop>
   <tabstop>cbDrawCoordinates</tabstop>
   <tabstop>cbShowMoveHints</tabstop>
-  <tabstop>cbShowGameClock</tabstop>
   <tabstop>cbCoordinateMoveInput</tabstop>
   <tabstop>cbQuickSingleMoveSelection</tabstop>
   <tabstop>cbAutoSaveGames</tabstop>
