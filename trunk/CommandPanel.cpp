@@ -9,8 +9,6 @@
 
 namespace
 {
-
-const int cDefaultTopMargin = 6;
 const int cHorizontalLabelPadding = 14;
 const int cVerticalLabelPadding = 6;
 const int cUnderlineHeight = 4; // must be within cVerticalLabelPadding
@@ -30,7 +28,6 @@ CommandPanel::CommandPanel(QWidget *parent) :
    backgroundBrush_(cDefaultBackgroundColor),
    textColor_(Qt::black),
    disabledTextColor_(blendColor(cDefaultBackgroundColor, Qt::black)),
-   topMargin_(cDefaultTopMargin),
    highlightedIndex_(-1),
    pressedIndex_(-1),
    useHotkeys_(false),
@@ -75,15 +72,6 @@ void CommandPanel::setCommandOptions(const CommandOptions& options)
    highlightedIndex_ = -1;
    //
    setLabels();
-}
-
-void CommandPanel::setTopMargin(int value)
-{
-   if(value<0 || value>100) return;
-   if(value==topMargin_) return;
-   //
-   topMargin_ = value;
-   updateLabelPositions();
 }
 
 void CommandPanel::keyPressEvent(QKeyEvent *event)
@@ -162,7 +150,7 @@ void CommandPanel::resizeEvent(QResizeEvent*)
 void CommandPanel::updateLabelPositions()
 {
    QRect lastRect;
-   QPoint nextTopLeft(0, topMargin_);
+   QPoint nextTopLeft(0, (rect().height()-fontMetrics().height())/2);
    //
    rects_.clear();
    unsigned lineStartIdx = 0;
