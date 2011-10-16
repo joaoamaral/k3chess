@@ -139,11 +139,12 @@ void K3ChessMainWindow::updateControlLayout()
    if(rect().isEmpty()) return;
    //
    // find appropriate board size
+   int margin = isFullScreen() ? g_settings.boardMargins() : 0;
    int pad = boardView_->padding();
-   int w1 = width()-pad*2;
-   int h1 = height()-pad*2;
-   int wboard = (w1/64)*64 + pad*2;
-   int hboard = ((h1-cDefaultCommandPanelHeight)/64)*64 + pad*2;
+   int w1 = width()-pad*2-margin*2;
+   int h1 = height()-pad*2-margin*2;
+   int wboard = (w1/8)*8 + pad*2;
+   int hboard = ((h1-cDefaultCommandPanelHeight)/8)*8 + pad*2;
    //
    int sboard = qMin(wboard, hboard);
    //

@@ -24,6 +24,7 @@ const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "K3Chess game";
 const QString cDefaultSiteName = "?";
+const int cDefaultBoardMargins = 28;
 
 bool containsDigits(const QString& s)
 {
@@ -531,14 +532,20 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
          //
          ini.endGroup();
          //
-         info.profileNames.push_back(profileName);
+         if(commands.isEmpty())
+         {
+            info.startupCommands.erase(info.startupCommands.find(groupName));
+         }
+         else
+         {
+            info.profileNames.push_back(profileName);
+         }
       }
    }
    //
    if(info.profileNames.isEmpty())
    {
       info.profileNames.push_back("Default");
-      info.startupCommands.insert(std::make_pair("Default", QStringList()));
    }
    //
    QString masks = ini.value("Cleanup/DeleteFiles", QString()).toString().trimmed();
@@ -645,6 +652,20 @@ void K3ChessSettings::setInitialPositionFen(const QString &fen)
    settings_.setValue("InitialPosition", fen);
 }
 
+int K3ChessSettings::boardMargins() const
+{
+   int value = settings_.value("Board/Margins", cDefaultBoardMargins).toInt();
+   if(value<0) return 0;
+   else return value;
+}
+
+void K3ChessSettings::setBoardMargins(int value)
+{
+   if(value==boardMargins()) return;
+   settings_.setValue("Board/Margins", value);
+   emit boardStyleChanged();
+}
+
 bool K3ChessSettings::showGameClock() const
 {
    return settings_.value("ShowGameClock", false).toBool();
@@ -653,6 +674,5 @@ bool K3ChessSettings::showGameClock() const
 void K3ChessSettings::setShowGameClock(bool value)
 {
    settings_.setValue("ShowGameClock", value);
-   // will be applied when the next game starts
+   // new setting will be applied when next game starts
 }
-

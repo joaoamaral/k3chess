@@ -95,6 +95,9 @@ public:
    QString initialPositionFen() const;
    void setInitialPositionFen(const QString& fen);
 
+   int boardMargins() const; // minimum board margins (for fullscreen mode)
+   void setBoardMargins(int value);
+
    void flush();
 
 signals:

@@ -43,7 +43,7 @@ void SettingsDialog::loadValues()
    ui->cbQuickSingleMoveSelection->setChecked(g_settings.quickSingleMoveSelection());
    ui->cbShowMoveHints->setChecked(g_settings.showMoveHints());
    ui->cbCoordinateMoveInput->setChecked(g_settings.coordinateMoveInput());
-   ui->cbShowGameClock->setChecked(g_settings.showGameClock());
+   //ui->cbShowGameClock->setChecked(g_settings.showGameClock());
    //
    QStringList engineNames = g_settings.getEngineNames();
    QStringList piecesStyleNames = g_settings.getPiecesStyleNames();
@@ -102,6 +102,17 @@ void SettingsDialog::loadValues()
    //
    updateEngineProfilesCombo();
    //
+   if(g_settings.profile().contains("ebook"))
+   {
+      ui->spinBoardMargins->setEnabled(true);
+      ui->spinBoardMargins->setValue(g_settings.boardMargins());
+   }
+   else
+   {
+      ui->spinBoardMargins->setEnabled(false);
+      ui->spinBoardMargins->setValue(0);
+   }
+   //
    isInitializing_ = false;
 }
 
@@ -120,7 +131,7 @@ void SettingsDialog::initializeLabels(const QString& engineProfile)
    ui->cbQuickSingleMoveSelection->setText(g_label("QuickSingleMoveSelection"));
    ui->cbPondering->setText(g_label("Pondering"));
    ui->cbCoordinateMoveInput->setText(g_label("CoordinateMoveInput"));
-   ui->cbShowGameClock->setText(g_label("ShowGameClock"));
+   //ui->cbShowGameClock->setText(g_label("ShowGameClock"));
    ui->lGeneralSettings->setText(g_label("GeneralSettings"));
    ui->lGameControl->setText(g_label("GameControl"));
    ui->lOtherSettings->setText(g_label("OtherSettings"));
@@ -131,6 +142,8 @@ void SettingsDialog::initializeLabels(const QString& engineProfile)
    ui->lPiecesStyle->setText(g_label("PiecesStyle"));
    ui->lPlayerTime->setText(g_label("PlayerTime"));
    ui->lEngineTime->setText(g_label("EngineTime"));
+   //
+   ui->lBoardMargins->setText(g_label("BoardMargins"));
    //
    if(ui->cmbPlayerTime->count()>0)
    {
@@ -212,7 +225,7 @@ void SettingsDialog::applyChanges()
    g_settings.setQuickSingleMoveSelection(ui->cbQuickSingleMoveSelection->isChecked());
    g_settings.setShowMoveHints(ui->cbShowMoveHints->isChecked());
    g_settings.setCoordinateMoveInput(ui->cbCoordinateMoveInput->isChecked());
-   g_settings.setShowGameClock(ui->cbShowGameClock->isChecked());
+   //g_settings.setShowGameClock(ui->cbShowGameClock->isChecked());
    //
    g_settings.setPlayerName(ui->edPlayerName->text().trimmed());
    g_settings.setEngine(ui->cmbEngine->currentText(), getCanonizedProfileName());
@@ -221,6 +234,8 @@ void SettingsDialog::applyChanges()
    //
    g_settings.setPlayerClock(ui->cmbPlayerTime->currentText());
    g_settings.setEngineClock(ui->cmbEngineTime->currentText());
+   //
+   g_settings.setBoardMargins(ui->spinBoardMargins->value());
 }
 
 QString SettingsDialog::getCanonizedProfileName() const
