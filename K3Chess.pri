@@ -26,7 +26,8 @@ SOURCES = ChessBoardView.cpp \
     KeyPreviewImpl.cpp \
     GlobalStrings.cpp \
     GameSessionInfo.cpp \
-    Random.cpp
+    Random.cpp\
+    GameClockView.cpp
 
 
 HEADERS = ChessBoardView.h \
@@ -61,7 +62,7 @@ HEADERS = ChessBoardView.h \
     GlobalStrings.h \
     GameSessionInfo.h \
     Random.h\
-    PlayerStatsView.h
+    GameClockView.h
 
 
 FORMS += \

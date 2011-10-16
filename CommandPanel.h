@@ -20,7 +20,6 @@ public:
    void setCommandOptions(const CommandOptions& options);
    void setUseHotKeys(bool value); // allow or disallow the use of hotkeys included in command options (default is false)
    void setBackgroundColor(QColor color);
-   void setTopMargin(int value);
 
    bool hasCursor() const;
    bool enter();  // enter the control to select items, returns false if enter fails because there are no selectable items
