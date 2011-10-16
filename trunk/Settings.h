@@ -53,6 +53,7 @@ public:
    bool drawCoordinates() const;  // show coordinates on board sides
    bool drawMoveArrow() const;    // mark last move with an 'arrow' on board
    bool showMoveHints() const; // draw hints on board squares that the current piece can move to
+   bool showGameClock() const; // show chess clock for both players during the game
    bool coordinateMoveInput() const; // moves are selected by entering direct coordinates in col-row form (e.g. e2e4)
    bool quickSingleMoveSelection() const; // if selected piece has only one allowed move, make that move
    bool keyColumnSelect() const;  // pressing keys 'a'..'h' will select pieces on corresponding columns
@@ -80,6 +81,7 @@ public:
    void setDrawCoordinates(bool value);
    void setDrawMoveArrow(bool value);
    void setShowMoveHints(bool value);
+   void setShowGameClock(bool value);
    void setCoordinateMoveInput(bool value);
    void setQuickSingleMoveSelection(bool value);
    void setAutoSaveGames(bool value);

@@ -150,7 +150,7 @@ void CommandPanel::resizeEvent(QResizeEvent*)
 void CommandPanel::updateLabelPositions()
 {
    QRect lastRect;
-   QPoint nextTopLeft(0, (rect().height()-fontMetrics().height())/2);
+   QPoint nextTopLeft(0, (rect().height()-fontMetrics().height()*9/5)/2);
    //
    rects_.clear();
    unsigned lineStartIdx = 0;

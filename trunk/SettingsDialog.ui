@@ -269,7 +269,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>676</y>
+     <y>708</y>
      <width>241</width>
      <height>16</height>
     </rect>
@@ -289,8 +289,8 @@
   <widget class="QComboBox" name="cmbInterfaceLanguage">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>670</y>
+     <x>290</x>
+     <y>702</y>
      <width>231</width>
      <height>30</height>
     </rect>
@@ -337,7 +337,7 @@
    <property name="geometry">
     <rect>
      <x>81</x>
-     <y>542</y>
+     <y>572</y>
      <width>491</width>
      <height>24</height>
     </rect>
@@ -376,7 +376,7 @@
    <property name="geometry">
     <rect>
      <x>81</x>
-     <y>610</y>
+     <y>640</y>
      <width>501</width>
      <height>23</height>
     </rect>
@@ -389,7 +389,7 @@
    <property name="geometry">
     <rect>
      <x>81</x>
-     <y>576</y>
+     <y>606</y>
      <width>491</width>
      <height>23</height>
     </rect>
@@ -411,6 +411,19 @@
     <string>Show move hints</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="cbShowGameClock">
+   <property name="geometry">
+    <rect>
+     <x>81</x>
+     <y>542</y>
+     <width>491</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Show game clock</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>edPlayerName</tabstop>
@@ -423,6 +436,7 @@
   <tabstop>cbDrawMoveArrow</tabstop>
   <tabstop>cbDrawCoordinates</tabstop>
   <tabstop>cbShowMoveHints</tabstop>
+  <tabstop>cbShowGameClock</tabstop>
   <tabstop>cbCoordinateMoveInput</tabstop>
   <tabstop>cbQuickSingleMoveSelection</tabstop>
   <tabstop>cbAutoSaveGames</tabstop>

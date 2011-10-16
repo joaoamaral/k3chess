@@ -645,3 +645,14 @@ void K3ChessSettings::setInitialPositionFen(const QString &fen)
    settings_.setValue("InitialPosition", fen);
 }
 
+bool K3ChessSettings::showGameClock() const
+{
+   return settings_.value("ShowGameClock", false).toBool();
+}
+
+void K3ChessSettings::setShowGameClock(bool value)
+{
+   settings_.setValue("ShowGameClock", value);
+   // will be applied when the next game starts
+}
+
