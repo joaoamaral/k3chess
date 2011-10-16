@@ -43,6 +43,7 @@ void SettingsDialog::loadValues()
    ui->cbQuickSingleMoveSelection->setChecked(g_settings.quickSingleMoveSelection());
    ui->cbShowMoveHints->setChecked(g_settings.showMoveHints());
    ui->cbCoordinateMoveInput->setChecked(g_settings.coordinateMoveInput());
+   ui->cbShowGameClock->setChecked(g_settings.showGameClock());
    //
    QStringList engineNames = g_settings.getEngineNames();
    QStringList piecesStyleNames = g_settings.getPiecesStyleNames();
@@ -119,6 +120,7 @@ void SettingsDialog::initializeLabels(const QString& engineProfile)
    ui->cbQuickSingleMoveSelection->setText(g_label("QuickSingleMoveSelection"));
    ui->cbPondering->setText(g_label("Pondering"));
    ui->cbCoordinateMoveInput->setText(g_label("CoordinateMoveInput"));
+   ui->cbShowGameClock->setText(g_label("ShowGameClock"));
    ui->lGeneralSettings->setText(g_label("GeneralSettings"));
    ui->lGameControl->setText(g_label("GameControl"));
    ui->lOtherSettings->setText(g_label("OtherSettings"));
@@ -210,6 +212,7 @@ void SettingsDialog::applyChanges()
    g_settings.setQuickSingleMoveSelection(ui->cbQuickSingleMoveSelection->isChecked());
    g_settings.setShowMoveHints(ui->cbShowMoveHints->isChecked());
    g_settings.setCoordinateMoveInput(ui->cbCoordinateMoveInput->isChecked());
+   g_settings.setShowGameClock(ui->cbShowGameClock->isChecked());
    //
    g_settings.setPlayerName(ui->edPlayerName->text().trimmed());
    g_settings.setEngine(ui->cmbEngine->currentText(), getCanonizedProfileName());

@@ -13,6 +13,12 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    console_ = new QPlainTextEdit(this);
    moveList_ = new MoveListView(this);
    commandPanel_ = new CommandPanel(this);
+   commandArea_ = new QStackedWidget(this);
+   gameClock_ = new GameClockView(this);
+   //
+   commandArea_->addWidget(commandPanel_);
+   commandArea_->addWidget(gameClock_);
+   commandArea_->setCurrentWidget(commandPanel_);
    //
    QFont textFont("Sans", 8, QFont::Bold);
    //
@@ -35,6 +41,8 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
                     SLOT(commandPanel_optionSelected(int)), Qt::UniqueConnection);
    QObject::connect(commandPanel_, SIGNAL(idleClick()), this,
                     SLOT(commandPanel_idleClick()), Qt::UniqueConnection);
+   QObject::connect(gameClock_, SIGNAL(click()), this,
+                    SLOT(commandPanel_idleClick()), Qt::UniqueConnection);
    //
    setMinimumSize(256, 256);
    setMaximumSize(4096, 4096);
@@ -45,7 +53,9 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    {
       setStyleSheet(cUIStyleSheet_Ebook);
       commandPanel_->setBackgroundColor(Qt::white);
+      gameClock_->setBackgroundColor(Qt::white);
    }
+   gameClock_->setFont(QFont("Sans", commandPanel_->font().pointSize()*4/3));
 }
 
 void K3ChessMainWindow::resizeEvent(QResizeEvent *)
@@ -167,7 +177,7 @@ void K3ChessMainWindow::updateControlLayout()
    }
    //
    boardView_->setGeometry(boardRect);
-   commandPanel_->setGeometry(commandRect);
+   commandArea_->setGeometry(commandRect);
    console_->setGeometry(consoleRect);
    moveList_->setGeometry(moveListRect);
 }
@@ -180,4 +190,25 @@ void K3ChessMainWindow::setCustomKeyboardMode(bool value)
 void K3ChessMainWindow::closeEvent(QCloseEvent*)
 {
    emit isClosing();
+}
+
+int K3ChessMainWindow::switchToClockView()
+{
+   int retval = commandArea_->currentIndex();
+   commandArea_->setCurrentWidget(gameClock_);
+   return retval;
+}
+
+int K3ChessMainWindow::switchToCommandView()
+{
+   int retval = commandArea_->currentIndex();
+   commandArea_->setCurrentWidget(commandPanel_);
+   return retval;
+}
+
+int K3ChessMainWindow::setCommandAreaMode(int idx)
+{
+   int retval = commandArea_->currentIndex();
+   commandArea_->setCurrentIndex(idx);
+   return retval;
 }

@@ -6,7 +6,7 @@
 namespace
 {
 
-const int cHorizMargin = 4;
+const int cHorizMargin = 12;
 const QColor cDefaultBackgroundColor(213, 196, 170);
 
 QColor blendColor(QColor c, QColor d)
@@ -62,6 +62,7 @@ void GameClockView::paintEvent(QPaintEvent *event)
 
 QString GameClockView::getClockText(const QTime &time) const
 {
+   if(time.isNull()) return "--:--";
    return time.hour()<1 ? time.toString("mm:ss") : time.toString("HH:mm:ss");
 }
 
@@ -69,7 +70,7 @@ void GameClockView::updateLayout()
 {
    int clockWidth = fontMetrics().width("_0:00:00");
    int h1 = fontMetrics().height();
-   int y1 = (rect().height()-h1)/2;
+   int y1 = (rect().height()-h1*9/5)/2;
    leftClockRect_ = QRect(cHorizMargin, y1, clockWidth, h1);
    leftPlayerNameRect_ = QRect(cHorizMargin+clockWidth, y1, fontMetrics().width(leftPlayerName_), h1);
    int w2 = fontMetrics().width(rightPlayerName_);
@@ -122,12 +123,14 @@ void GameClockView::draw(QPainter &painter, const QRect &clipRect)
    painter.setBrush(backgroundBrush_);
    painter.drawRect(clipRect);
    //
+   painter.setFont(font());
+   //
    if(activeSide_==casLeft)
       painter.setPen(textColor_);
    else
       painter.setPen(inactiveTextColor_);
    //
-   painter.drawText(leftClockRect_, leftClockText_);
+   painter.drawText(leftClockRect_, leftClockText_, Qt::AlignVCenter | Qt::AlignLeft);
    painter.drawText(leftPlayerNameRect_, leftPlayerName_);
    //
    if(activeSide_==casRight)
@@ -135,6 +138,11 @@ void GameClockView::draw(QPainter &painter, const QRect &clipRect)
    else
       painter.setPen(inactiveTextColor_);
    //
-   painter.drawText(rightClockRect_, rightClockText_);
+   painter.drawText(rightClockRect_, rightClockText_, Qt::AlignVCenter | Qt::AlignRight);
    painter.drawText(rightPlayerNameRect_, rightPlayerName_);
+}
+
+void GameClockView::mousePressEvent(QMouseEvent *)
+{
+   emit click();
 }

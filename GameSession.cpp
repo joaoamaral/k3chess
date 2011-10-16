@@ -11,6 +11,7 @@ const int cGetReadyTimeout = 5000; // ms
 // he/she/it is considered not ready and the game session aborts
 
 const int cClockUpdateInterval = 100; // ms
+const int cClockRedrawInterval = 10;  // sec
 
 
 QString gameResultToMessage(ChessGameResult result)
@@ -55,6 +56,7 @@ GameSession::GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
 {
    QObject::connect(&getReadyTimer_, SIGNAL(timeout()), this, SLOT(getReadyTimeout()), Qt::UniqueConnection);
    QObject::connect(&clockUpdateTimer_, SIGNAL(timeout()), this, SLOT(clockUpdateTimer()), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(clockUpdateRequest()), this, SLOT(clockUpdateRequest()), Qt::UniqueConnection);
    //
    connectPlayers();
    connectGame();
@@ -71,6 +73,8 @@ void GameSession::begin()
    //
    getReadyTimer_.setSingleShot(true);
    getReadyTimer_.start(cGetReadyTimeout);
+   //
+   g_localChessGui.switchToClockView();
 }
 
 void GameSession::getReadyTimeout()
@@ -147,12 +151,12 @@ void GameSession::white_moves(const ChessMove& move)
          blackPlayer_->opponentRejectsDraw();
       }
       //
-      whiteDrawOfferActive_ = false;
       blackDrawOfferActive_ = false;
       //
       whiteClock_.remainingTime += whiteClock_.moveIncrement;
       //
       outputLastMove();
+      updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       //
@@ -243,11 +247,11 @@ void GameSession::black_moves(const ChessMove& move)
       }
       //
       blackDrawOfferActive_ = false;
-      whiteDrawOfferActive_ = false;
       //
       blackClock_.remainingTime += blackClock_.moveIncrement;
       //
       outputLastMove();
+      updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       //
@@ -458,14 +462,14 @@ void GameSession::startGame()
    //
    // finished setting up position, can actually start the game
    //
+   g_localChessGui.updatePosition(game_.position(), game_.lastMove(), game_.possibleMoves());
+   updateClockDisplay();
    //
    counter_.restart();
    //
    clockUpdateTimer_.setInterval(cClockUpdateInterval);
    clockUpdateTimer_.setSingleShot(false);
    clockUpdateTimer_.start();
-   //
-   g_localChessGui.updatePosition(game_.position(), game_.lastMove(), game_.possibleMoves());
    //
    if(game_.position().sideToMove()==pcWhite)
       requestMove(whitePlayer_);
@@ -497,6 +501,8 @@ QString GameSession::getResultMessage(GameSessionEndReason reason, ChessGameResu
 void GameSession::endGame(GameSessionEndReason reason, ChessGameResult result)
 {
    clockUpdateTimer_.stop();
+   //
+   g_localChessGui.switchToCommandView();
    //
    sessionInfo_.moves = game_.moves();
    //
@@ -532,9 +538,15 @@ void GameSession::clockUpdateTimer()
       if(!whiteClock_.untimed)
       {
          whiteClock_.remainingTime -= counter_.elapsed();
-         if(whiteClock_.remainingTime<=0)
+         if(whiteClock_.remainingTime < 0)
+            whiteClock_.remainingTime = 0;
+         if(whiteClock_.remainingTime==0)
          {
             endGame(reasonGameFinished, resultBlackWonOnTime);
+         }
+         if(((whiteClock_.remainingTime/1000)%10)==0)
+         {
+            updateClockDisplay();
          }
       }
    }
@@ -543,9 +555,15 @@ void GameSession::clockUpdateTimer()
       if(!blackClock_.untimed)
       {
          blackClock_.remainingTime -= counter_.elapsed();
-         if(blackClock_.remainingTime<=0)
+         if(blackClock_.remainingTime < 0)
+            blackClock_.remainingTime = 0;
+         if(blackClock_.remainingTime==0)
          {
             endGame(reasonGameFinished, resultWhiteWonOnTime);
+         }
+         if(((blackClock_.remainingTime/1000)%cClockRedrawInterval)==0)
+         {
+            updateClockDisplay();
          }
       }
    }
@@ -574,6 +592,7 @@ void GameSession::white_requestsTakeback()
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
+         updateClockDisplay();
       }
    }
    requestMove(whitePlayer_);
@@ -615,6 +634,7 @@ void GameSession::black_requestsTakeback()
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
+         updateClockDisplay();
       }
    }
    requestMove(blackPlayer_);
@@ -658,4 +678,28 @@ void GameSession::updateSessionInfo()
    //
    sessionInfo_.profile.whiteClock = whiteClock_;
    sessionInfo_.profile.blackClock = blackClock_;
+}
+
+void GameSession::updateClockDisplay()
+{
+   if(game_.possibleMoves().empty() || game_.result()!=resultNone)
+   {
+      // game ended, make both clock sides inactive
+      g_localChessGui.updateGameClock(casNone, whiteClock_, blackClock_);
+   }
+   else if(game_.position().sideToMove()==pcWhite)
+   {
+      // update white's clock
+      g_localChessGui.updateGameClock(casLeft, whiteClock_, blackClock_);
+   }
+   else
+   {
+      // update black's clock
+      g_localChessGui.updateGameClock(casRight, whiteClock_, blackClock_);
+   }
+}
+
+void GameSession::clockUpdateRequest()
+{
+   updateClockDisplay();
 }

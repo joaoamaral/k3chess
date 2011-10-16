@@ -323,6 +323,13 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
                }
             }
             break;
+         case Qt::Key_T:
+            g_settings.setShowGameClock(!g_settings.showGameClock());
+            if(gameSession_)
+            {
+               g_localChessGui.updateShowClock();
+            }
+            break;
          default:
             break;
       }

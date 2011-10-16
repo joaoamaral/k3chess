@@ -5,7 +5,7 @@
 #include "SettingsDialog.h"
 
 
-LocalChessGui::LocalChessGui()
+LocalChessGui::LocalChessGui() : clockDisplay_(false)
 {
    mainWindow_ = new K3ChessMainWindow;
    //
@@ -98,14 +98,19 @@ void LocalChessGui::beginGame(
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
    mainWindow_->boardView()->setInitialCursorPos(ChessCoord());
+   mainWindow_->gameClock()->setLeftPlayerName(whitePlayerName);
+   mainWindow_->gameClock()->setRightPlayerName(blackPlayerName);
    mainWindow_->console()->appendPlainText(
       getGameAnnouncementText(whitePlayerName, blackPlayerName, profile, isResumedGame));
+   updateGameClock(casNone, profile.whiteClock, profile.blackClock);
+   g_localChessGui.switchToClockView();
 }
 
 void LocalChessGui::beginMoveSelection()
 {
    g_localChessGui.showStaticMessage(g_msg("MovePrompt"));
    mainWindow_->boardView()->beginMoveSelection();
+   switchToClockView();
 }
 
 void LocalChessGui::showStaticMessage(const QString &msg)
@@ -135,6 +140,38 @@ void LocalChessGui::updatePosition(const ChessPosition& position,
    mainWindow_->boardView()->updatePosition(position, lastMove, possibleMoves);
 }
 
+void LocalChessGui::updateGameClock(ClockActiveSide cas,
+                                    const ChessClock& whiteClock,
+                                    const ChessClock& blackClock)
+{
+   QTime wtime;
+   QTime btime;
+   //
+   //
+   if(!whiteClock.untimed)
+      wtime = QTime(0, 0, 0).addMSecs(whiteClock.remainingTime);
+   if(!blackClock.untimed)
+      btime = QTime(0, 0, 0).addMSecs(blackClock.remainingTime);
+   //
+   mainWindow_->gameClock()->setLeftClock(wtime);
+   mainWindow_->gameClock()->setRightClock(btime);
+   //
+   mainWindow_->gameClock()->setActiveSide(cas);
+}
+
+void LocalChessGui::switchToClockView()
+{
+   if(g_settings.showGameClock())
+      mainWindow_->switchToClockView();
+   clockDisplay_ = true;
+}
+
+void LocalChessGui::switchToCommandView()
+{
+   mainWindow_->switchToCommandView();
+   clockDisplay_ = false;
+}
+
 void LocalChessGui::appendToMoveList(const QString& str)
 {
    mainWindow_->moveList()->addMove(str);
@@ -149,6 +186,7 @@ void LocalChessGui::appendToMoveList(const QStringList& slist)
 void LocalChessGui::offerChoice(const CommandOptions& options)
 {
    mainWindow_->commandPanel()->setCommandOptions(options);
+   //
    if(mainWindow_->commandPanel()->enter())
    {
       mainWindow_->boardView()->cancelMoveSelection();
@@ -219,4 +257,20 @@ void LocalChessGui::dropLastFullMove()
 void LocalChessGui::exitProgram()
 {
    mainWindow_->close();
+}
+
+void LocalChessGui::endGame()
+{
+   switchToCommandView();
+}
+
+void LocalChessGui::updateShowClock()
+{
+   if(clockDisplay_ && g_settings.showGameClock())
+   {
+      emit clockUpdateRequest();
+      mainWindow_->switchToClockView();
+   }
+   else
+      mainWindow_->switchToCommandView();
 }

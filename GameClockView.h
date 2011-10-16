@@ -18,9 +18,14 @@ public:
    void setLeftClock(QTime time);
    void setRightClock(QTime time);
    void setActiveSide(ClockActiveSide value);
+
+signals:
+   void click();
+
 protected:
    virtual void resizeEvent(QResizeEvent*);
    virtual void paintEvent(QPaintEvent*);
+   virtual void mousePressEvent(QMouseEvent*);
 private:
    void draw(QPainter& painter, const QRect& clipRect);
    QString getClockText(const QTime& time) const;

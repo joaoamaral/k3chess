@@ -47,6 +47,7 @@ void ChessPlayer_LocalHuman::offerChoice(const CommandOptions& options)
 {
    QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
    QObject::connect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)), Qt::UniqueConnection);
+   g_localChessGui.switchToCommandView();
    g_localChessGui.offerChoice(options);
 }
 
@@ -69,6 +70,7 @@ void ChessPlayer_LocalHuman::userChoice(int id)
          mode_ = modeSelectingMove;
          QObject::connect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this,
                           SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
+         g_localChessGui.beginMoveSelection();
          break;
       case cmd_InGame_Resign:     emit playerResigns();  break;
       case cmd_InGame_Abort:      emit playerRequestsAbort();  break;
@@ -91,6 +93,8 @@ void ChessPlayer_LocalHuman::userMoves(const CoordPair &move)
       QObject::disconnect(&g_localChessGui, SIGNAL(userChoice(int)), this, SLOT(userChoice(int)));
       QObject::disconnect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key, Qt::KeyboardModifiers)),
                                                    this, SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)));
+      //
+      g_localChessGui.switchToClockView();
       //
       emit playerMoves(ChessMove(move));
    }

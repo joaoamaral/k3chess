@@ -66,6 +66,7 @@ private slots:
    void getReadyTimeout();
 
    void clockUpdateTimer();
+   void clockUpdateRequest();
 
    void checkmateDetected();
    void stalemateDetected();
@@ -85,6 +86,7 @@ private:
 
    void requestMove(ChessPlayer *player);
    void outputLastMove();
+   void updateClockDisplay();
 
    void enableInGameCommands();
    void updateSessionInfo();

@@ -26,11 +26,13 @@ public:
    void setInitialMoveCursorPos(ChessCoord coord);
    void showStaticMessage(const QString& msg);
    void showSessionMessage(const QString& msg);
+   void endGame();
    void showPlayerMessage(const QString& playerName, const QString& msg);
    void flipBoard(bool flipped);
    void updatePosition(const ChessPosition& position,
                        const CoordPair& lastMove=CoordPair(),
                        const ChessMoveMap& possibleMoves=ChessMoveMap());
+   void updateGameClock(ClockActiveSide cas, const ChessClock& whiteClock, const ChessClock& blackClock);
    void appendToMoveList(const QString& str);
    void appendToMoveList(const QStringList& str);
    void offerChoice(const CommandOptions& options);
@@ -41,10 +43,15 @@ public:
    void showSettingsDialog();
    void exitProgram();
 
+   void switchToClockView();
+   void switchToCommandView();
+   void updateShowClock();
+
 signals:
    void userMoves(const CoordPair& pair);
    void userChoice(int id);
    void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers); // for keys pressed while no control is active
+   void clockUpdateRequest();
    void isExiting();
 
 private slots:
@@ -56,6 +63,7 @@ private:
 
 private:
    K3ChessMainWindow *mainWindow_;
+   bool clockDisplay_;
 };
 
 #endif
