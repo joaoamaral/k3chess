@@ -27,7 +27,7 @@ const QString cDefaultSiteName = "?";
 
 bool containsDigits(const QString& s)
 {
-   for(unsigned i=0; i<s.length(); ++i)
+   for(int i=0; i<s.length(); ++i)
    {
       if(s[i].isDigit()) return true;
    }
@@ -531,20 +531,14 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
          //
          ini.endGroup();
          //
-         if(commands.isEmpty())
-         {
-            info.startupCommands.erase(info.startupCommands.find(groupName));
-         }
-         else
-         {
-            info.profileNames.push_back(profileName);
-         }
+         info.profileNames.push_back(profileName);
       }
    }
    //
    if(info.profileNames.isEmpty())
    {
       info.profileNames.push_back("Default");
+      info.startupCommands.insert(std::make_pair("Default", QStringList()));
    }
    //
    QString masks = ini.value("Cleanup/DeleteFiles", QString()).toString().trimmed();
