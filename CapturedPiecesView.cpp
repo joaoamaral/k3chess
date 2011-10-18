@@ -6,7 +6,7 @@
 
 namespace
 {
-const QColor cDefaultLinePenColor(0xB0, 0xB0, 0xB0);
+const QColor cDefaultLinePenColor(0xD0, 0xD0, 0xD0);
 const QColor cDefaultNumberColor(0xB0, 0xB0, 0xB0);
 }
 
@@ -65,8 +65,8 @@ void CapturedPiecesView::draw(QPainter &painter, const QRect &clipRect)
    painter.setBrush(backgroundBrush_);
    painter.drawRect(clipRect);
    //
-   //painter.setPen(linePen_);
-   //@@painter.drawLine(whiteRect_.topLeft(), blackRect_.topRight());
+   painter.setPen(linePen_);
+   painter.drawLine(0, 0, rect().width(), 0);
    //
    if(clipRect.intersects(whiteRect_))
    {

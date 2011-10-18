@@ -37,6 +37,6 @@ void ExtConsole::resizeEvent(QResizeEvent *)
    if(s>h/2) s = h/2;
    if(s>cMaxCaptPieceSize) s = cMaxCaptPieceSize;
    //
-   console_->setGeometry(1, 1, w, h-s-1);
+   console_->setGeometry(1, 1, w, h-s+1);
    capturedPieces_->setGeometry(1, h-s+1, w, s);
 }
