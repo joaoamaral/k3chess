@@ -159,6 +159,7 @@ void GameSession::white_moves(const ChessMove& move)
       updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
+      updateCapturedPieces();
       //
       blackPlayer_->opponentMoves(move);
       if(game_.result()==resultNone && sessionInfo_.profile.blackClock.remainingTime > 0)
@@ -254,6 +255,7 @@ void GameSession::black_moves(const ChessMove& move)
       updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
+      updateCapturedPieces();
       //
       whitePlayer_->opponentMoves(move);
       if(game_.result()==resultNone && whiteClock_.remainingTime > 0)
@@ -463,6 +465,7 @@ void GameSession::startGame()
    // finished setting up position, can actually start the game
    //
    g_localChessGui.updatePosition(game_.position(), game_.lastMove(), game_.possibleMoves());
+   updateCapturedPieces();
    updateClockDisplay();
    //
    counter_.restart();
@@ -592,6 +595,7 @@ void GameSession::white_requestsTakeback()
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
+         updateCapturedPieces();
          updateClockDisplay();
       }
    }
@@ -634,6 +638,7 @@ void GameSession::black_requestsTakeback()
          g_localChessGui.setInitialMoveCursorPos(prevCursorPos);
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
+         updateCapturedPieces();
          updateClockDisplay();
       }
    }
@@ -702,4 +707,11 @@ void GameSession::updateClockDisplay()
 void GameSession::clockUpdateRequest()
 {
    updateClockDisplay();
+}
+
+void GameSession::updateCapturedPieces()
+{
+   g_localChessGui.updateCapturedPieces(
+            sessionInfo_.initialPosition,
+            game_.position());
 }

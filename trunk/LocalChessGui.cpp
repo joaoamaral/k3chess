@@ -4,7 +4,6 @@
 #include "Settings.h"
 #include "SettingsDialog.h"
 
-
 LocalChessGui::LocalChessGui() : clockDisplay_(false)
 {
    mainWindow_ = new K3ChessMainWindow;
@@ -224,7 +223,9 @@ void LocalChessGui::showSettingsDialog()
 
 void LocalChessGui::updateBoardStyle()
 {
-   mainWindow_->boardView()->setPiecesImage(QImage(g_settings.pieceImageFilePath()));
+   QImage pieces(g_settings.pieceImageFilePath());
+   mainWindow_->boardView()->setPiecesImage(pieces);
+   mainWindow_->capturedPieces()->setPiecesImage(pieces);
    mainWindow_->boardView()->setDrawMoveArrow(g_settings.drawMoveArrow());
    mainWindow_->boardView()->setDrawCoords(g_settings.drawCoordinates());
    mainWindow_->boardView()->setShowMoveHints(g_settings.showMoveHints());
@@ -273,4 +274,9 @@ void LocalChessGui::updateShowClock()
    }
    else
       mainWindow_->switchToCommandView();
+}
+
+void LocalChessGui::updateCapturedPieces(const ChessPosition &initialPosition, const ChessPosition &currentPosition)
+{
+   mainWindow_->capturedPieces()->updateContents(initialPosition, currentPosition);
 }

@@ -30,6 +30,7 @@ public:
    void begin();
 
 private slots:
+   void asyncBegin();
    void userChoice(int id);
    void gameSessionEnded(GameSessionEndReason reason, ChessGameResult result,
                          const QString& message);
@@ -39,8 +40,6 @@ private slots:
    void ponderingChanged();
    void localeChanged();
    void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
-
-   void startSavedGameTimeout();
 
    void isExiting();
 
@@ -76,7 +75,7 @@ private:
    GameSession *gameSession_;
    int keyRemapIdx_;
    MenuType menuType_;
-   QTimer startSavedGameTimer_;
+   QTimer beginDelayTimer_;
    ChessPosition initialPosition_; // standard or 960 random (or last)
 };
 

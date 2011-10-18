@@ -7,10 +7,14 @@
 const int cDefaultCommandPanelHeight = 38;
 
 K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
-   QMainWindow(parent), customKeyboardMode_(false)
+   QMainWindow(parent), boardView_(0),
+   extConsole_(0), moveList_(0),
+   commandPanel_(0), commandArea_(0),
+   gameClock_(0), customKeyboardMode_(false)
 {
    boardView_ = new ChessBoardView(this);
-   console_ = new QPlainTextEdit(this);
+   extConsole_ = new ExtConsole(this);
+   //@@console_ = new QPlainTextEdit(this);
    moveList_ = new MoveListView(this);
    commandPanel_ = new CommandPanel(this);
    commandArea_ = new QStackedWidget(this);
@@ -23,12 +27,6 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    QFont textFont("Sans", 8, QFont::Bold);
    //
    boardView_->setFocusPolicy(Qt::NoFocus);
-   console_->setReadOnly(true);
-   console_->setFocusPolicy(Qt::NoFocus);
-   console_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-   console_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-   console_->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-   console_->setFont(textFont);
    moveList_->setFocusPolicy(Qt::NoFocus);
    moveList_->setFont(textFont);
    moveList_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -36,6 +34,8 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    commandPanel_->setFocusPolicy(Qt::NoFocus);
    commandPanel_->setFont(textFont);
    commandPanel_->setUseHotKeys(false);
+   //console_->setReadOnly(true);
+   //console_->setFocusPolicy(Qt::NoFocus);
    //
    QObject::connect(commandPanel_, SIGNAL(optionSelected(int)), this,
                     SLOT(commandPanel_optionSelected(int)), Qt::UniqueConnection);
@@ -139,12 +139,11 @@ void K3ChessMainWindow::updateControlLayout()
    if(rect().isEmpty()) return;
    //
    // find appropriate board size
-   int margin = isFullScreen() ? g_settings.boardMargins() : 0;
    int pad = boardView_->padding();
-   int w1 = width()-pad*2-margin*2;
-   int h1 = height()-pad*2-margin*2;
-   int wboard = (w1/8)*8 + pad*2;
-   int hboard = ((h1-cDefaultCommandPanelHeight)/8)*8 + pad*2;
+   int w1 = width()-pad*2;
+   int h1 = height()-pad*2;
+   int wboard = (w1/64)*64 + pad*2;
+   int hboard = ((h1-cDefaultCommandPanelHeight)/64)*64 + pad*2;
    //
    int sboard = qMin(wboard, hboard);
    //
@@ -165,12 +164,12 @@ void K3ChessMainWindow::updateControlLayout()
       // portrait orientation
       consoleRect = QRect(0, commandRect.bottom()+1,
                           width()*31/50, height()-commandRect.bottom()-1);
-      moveListRect = QRect(consoleRect.right()+1, consoleRect.top()+1,
+      moveListRect = QRect(consoleRect.right()+1, consoleRect.top(),
                            width()-consoleRect.right()-1, consoleRect.height());
    }
    else
    {
-      // landscape orientation
+      // landscape orientations
       consoleRect = QRect(boardRect.right()+1, boardRect.top(),
                           width()-boardRect.right()-1, boardRect.height()*19/50);
       moveListRect = QRect(consoleRect.left(), consoleRect.bottom()+1,
@@ -179,7 +178,8 @@ void K3ChessMainWindow::updateControlLayout()
    //
    boardView_->setGeometry(boardRect);
    commandArea_->setGeometry(commandRect);
-   console_->setGeometry(consoleRect);
+   extConsole_->setGeometry(consoleRect);
+   //console_->setGeometry(consoleRect);
    moveList_->setGeometry(moveListRect);
 }
 

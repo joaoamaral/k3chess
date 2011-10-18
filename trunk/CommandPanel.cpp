@@ -237,6 +237,7 @@ void CommandPanel::paintEvent(QPaintEvent *event)
    QPixmap pix(size());
    QPainter buffer(&pix);
    //
+   buffer.setClipRect(event->rect());
    drawPanel(buffer, event->rect());
    //
    QPainter painter(this);
