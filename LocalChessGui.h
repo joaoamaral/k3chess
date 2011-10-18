@@ -32,6 +32,8 @@ public:
    void updatePosition(const ChessPosition& position,
                        const CoordPair& lastMove=CoordPair(),
                        const ChessMoveMap& possibleMoves=ChessMoveMap());
+   void updateCapturedPieces(const ChessPosition& initialPosition,
+                             const ChessPosition& currentPosition);
    void updateGameClock(ClockActiveSide cas, const ChessClock& whiteClock, const ChessClock& blackClock);
    void appendToMoveList(const QString& str);
    void appendToMoveList(const QStringList& str);

@@ -87,6 +87,7 @@ private:
    void requestMove(ChessPlayer *player);
    void outputLastMove();
    void updateClockDisplay();
+   void updateCapturedPieces();
 
    void enableInGameCommands();
    void updateSessionInfo();

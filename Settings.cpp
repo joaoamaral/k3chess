@@ -668,7 +668,7 @@ void K3ChessSettings::setBoardMargins(int value)
 
 bool K3ChessSettings::showGameClock() const
 {
-   return settings_.value("ShowGameClock", false).toBool();
+   return settings_.value("ShowGameClock", true).toBool();
 }
 
 void K3ChessSettings::setShowGameClock(bool value)

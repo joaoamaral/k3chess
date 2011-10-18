@@ -46,6 +46,18 @@ void GlobalUISession::initialize()
 
 void GlobalUISession::begin()
 {
+   QObject::connect(&beginDelayTimer_, SIGNAL(timeout()),
+                    this, SLOT(asyncBegin()));
+   //
+   beginDelayTimer_.setSingleShot(true);
+   beginDelayTimer_.start(10); // any ridiculous amount will do
+}
+
+void GlobalUISession::asyncBegin()
+{
+   QObject::disconnect(&beginDelayTimer_, SIGNAL(timeout()),
+                       this, SLOT(asyncBegin()));
+   //
    if(g_keyMapper.fileNotFound())
    {
       beginKeyRemapping();
@@ -381,13 +393,7 @@ bool GlobalUISession::restoreLastGame()
 {
    GameSessionInfo sessionInfo;
    if(!sessionInfo.loadFromFile(g_settings.lastGameFile())) return false;
-   //
-   QObject::connect(&startSavedGameTimer_, SIGNAL(timeout()),
-                    this, SLOT(startSavedGameTimeout()));
-   //
-   startSavedGameTimer_.setSingleShot(true);
-   startSavedGameTimer_.start(10); // any ridiculous amount will do
-   //
+   playGame(sessionInfo);
    return true;
 }
 
@@ -401,15 +407,6 @@ void GlobalUISession::requestExit()
 {
    finalize();
    g_localChessGui.exitProgram();
-}
-
-void GlobalUISession::startSavedGameTimeout()
-{
-   QObject::disconnect(&startSavedGameTimer_, SIGNAL(timeout()),
-                       this, SLOT(startSavedGameTimeout()));
-   GameSessionInfo sessionInfo;
-   sessionInfo.loadFromFile(g_settings.lastGameFile());
-   playGame(sessionInfo);
 }
 
 void GlobalUISession::isExiting()

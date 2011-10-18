@@ -54,6 +54,7 @@ void GameClockView::paintEvent(QPaintEvent *event)
    QPixmap pix(size());
    QPainter buffer(&pix);
    //
+   buffer.setClipRect(event->rect());
    draw(buffer, event->rect());
    //
    QPainter painter(this);
