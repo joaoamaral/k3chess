@@ -280,3 +280,15 @@ void LocalChessGui::updateCapturedPieces(const ChessPosition &initialPosition, c
 {
    mainWindow_->capturedPieces()->updateContents(initialPosition, currentPosition);
 }
+
+void LocalChessGui::updateShowCaptured()
+{
+   if(g_settings.showCapturedPieces())
+   {
+      mainWindow_->showCapturedPieces();
+   }
+   else
+   {
+      mainWindow_->hideCapturedPieces();
+   }
+}

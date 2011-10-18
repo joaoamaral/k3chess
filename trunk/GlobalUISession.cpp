@@ -342,6 +342,12 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
                g_localChessGui.updateShowClock();
             }
             break;
+         case Qt::Key_U:
+            g_settings.setShowCapturedPieces(!g_settings.showCapturedPieces());
+            if(gameSession_)
+            {
+               g_localChessGui.updateShowCaptured();
+            }
          default:
             break;
       }

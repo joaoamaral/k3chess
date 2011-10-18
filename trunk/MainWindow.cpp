@@ -24,6 +24,11 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    commandArea_->addWidget(gameClock_);
    commandArea_->setCurrentWidget(commandPanel_);
    //
+   if(g_settings.showCapturedPieces())
+      extConsole_->showCapturedPieces();
+   else
+      extConsole_->hideCapturedPieces();
+   //
    QFont textFont("Sans", 8, QFont::Bold);
    //
    boardView_->setFocusPolicy(Qt::NoFocus);
@@ -212,4 +217,14 @@ int K3ChessMainWindow::setCommandAreaMode(int idx)
    int retval = commandArea_->currentIndex();
    commandArea_->setCurrentIndex(idx);
    return retval;
+}
+
+void K3ChessMainWindow::showCapturedPieces()
+{
+   extConsole_->showCapturedPieces();
+}
+
+void K3ChessMainWindow::hideCapturedPieces()
+{
+   extConsole_->hideCapturedPieces();
 }

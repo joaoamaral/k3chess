@@ -13,12 +13,19 @@ public:
    QPlainTextEdit *console() { return console_; }
    CapturedPiecesView *capturedPieces() { return capturedPieces_; }
 
+   void showCapturedPieces();
+   void hideCapturedPieces();
+
 protected:
    virtual void resizeEvent(QResizeEvent*);
 
 private:
+   void updateLayout();
+
+private:
    QPlainTextEdit *console_;
    CapturedPiecesView *capturedPieces_;
+   bool showCapturedPieces_;
 };
 
 #endif
