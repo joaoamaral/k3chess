@@ -18,6 +18,8 @@ public:
    void setLeftClock(QTime time);
    void setRightClock(QTime time);
    void setActiveSide(ClockActiveSide value);
+   void setActiveFont(const QFont& font);
+   void setInactiveFont(const QFont& font);
 
 signals:
    void click();
@@ -43,6 +45,8 @@ private:
    QRect leftClockRect_;
    QRect rightClockRect_;
    ClockActiveSide activeSide_;
+   QFont activeFont_;
+   QFont inactiveFont_;
 };
 
 #endif

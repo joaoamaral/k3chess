@@ -187,27 +187,16 @@ QRect ChessBoardView::getCellRect(ChessCoord coord) const
    //
    int x0, x1, y0, y1;
    //
-   x0 = (width()-padding_*2)*(coord.col-1)/position_.maxCol() + padding_;
+   int w = rect().width();
+   int h = rect().height();
    //
-   if(coord.col==position_.maxCol())
-   {
-      x1 = width()-padding_;
-   }
-   else
-   {
-      x1 = x0 + (width()-padding_*2)/position_.maxCol();
-   }
+   x0 = (w-padding_*2)*(coord.col-1)/position_.maxCol() + padding_;
    //
-   y0 = (height()-padding_*2)*(position_.maxRow()-coord.row)/position_.maxRow() + padding_;
+   x1 = x0 + (w-padding_*2)/position_.maxCol();
    //
-   if(coord.row==1)
-   {
-      y1 = height()-padding_;
-   }
-   else
-   {
-      y1 = y0 + (height()-padding_*2)/position_.maxRow();
-   }
+   y0 = (h-padding_*2)*(position_.maxRow()-coord.row)/position_.maxRow() + padding_;
+   //
+   y1 = y0 + (h-padding_*2)/position_.maxRow();
    //
    return QRect(x0, y0, x1-x0, y1-y0);
 }
@@ -824,6 +813,13 @@ void ChessBoardView::drawPiece(QPainter& painter, const QRect& rect, ChessPiece 
    }
 }
 
+QRect inflateRect(const QRect& rect, int d)
+{
+   return QRect(rect.left()-d, rect.top()-d,
+                rect.right()-rect.left()+d*2,
+                rect.bottom()-rect.top()+d*2);
+}
+
 void ChessBoardView::drawBorder(QPainter& painter, const QRect& clipRect)
 {
    if(padding_>0)
@@ -841,7 +837,7 @@ void ChessBoardView::drawBorder(QPainter& painter, const QRect& clipRect)
       if(bottom.intersects(clipRect)) painter.drawRect(bottom);
       if(right.intersects(clipRect)) painter.drawRect(right);
       //
-      QRect innerFrame(padding_-1, padding_-1, width()-(padding_-1)*2, height()-(padding_-1)*2);
+      QRect innerFrame = inflateRect(boardCellsRect(), 1);
       //
       painter.setPen(cBoardInnerFrameColor);
       painter.setBrush(Qt::NoBrush);
@@ -1192,4 +1188,16 @@ void ChessBoardView::setInitialCursorPos(ChessCoord coord)
 void ChessBoardView::setDirectCoordinateInput(bool value)
 {
    directCoordinateInput_ = value;
+}
+
+QColor ChessBoardView::borderColor() const
+{
+   return borderBrush_.color();
+}
+
+void ChessBoardView::setBorderColor(QColor color)
+{
+   if(color==borderColor()) return;
+   borderBrush_.setColor(color);
+   repaint();
 }

@@ -62,6 +62,7 @@ private:
    QStackedWidget *commandArea_;
    GameClockView *gameClock_;
    bool customKeyboardMode_;
+   QColor boardBorderColor_;
 };
 
 #endif
