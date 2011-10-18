@@ -47,11 +47,13 @@ public:
    const ChessPosition& position() const; // returns current position
    const ChessMove& lastMove() const;            // returns last move
    const QString& lastSANMove() const; // last move in PGN notation
+   const QString& lastRuMove() const;  // last move in Russian notation
 
    ChessMove interpretMoveString(const std::string& move_str) const; // among moves possible in the current position
 
    const std::vector<ChessMove>& moves() const; // all game moves up to current position
    const QStringList& sanMoves() const; // all game moves in SAN format up to current position
+   const QStringList& ruMoves() const; // all game moves in Russian notation up to current position
    QString toPGN() const; // get all game in PGN notation
 
    const ChessMoveMap& possibleMoves() const; // possible moves for current position
@@ -80,6 +82,7 @@ private:
    std::vector<std::string> positions_; // game positions in the form of fen strings
    std::vector<ChessMove> gameMoves_;   // game moves in coordinate algebraic form
    QStringList sanMoves_;  // game moves in standard algebraic notation
+   QStringList ruMoves_;   // game moves in Russian notation
 
    ChessMoveMap possibleMoves_; // precalculated possible moves from current position
    std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection

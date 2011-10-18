@@ -100,6 +100,9 @@ public:
    int boardMargins() const; // minimum board margins (for fullscreen mode)
    void setBoardMargins(int value);
 
+   bool useRussianNotation() const; // use Russian chess move notation
+   void setUseRussianNotation(bool value);
+
    void flush();
 
 signals:

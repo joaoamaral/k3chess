@@ -37,6 +37,7 @@ public:
    void updateGameClock(ClockActiveSide cas, const ChessClock& whiteClock, const ChessClock& blackClock);
    void appendToMoveList(const QString& str);
    void appendToMoveList(const QStringList& str);
+   void updateMoveList(const QStringList& moves);
    void offerChoice(const CommandOptions& options);
    void enableDefaultKeyProcessing(bool value);
    //

@@ -348,6 +348,21 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
             {
                g_localChessGui.updateShowCaptured();
             }
+            break;
+         case Qt::Key_N:
+            if(modifiers & Qt::AltModifier)
+            {
+               // change notation
+               g_settings.setUseRussianNotation(!g_settings.useRussianNotation());
+               if(gameSession_)
+               {
+                  if(g_settings.useRussianNotation())
+                     g_localChessGui.updateMoveList(gameSession_->game().ruMoves());
+                  else
+                     g_localChessGui.updateMoveList(gameSession_->game().sanMoves());
+               }
+            }
+            break;
          default:
             break;
       }
