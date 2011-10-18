@@ -110,13 +110,16 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
           }
          break;
       default:
-         if(commandPanel_->hasCursor())
+         if((event->modifiers() & Qt::AltModifier)==0)
          {
-            if(commandPanel_->processKey(key)) return;
-         }
-         else if(boardView_->hasCursor())
-         {
-            if(boardView_->processKey(key)) return;
+            if(commandPanel_->hasCursor())
+            {
+               if(commandPanel_->processKey(key)) return;
+            }
+            else if(boardView_->hasCursor())
+            {
+               if(boardView_->processKey(key)) return;
+            }
          }
          //
          emit keyPressed(key, event->modifiers());

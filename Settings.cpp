@@ -685,3 +685,14 @@ void K3ChessSettings::setShowCapturedPieces(bool value)
 {
    settings_.setValue("ShowCapturedPieces", value);
 }
+
+bool K3ChessSettings::useRussianNotation() const
+{
+   return settings_.value("UseRussianNotation", false).toBool();
+}
+
+void K3ChessSettings::setUseRussianNotation(bool value)
+{
+   settings_.setValue("UseRussianNotation", value);
+}
+

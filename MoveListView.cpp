@@ -75,7 +75,7 @@ void MoveListView::regenerateLines()
    //
    lastLine_.clear();
    //
-   int halfMoveMargin = fontMetrics().width("44. XXX");
+   int halfMoveMargin = fontMetrics().width("XX. XXXXX");
    //
    for(unsigned i=0; i<moves_.size(); ++i)
    {
@@ -146,4 +146,10 @@ void MoveListView::dropMoves(unsigned count)
       //
       regenerateLines();
    }
+}
+
+void MoveListView::updateMoves(const QStringList &moves)
+{
+   moves_.clear();
+   addMoves(moves);
 }

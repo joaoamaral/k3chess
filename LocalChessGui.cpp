@@ -292,3 +292,8 @@ void LocalChessGui::updateShowCaptured()
       mainWindow_->hideCapturedPieces();
    }
 }
+
+void LocalChessGui::updateMoveList(const QStringList &slist)
+{
+   mainWindow_->moveList()->updateMoves(slist);
+}

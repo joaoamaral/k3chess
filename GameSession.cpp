@@ -2,6 +2,7 @@
 #include "LocalChessGui.h"
 #include "GlobalStrings.h"
 #include "CommandOptionDefs.h"
+#include "Settings.h"
 
 namespace
 {
@@ -459,7 +460,10 @@ void GameSession::startGame()
    //
    if(!game_.moves().empty())
    {
-      g_localChessGui.appendToMoveList(game_.sanMoves());
+      if(g_settings.useRussianNotation())
+         g_localChessGui.appendToMoveList(game_.ruMoves());
+      else
+         g_localChessGui.appendToMoveList(game_.sanMoves());
    }
    //
    // finished setting up position, can actually start the game
@@ -531,7 +535,14 @@ void GameSession::endGame(GameSessionEndReason reason, ChessGameResult result)
 
 void GameSession::outputLastMove()
 {
-   g_localChessGui.appendToMoveList(game_.lastSANMove());
+   QString moveStr;
+   //
+   if(g_settings.useRussianNotation())
+      moveStr = game_.lastRuMove();
+   else
+      moveStr = game_.lastSANMove();
+   //
+   g_localChessGui.appendToMoveList(moveStr);
 }
 
 void GameSession::clockUpdateTimer()

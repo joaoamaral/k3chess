@@ -54,17 +54,18 @@ void logPositionAndMoves(const ChessPosition& position, const ChessMoveMap& move
    logString(str);
 }
 
-QString toSANMove(const ChessPosition& position, const ChessMoveMap& moves, const ChessMove& move)
+QString toSANMove(const ChessPosition& position,
+                  const ChessMove& move,
+                  ChessMoveType moveType,
+                  const ChessMoveMap& moves,
+                  bool isCheck,
+                  bool isCheckmate)
 {
    // @@note: call this function before move is applied to position
    //
    QString s;
    //
    s.reserve(8);
-   //
-   ChessPosition nextPosition(position);
-   //
-   ChessMoveType moveType = g_chessRules.applyMove(nextPosition, move);
    //
    if(moveType & moveShortCastling)
    {
@@ -147,21 +148,84 @@ QString toSANMove(const ChessPosition& position, const ChessMoveMap& moves, cons
       }
    }
    //
-   ChessMoveMap nextMoves;
-   //
-   g_chessRules.findPossibleMoves(nextPosition, nextMoves);
-   //
-   if(g_chessRules.isKingChecked(nextPosition.sideToMove(), nextPosition))
+   if(isCheckmate)
    {
-      if(nextMoves.empty())
+      s.append('#');
+   }
+   else if(isCheck)
+   {
+      s.append('+');
+   }
+   //
+   return s;
+}
+
+QString toRuMove(const ChessPosition& position,
+                 const ChessMove& move,
+                 ChessMoveType moveType,
+                 bool isCheck,
+                 bool isCheckmate)
+{
+   QString s;
+   //
+   s.reserve(8);
+   //
+   if(moveType & moveShortCastling)
+   {
+      s.append("O-O");
+   }
+   else if(moveType & moveLongCastling)
+   {
+      s.append("O-O-O");
+   }
+   else
+   {
+      ChessPiece piece = position.cell(move.from);
+      switch(piece.type())
       {
-         s.append('#');
+         case ptKing:   s.append(QChar(0x041A));
+                        s.append(QChar(0x0440));
+                        break;
+         case ptQueen:  s.append(QChar(0x0424)); break;
+         case ptRook:   s.append(QChar(0x041B)); break;
+         case ptBishop: s.append(QChar(0x0421)); break;
+         case ptKnight: s.append(QChar(0x041A)); break;
+         default:
+            break;
       }
+      //
+      s.append(move.from.toString().c_str());
+      if(moveType & moveCapture)
+         s.append(QChar(0x003A));
       else
+         s.append(QChar(0x2014));
+      //
+      s.append(move.to.toString().c_str());
+      //
+      if(moveType & movePromotion)
       {
-         s.append('+');
+         switch(piece.type())
+         {
+            case ptQueen:  s.append(QChar(0x0424)); break;
+            case ptRook:   s.append(QChar(0x041B)); break;
+            case ptBishop: s.append(QChar(0x0421)); break;
+            case ptKnight: s.append(QChar(0x041A)); break;
+            default:
+               break;
+         }
       }
    }
+   //
+   if(isCheckmate)
+   {
+      s.append(QChar(0x2A09));
+   }
+   else if(isCheck)
+   {
+      s.append(QChar(0x002B));
+   }
+   //
+   s.append(' ');
    //
    return s;
 }
@@ -492,15 +556,23 @@ bool ChessGame::applyMove(const ChessMove& move)
       return false; // attempt to make an illegal move
    }
    //
-   QString sanMove = toSANMove(position_, possibleMoves_, move);
-   sanMoves_.push_back(sanMove);
+   ChessPosition prevPosition(position_);
    //
    gameMoves_.push_back(move);
    //
-   g_chessRules.applyMove(position_, move);
+   ChessMoveType moveType = g_chessRules.applyMove(position_, move);
    positions_.push_back(position_.toString());
    //
    recalcPossibleMoves();
+   //
+   bool isCheck = g_chessRules.isKingChecked(position_.sideToMove(), position_);
+   bool isCheckmate = possibleMoves_.empty() && isCheck;
+   //
+   QString sanMove = toSANMove(prevPosition, move, moveType, possibleMoves_, isCheck, isCheckmate);
+   QString ruMove = toRuMove(prevPosition, move, moveType, isCheck, isCheckmate);
+   //
+   sanMoves_.push_back(sanMove);
+   ruMoves_.push_back(ruMove);
    //
    if(addPositionOccurrence(positions_.back())>=3)
    {
@@ -543,6 +615,19 @@ const QString& ChessGame::lastSANMove() const
    else
    {
       return sanMoves_.back();
+   }
+}
+
+const QString& ChessGame::lastRuMove() const
+{
+   if(ruMoves_.empty())
+   {
+      static const QString dummy;
+      return dummy;
+   }
+   else
+   {
+      return ruMoves_.back();
    }
 }
 
@@ -650,6 +735,9 @@ bool ChessGame::takebackOneFullMove()
    sanMoves_.pop_back();
    sanMoves_.pop_back();
    //
+   ruMoves_.pop_back();
+   ruMoves_.pop_back();
+   //
    recalcPossibleMoves();
    //
    return true;
@@ -690,4 +778,9 @@ unsigned ChessGame::addPositionOccurrence(const std::string& fen)
 const QStringList & ChessGame::sanMoves() const
 {
    return sanMoves_;
+}
+
+const QStringList & ChessGame::ruMoves() const
+{
+   return ruMoves_;
 }

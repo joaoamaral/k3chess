@@ -12,6 +12,7 @@ public:
 
    void addMove(const QString& move);
    void addMoves(const QStringList& moves);
+   void updateMoves(const QStringList& moves);
    void dropMoves(unsigned count);
    void clearMoves();
 
