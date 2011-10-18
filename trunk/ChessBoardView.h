@@ -18,6 +18,7 @@ public:
    ChessBoardView(QWidget *parent);
 
    int padding() const;                     // chess board border width
+   QColor borderColor() const;
 
    void updatePosition(const ChessPosition& position, // updates position and accompanying data (if provided)
                        const CoordPair& lastMove=CoordPair(),
@@ -32,6 +33,7 @@ public:
    void setShowMoveHints(bool value);
    void setQuickSingleMoveSelection(bool value); // if selected piece has only one allowed move, make that move
    void setDirectCoordinateInput(bool value);
+   void setBorderColor(QColor color);
 
    bool hasCursor() const;
    bool enter();  // to return to active board with suspended selection, returns false if board is not active

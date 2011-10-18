@@ -4,7 +4,7 @@
 #include "KeyMapper.h"
 #include <QCloseEvent>
 
-const int cDefaultCommandPanelHeight = 38;
+const int cDefaultCommandPanelHeight = 48;
 
 K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    QMainWindow(parent), boardView_(0),
@@ -19,6 +19,8 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    commandPanel_ = new CommandPanel(this);
    commandArea_ = new QStackedWidget(this);
    gameClock_ = new GameClockView(this);
+   //
+   boardBorderColor_ = boardView_->borderColor();
    //
    commandArea_->addWidget(commandPanel_);
    commandArea_->addWidget(gameClock_);
@@ -60,7 +62,9 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
       commandPanel_->setBackgroundColor(Qt::white);
       gameClock_->setBackgroundColor(Qt::white);
    }
-   gameClock_->setFont(QFont("Sans", commandPanel_->font().pointSize()*4/3));
+   QFont clockFont("Sans", commandPanel_->font().pointSize()*4/3);
+   gameClock_->setActiveFont(clockFont);
+   gameClock_->setInactiveFont(clockFont);
 }
 
 void K3ChessMainWindow::resizeEvent(QResizeEvent *)
@@ -148,10 +152,11 @@ void K3ChessMainWindow::updateControlLayout()
    //
    // find appropriate board size
    int pad = boardView_->padding();
-   int w1 = width()-pad*2;
-   int h1 = height()-pad*2;
-   int wboard = (w1/64)*64 + pad*2;
-   int hboard = ((h1-cDefaultCommandPanelHeight)/64)*64 + pad*2;
+   int bm = g_settings.boardMargins();
+   int w1 = width()-pad*2-bm;
+   int h1 = height()-pad*2-bm;
+   int wboard = (w1/8)*8 + pad*2;
+   int hboard = ((h1-cDefaultCommandPanelHeight)/8)*8 + pad*2;
    //
    int sboard = qMin(wboard, hboard);
    //
@@ -159,17 +164,21 @@ void K3ChessMainWindow::updateControlLayout()
    int y0 = (height()-sboard-cDefaultCommandPanelHeight)/2;
    int t0 = qMin(x0, y0);
    //
-   QRect boardRect(t0, t0, sboard, sboard);
-   QRect commandRect(boardRect.left(), boardRect.bottom()+1,
-                     boardRect.width(), cDefaultCommandPanelHeight);
-
+   if(t0<=24)
+      boardView_->setBorderColor(Qt::white);
+   else
+      boardView_->setBorderColor(boardBorderColor_);
    //
+   QRect boardRect(t0, t0, sboard, sboard);
+   QRect commandRect;
    QRect consoleRect;
    QRect moveListRect;
    //
    if(width()<height())
    {
       // portrait orientation
+      commandRect = QRect(0, boardRect.bottom()+1,
+                          rect().width(), cDefaultCommandPanelHeight);
       consoleRect = QRect(0, commandRect.bottom()+1,
                           width()*31/50, height()-commandRect.bottom()-1);
       moveListRect = QRect(consoleRect.right()+1, consoleRect.top(),
@@ -177,9 +186,12 @@ void K3ChessMainWindow::updateControlLayout()
    }
    else
    {
+      int x1 = boardRect.right() + t0;
+      commandRect = QRect(0, boardRect.bottom()+1,
+                          x1, cDefaultCommandPanelHeight);
       // landscape orientations
-      consoleRect = QRect(boardRect.right()+1, boardRect.top(),
-                          width()-boardRect.right()-1, boardRect.height()*19/50);
+      consoleRect = QRect(x1+1, boardRect.top(),
+                          width()-x1-1, boardRect.height()*19/50);
       moveListRect = QRect(consoleRect.left(), consoleRect.bottom()+1,
                            consoleRect.width(), boardRect.height()-consoleRect.height());
    }

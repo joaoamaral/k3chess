@@ -344,10 +344,7 @@ void GlobalUISession::keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers)
             break;
          case Qt::Key_U:
             g_settings.setShowCapturedPieces(!g_settings.showCapturedPieces());
-            if(gameSession_)
-            {
-               g_localChessGui.updateShowCaptured();
-            }
+            g_localChessGui.updateShowCaptured();
             break;
          case Qt::Key_N:
             if(modifiers & Qt::AltModifier)
@@ -393,7 +390,7 @@ void GlobalUISession::showExtMenu()
 
 void GlobalUISession::nextKeyRemapPrompt()
 {
-   if(keyRemapIdx_==g_keyMapper.keyDefs().size())
+   if(keyRemapIdx_==(int)g_keyMapper.keyDefs().size())
    {
       keyRemapIdx_ = -1;
       // end of key remapping sequence,
