@@ -48,6 +48,7 @@ public:
    void switchToClockView();
    void switchToCommandView();
    void updateShowClock();
+   void updateShowCaptured();
 
 signals:
    void userMoves(const CoordPair& pair);

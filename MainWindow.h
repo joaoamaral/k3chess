@@ -35,6 +35,9 @@ public:
    int switchToCommandView();
    int setCommandAreaMode(int idx);
 
+   void showCapturedPieces();
+   void hideCapturedPieces();
+
 protected:
    virtual void closeEvent(QCloseEvent*);
 

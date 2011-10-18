@@ -674,5 +674,14 @@ bool K3ChessSettings::showGameClock() const
 void K3ChessSettings::setShowGameClock(bool value)
 {
    settings_.setValue("ShowGameClock", value);
-   // new setting will be applied when next game starts
+}
+
+bool K3ChessSettings::showCapturedPieces() const
+{
+   return settings_.value("ShowCapturedPieces", true).toBool();
+}
+
+void K3ChessSettings::setShowCapturedPieces(bool value)
+{
+   settings_.setValue("ShowCapturedPieces", value);
 }
