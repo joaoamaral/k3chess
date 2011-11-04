@@ -19,7 +19,6 @@ LocalChessGui::LocalChessGui() : clockDisplay_(false)
    {
       mainWindow_->setWindowFlags(mainWindow_->windowFlags() | Qt::FramelessWindowHint);
       mainWindow_->showFullScreen();
-      mainWindow_->show();
    }
    else
    {

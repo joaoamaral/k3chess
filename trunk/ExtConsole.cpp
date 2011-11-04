@@ -58,7 +58,7 @@ void ExtConsole::updateLayout()
    {
       s = w/11;
       if(s>h/2) s = h/2;
-      if(s>cMaxCaptPieceSize) s = cMaxCaptPieceSize;
+      if(s>cMaxCaptPieceSize*4/3) s = cMaxCaptPieceSize*4/3;
       capturedPieces_->setGeometry(1, h-s+1, w, s);
    }
    else
