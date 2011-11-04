@@ -24,7 +24,7 @@ const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "K3Chess game";
 const QString cDefaultSiteName = "?";
-const int cDefaultBoardMargins = 28;
+const int cDefaultBoardMargins = 16;
 
 bool containsDigits(const QString& s)
 {
