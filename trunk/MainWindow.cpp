@@ -14,7 +14,6 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
 {
    boardView_ = new ChessBoardView(this);
    extConsole_ = new ExtConsole(this);
-   //@@console_ = new QPlainTextEdit(this);
    moveList_ = new MoveListView(this);
    commandPanel_ = new CommandPanel(this);
    commandArea_ = new QStackedWidget(this);
@@ -59,12 +58,11 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    if(g_settings.profile().contains("ebook"))
    {
       setStyleSheet(cUIStyleSheet_Ebook);
-      commandPanel_->setBackgroundColor(Qt::white);
-      gameClock_->setBackgroundColor(Qt::white);
    }
-   QFont clockFont("Sans", commandPanel_->font().pointSize()*4/3);
-   gameClock_->setActiveFont(clockFont);
-   gameClock_->setInactiveFont(clockFont);
+   else
+   {
+      setStyleSheet(cUIStyleSheet_Normal);
+   }
 }
 
 void K3ChessMainWindow::resizeEvent(QResizeEvent *)

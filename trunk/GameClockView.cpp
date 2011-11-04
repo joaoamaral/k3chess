@@ -2,45 +2,21 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QPixmap>
+#include <QStyle>
+#include <QPalette>
 
 namespace
 {
 
 const int cHorizMargin = 12;
-const QColor cDefaultBackgroundColor(213, 196, 170);
-
-QColor blendColor(QColor c, QColor d)
-{
-   return QColor((c.red()+d.red())/2,
-                 (c.green()+d.green())/2,
-                 (c.blue()+d.blue())/2);
-}
 
 }
 
 GameClockView::GameClockView(QWidget *parent) :
    QWidget(parent),
-   backgroundBrush_(cDefaultBackgroundColor),
-   textColor_(Qt::black),
-   inactiveTextColor_(blendColor(cDefaultBackgroundColor, Qt::black)),
-   activeSide_(casNone), activeFont_("Sans", 12), inactiveFont_("Sans", 12)
+   activeSide_(casNone)
 {
 
-}
-
-void GameClockView::setBackgroundColor(QColor color)
-{
-   if(backgroundBrush_.color()==color) return;
-   backgroundBrush_.setColor(color);
-   repaint();
-}
-
-void GameClockView::setTextColor(QColor color)
-{
-   if(textColor_==color) return;
-   textColor_ = color;
-   inactiveTextColor_ = blendColor(textColor_, backgroundBrush_.color());
-   repaint();
 }
 
 void GameClockView::resizeEvent(QResizeEvent*)
@@ -69,13 +45,13 @@ QString GameClockView::getClockText(const QTime &time) const
 
 void GameClockView::updateLayout()
 {
-   QFontMetrics activeFontMetrics(activeFont_);
-   int clockWidth = activeFontMetrics.width("_0:00:00");
-   int h1 = activeFontMetrics.height();
+   QFontMetrics fm(fontMetrics());
+   int clockWidth = fm.width("_0:00:00");
+   int h1 = fm.height();
    int y1 = (rect().height()-h1)/2;
    leftClockRect_ = QRect(cHorizMargin, y1, clockWidth, h1);
-   leftPlayerNameRect_ = QRect(cHorizMargin+clockWidth, y1, activeFontMetrics.width(leftPlayerName_), h1);
-   int w2 = activeFontMetrics.width(rightPlayerName_);
+   leftPlayerNameRect_ = QRect(cHorizMargin+clockWidth, y1, fm.width(leftPlayerName_), h1);
+   int w2 = fm.width(rightPlayerName_);
    rightPlayerNameRect_ = QRect(rect().width()-cHorizMargin-clockWidth-w2, y1, w2, h1);
    rightClockRect_ = QRect(rect().width()-cHorizMargin-clockWidth, y1, clockWidth, h1);
 }
@@ -121,46 +97,25 @@ void GameClockView::setActiveSide(ClockActiveSide value)
 
 void GameClockView::draw(QPainter &painter, const QRect &clipRect)
 {
+   QColor textColor = palette().color(QPalette::Text);
+   QColor backgroundColor = palette().color(QPalette::Background);
+   //
    painter.setPen(Qt::NoPen);
-   painter.setBrush(backgroundBrush_);
+   painter.setBrush(backgroundColor);
    painter.drawRect(clipRect);
    //
-   if(activeSide_==casLeft)
-      painter.setPen(textColor_);
-   else
-      painter.setPen(inactiveTextColor_);
+   painter.setFont(font());
+   painter.setBackgroundMode(Qt::OpaqueMode);
+   painter.setBackground(backgroundColor);
    //
-   painter.setFont(activeFont_);
+   style()->drawItemText(&painter, leftClockRect_, Qt::AlignVCenter, palette(), activeSide_!=casRight, leftClockText_);
+   style()->drawItemText(&painter, leftPlayerNameRect_, Qt::AlignVCenter, palette(), activeSide_!=casRight, leftPlayerName_);
    //
-   painter.drawText(leftClockRect_, leftClockText_, Qt::AlignVCenter | Qt::AlignLeft);
-   painter.drawText(leftPlayerNameRect_, leftPlayerName_);
-   //
-   if(activeSide_==casRight)
-      painter.setPen(textColor_);
-   else
-      painter.setPen(inactiveTextColor_);
-   //
-   painter.setFont(inactiveFont_);
-   //
-   painter.drawText(rightClockRect_, rightClockText_, Qt::AlignVCenter | Qt::AlignRight);
-   painter.drawText(rightPlayerNameRect_, rightPlayerName_);
+   style()->drawItemText(&painter, rightClockRect_, Qt::AlignVCenter, palette(), activeSide_!=casLeft, rightClockText_);
+   style()->drawItemText(&painter, rightPlayerNameRect_, Qt::AlignVCenter, palette(), activeSide_!=casLeft, rightPlayerName_);
 }
 
 void GameClockView::mousePressEvent(QMouseEvent *)
 {
    emit click();
-}
-
-void GameClockView::setActiveFont(const QFont& font)
-{
-   activeFont_ = font;
-   updateLayout();
-   repaint();
-}
-
-void GameClockView::setInactiveFont(const QFont& font)
-{
-   inactiveFont_ = font;
-   updateLayout();
-   repaint();
 }

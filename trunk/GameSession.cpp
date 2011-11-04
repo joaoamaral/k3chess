@@ -12,8 +12,6 @@ const int cGetReadyTimeout = 5000; // ms
 // he/she/it is considered not ready and the game session aborts
 
 const int cClockUpdateInterval = 100; // ms
-const int cClockRedrawInterval = 10;  // sec
-
 
 QString gameResultToMessage(ChessGameResult result)
 {
@@ -53,11 +51,16 @@ GameSession::GameSession(ChessPlayer *whitePlayer, ChessPlayer *blackPlayer,
    game_(whitePlayer->name(), blackPlayer->name()),
    whitePlayerReady_(false), blackPlayerReady_(false),
    sessionInfo_(initialInfo), whiteDrawOfferActive_(false), blackDrawOfferActive_(false),
-   canDrawByRepetition_(false)
+   canDrawByRepetition_(false), clockRedrawInterval_(1)
 {
    QObject::connect(&getReadyTimer_, SIGNAL(timeout()), this, SLOT(getReadyTimeout()), Qt::UniqueConnection);
    QObject::connect(&clockUpdateTimer_, SIGNAL(timeout()), this, SLOT(clockUpdateTimer()), Qt::UniqueConnection);
    QObject::connect(&g_localChessGui, SIGNAL(clockUpdateRequest()), this, SLOT(clockUpdateRequest()), Qt::UniqueConnection);
+   //
+   if(g_settings.profile().contains("ebook"))
+   {
+      clockRedrawInterval_ = 10; // seconds
+   }
    //
    connectPlayers();
    connectGame();
@@ -157,7 +160,7 @@ void GameSession::white_moves(const ChessMove& move)
       whiteClock_.remainingTime += whiteClock_.moveIncrement;
       //
       outputLastMove();
-      updateClockDisplay();
+      //updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       updateCapturedPieces();
@@ -253,7 +256,7 @@ void GameSession::black_moves(const ChessMove& move)
       blackClock_.remainingTime += blackClock_.moveIncrement;
       //
       outputLastMove();
-      updateClockDisplay();
+      //updateClockDisplay();
       g_localChessGui.updatePosition(game_.position(), game_.lastMove(),
                                      game_.possibleMoves());
       updateCapturedPieces();
@@ -470,7 +473,7 @@ void GameSession::startGame()
    //
    g_localChessGui.updatePosition(game_.position(), game_.lastMove(), game_.possibleMoves());
    updateCapturedPieces();
-   updateClockDisplay();
+   //updateClockDisplay();
    //
    counter_.restart();
    //
@@ -558,7 +561,7 @@ void GameSession::clockUpdateTimer()
          {
             endGame(reasonGameFinished, resultBlackWonOnTime);
          }
-         if(((whiteClock_.remainingTime/1000)%10)==0)
+         if(((whiteClock_.remainingTime/1000)%clockRedrawInterval_)==0)
          {
             updateClockDisplay();
          }
@@ -575,7 +578,7 @@ void GameSession::clockUpdateTimer()
          {
             endGame(reasonGameFinished, resultWhiteWonOnTime);
          }
-         if(((blackClock_.remainingTime/1000)%cClockRedrawInterval)==0)
+         if(((blackClock_.remainingTime/1000)%clockRedrawInterval_)==0)
          {
             updateClockDisplay();
          }
@@ -607,7 +610,7 @@ void GameSession::white_requestsTakeback()
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
          updateCapturedPieces();
-         updateClockDisplay();
+         //updateClockDisplay();
       }
    }
    requestMove(whitePlayer_);
@@ -650,7 +653,7 @@ void GameSession::black_requestsTakeback()
          g_localChessGui.updatePosition(game_.position(),
             game_.lastMove(), game_.possibleMoves());
          updateCapturedPieces();
-         updateClockDisplay();
+         //updateClockDisplay();
       }
    }
    requestMove(blackPlayer_);

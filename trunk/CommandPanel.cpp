@@ -53,9 +53,10 @@ void CommandPanel::setLabels()
    std::list<CommandOption>::const_iterator it = options_.items().begin(), itEnd = options_.items().end();
    for(;it!=itEnd;++it)
    {
-      selectable_.push_back(it->enabled && it->id>0);
-      enabled_.push_back(it->enabled);
-      if(it->id>0)
+      const CommandOption& cmd = *it;
+      selectable_.push_back(cmd.enabled && cmd.id>0);
+      enabled_.push_back(cmd.enabled);
+      if(cmd.id>0)
          staticMode_ = false;
    }
    //
@@ -180,9 +181,10 @@ void CommandPanel::updateLabelPositions()
          else
          {
             // center align current line
-            centerAlignRects(rects_, lineStartIdx, rects_.size()-1);
+            centerAlignRects(rects_, lineStartIdx, rects_.size()-2);
             //
-            lineStartIdx = rects_.size();
+            lineStartIdx = rects_.size()-1;
+            //
             //
             nextTopLeft.setX(0);
             nextTopLeft.setY(lastRect.bottom()+cVerticalLabelPadding);
@@ -246,16 +248,20 @@ void CommandPanel::paintEvent(QPaintEvent *event)
 
 void CommandPanel::drawPanel(QPainter& painter, const QRect& clipRect)
 {
+   QColor textColor = palette().color(QPalette::Text);
+   QColor backgroundColor = palette().color(QPalette::Background);
+   QColor disabledTextColor = blendColor(textColor, backgroundColor);
+   //
    painter.setRenderHint(QPainter::TextAntialiasing);
    //
    painter.setPen(Qt::NoPen);
-   painter.setBrush(backgroundBrush_);
+   painter.setBrush(backgroundColor);
    painter.drawRect(clipRect);
    //
    painter.setFont(font());
-   painter.setPen(textColor_);
+   painter.setPen(textColor);
    painter.setBackgroundMode(Qt::OpaqueMode);
-   painter.setBackground(backgroundBrush_);
+   painter.setBackground(backgroundColor);
    //
    std::list<CommandOption>::const_iterator it = options_.items().begin(), itEnd = options_.items().end();
    for(int i=0;it!=itEnd;++it, ++i)
@@ -270,19 +276,19 @@ void CommandPanel::drawPanel(QPainter& painter, const QRect& clipRect)
       //
       if(i==pressedIndex_)
       {
-         painter.setPen(backgroundBrush_.color());
-         painter.setBackground(textColor_);
+         painter.setPen(backgroundColor);
+         painter.setBackground(textColor);
          painter.drawText(textRect, Qt::AlignHCenter, it->text());
       }
       else if(enabled_[i])
       {
-         painter.setPen(textColor_);
+         painter.setPen(textColor);
          //
          QRect underlineRect(rect.left(), rect.bottom()-cUnderlineHeight,
                              rect.width()-1, cUnderlineHeight);
          if(i==highlightedIndex_ && showHighlight_)
          {
-            painter.setBrush(textColor_);
+            painter.setBrush(textColor);
             painter.drawRect(underlineRect);
          }
          //
@@ -290,7 +296,7 @@ void CommandPanel::drawPanel(QPainter& painter, const QRect& clipRect)
       }
       else
       {
-         painter.setPen(disabledTextColor_);
+         painter.setPen(disabledTextColor);
          painter.drawText(textRect, Qt::AlignCenter, it->text());
       }
    }

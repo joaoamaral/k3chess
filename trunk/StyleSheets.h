@@ -4,5 +4,6 @@
 #include <QString>
 
 extern const QString cUIStyleSheet_Ebook;
+extern const QString cUIStyleSheet_Normal;
 
 #endif

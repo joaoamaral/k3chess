@@ -19,6 +19,7 @@ LocalChessGui::LocalChessGui() : clockDisplay_(false)
    {
       mainWindow_->setWindowFlags(mainWindow_->windowFlags() | Qt::FramelessWindowHint);
       mainWindow_->showFullScreen();
+      mainWindow_->show();
    }
    else
    {
@@ -101,7 +102,15 @@ void LocalChessGui::beginGame(
    mainWindow_->gameClock()->setRightPlayerName(blackPlayerName);
    mainWindow_->console()->appendPlainText(
       getGameAnnouncementText(whitePlayerName, blackPlayerName, profile, isResumedGame));
-   updateGameClock(casNone, profile.whiteClock, profile.blackClock);
+   ClockActiveSide cas = casNone;
+   switch(profile.type)
+   {
+      case gameComputerBlack: cas = casLeft; break;
+      case gameComputerWhite: cas = casRight; break;
+      default:
+         break;
+   }
+   updateGameClock(cas, profile.whiteClock, profile.blackClock);
    g_localChessGui.switchToClockView();
 }
 

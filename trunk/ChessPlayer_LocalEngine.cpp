@@ -44,8 +44,8 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
 
 ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
                                                  const QString& profileName) :
-   ChessPlayer(info.name), engineProcess_(this),
-   readyRequest_(false), info_(info), inForceMode_(false),
+   ChessPlayer(info.name), info_(info), readyRequest_(false),
+   engineProcess_(this), inForceMode_(false),
    profileName_(profileName.isEmpty() ? QString("Default") : profileName),
    forceMoveTimeout_(cDefaultUciForceMoveTimeout),
    randomizeMoveTimeout_(cRandomizeMoveTimeout), weakMode_(false)
@@ -591,12 +591,15 @@ bool ChessPlayer_LocalEngine::setChess960(bool value)
       if(info_.supports960())
       {
          tellEngine(info_.commandStandard.toStdString());
+         return true;
       }
    }
    else if(info_.supports960())
    {
       tellEngine(info_.command960.toStdString());
+      return true;
    }
+   return false;
 }
 
 const QString& ChessPlayer_LocalEngine::profileName() const
