@@ -18,6 +18,7 @@ public:
    void setPiecesImage(const QImage& image);
    void updateContents(const ChessPosition& initialPosition,
                        const ChessPosition& currentPosition);
+   void setNumberFont(const QFont& font);
 
 protected:
    virtual void paintEvent(QPaintEvent*);
@@ -42,6 +43,7 @@ private:
    QImage originalPieces_;
    std::vector<QImage> whitePieces_;
    std::vector<QImage> blackPieces_;
+   QFont numberFont_;
 };
 
 #endif

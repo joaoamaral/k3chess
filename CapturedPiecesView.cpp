@@ -14,7 +14,8 @@ CapturedPiecesView::CapturedPiecesView(QWidget *parent) :
    QWidget(parent),
    whiteCaptPieces_(ptPawn-ptQueen+1),
    blackCaptPieces_(ptPawn-ptQueen+1),
-   linePen_(cDefaultLinePenColor)
+   linePen_(cDefaultLinePenColor),
+   numberFont_("Sans", 9)
 {
 }
 
@@ -68,7 +69,9 @@ void CapturedPiecesView::draw(QPainter &painter, const QRect &clipRect)
    painter.setPen(linePen_);
    painter.drawLine(0, 0, rect().width(), 0);
    //
+   painter.setBackgroundMode(Qt::TransparentMode);
    painter.setPen(textColor);
+   painter.setFont(numberFont_);
    //
    if(clipRect.intersects(whiteRect_))
    {
@@ -96,25 +99,28 @@ void CapturedPiecesView::drawPieces(QPainter& painter, const QRect& rect,
                                     const std::vector<int>& captured,
                                     PieceColor color)
 {
-   QFontMetrics fm(fontMetrics());
+   QFontMetrics fm(numberFont_);
    QSize sz(fm.width("8"), fm.height());
    QRect r(rect.left(), rect.top(), (rect.width())/5, rect.height());
-   painter.setPen(linePen_);
    const std::vector<QImage>& images = color==pcWhite ? whitePieces_ : blackPieces_;
    for(unsigned i=0; i<=(ptPawn-ptQueen); ++i)
    {
-      if(captured[i]>0)
+      int ncap = captured[i];
+      //
+      if(ncap>0)
       {
          QPoint p(r.left()+r.width()/6, r.top()+r.height()/6);
          //painter.drawText(p.x(), p.y()+12, QString::number(i));
          const QImage& pieceImage = images[i];
          painter.drawImage(p, pieceImage);
-         if(captured[i]>1)
+
+         if(ncap>1)
          {
-            QRect r2(r.right()-sz.width(), r.bottom()-sz.height()/8, sz.width(), sz.height());
-            /*drawOutlinedText(painter, numberColor_, Qt::white,
-                             p2, QString::number(captured[i]));*/
-            style()->drawItemText(&painter, r2, Qt::AlignVCenter, palette(), true, QString::number(captured[i]));
+            QPoint p2(r.right()-sz.width()*72/100, r.bottom()-sz.height()/8);
+            //drawOutlinedText(painter, painter.pen().color(), Qt::white,
+            //                 p2, QString::number(ncap));
+            painter.drawText(p2, QString::number(ncap));
+            //style()->drawItemText(&painter, r2, Qt::AlignVCenter, palette(), true, QString::number(captured[i]), QPalette::WindowText);
          }
       }
       r.moveLeft(r.right());
@@ -125,16 +131,19 @@ void CapturedPiecesView::paintEvent(QPaintEvent *event)
 {
    QPixmap pix(size());
    QPainter buffer(&pix);
+   QPainter painter(this);
    //
    buffer.setClipRect(event->rect());
+   buffer.setFont(painter.font());
    draw(buffer, event->rect());
    //
-   QPainter painter(this);
    painter.drawPixmap(QPoint(0, 0), pix);
 }
 
 void CapturedPiecesView::resizeImages(int size)
 {
+   /*numberFont_.setPixelSize(size*2/5);*/
+   //
    QImage resizedPieces = originalPieces_.scaledToHeight(
             size*4, Qt::SmoothTransformation);
    //
@@ -168,10 +177,10 @@ void CapturedPiecesView::updateLayout()
    //
    int sblock = s*5;
    //
-   whiteRect_ = QRect(0, h-s, sblock, s);
-   blackRect_ = QRect(w-sblock, h-s, sblock, s);
+   whiteRect_ = QRect(0, h-s, sblock+s/2, s);
+   blackRect_ = QRect(w-sblock-s/2, h-s, sblock+s/2, s);
    //
-   int imgSize = s*3/4;
+   int imgSize = s*4/5;
    resizeImages(imgSize);
    //
    repaint();
@@ -199,4 +208,10 @@ void CapturedPiecesView::countFromPosition(const ChessPosition &position, int si
          }
       }
    }
+}
+
+void CapturedPiecesView::setNumberFont(const QFont& font)
+{
+   numberFont_ = font;
+   repaint();
 }

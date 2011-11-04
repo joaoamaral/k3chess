@@ -58,10 +58,30 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    if(g_settings.profile().contains("ebook"))
    {
       setStyleSheet(cUIStyleSheet_Ebook);
+      //
+      QFont clockFont(font());
+      clockFont.setPixelSize(15);
+      clockFont.setBold(false);
+      gameClock_->setClockFont(clockFont);
+      //
+      QFont captNumberFont(font());
+      captNumberFont.setPixelSize(14);
+      captNumberFont.setBold(false);
+      capturedPieces()->setNumberFont(captNumberFont);
    }
    else
    {
       setStyleSheet(cUIStyleSheet_Normal);
+      //
+      QFont clockFont(font());
+      clockFont.setPixelSize(12);
+      clockFont.setBold(false);
+      gameClock_->setClockFont(clockFont);
+      //
+      QFont captNumberFont(font());
+      captNumberFont.setPixelSize(11);
+      captNumberFont.setBold(false);
+      capturedPieces()->setNumberFont(captNumberFont);
    }
 }
 

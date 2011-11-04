@@ -14,7 +14,8 @@ const int cHorizMargin = 12;
 
 GameClockView::GameClockView(QWidget *parent) :
    QWidget(parent),
-   activeSide_(casNone)
+   activeSide_(casNone),
+   clockFont_("Sans", 8)
 {
 
 }
@@ -30,10 +31,11 @@ void GameClockView::paintEvent(QPaintEvent *event)
    QPixmap pix(size());
    QPainter buffer(&pix);
    //
+   QPainter painter(this);
+   //
    buffer.setClipRect(event->rect());
    draw(buffer, event->rect());
    //
-   QPainter painter(this);
    painter.drawPixmap(QPoint(0, 0), pix);
 }
 
@@ -45,7 +47,7 @@ QString GameClockView::getClockText(const QTime &time) const
 
 void GameClockView::updateLayout()
 {
-   QFontMetrics fm(fontMetrics());
+   QFontMetrics fm(clockFont_);
    int clockWidth = fm.width("_0:00:00");
    int h1 = fm.height();
    int y1 = (rect().height()-h1)/2;
@@ -104,18 +106,22 @@ void GameClockView::draw(QPainter &painter, const QRect &clipRect)
    painter.setBrush(backgroundColor);
    painter.drawRect(clipRect);
    //
-   painter.setFont(font());
-   painter.setBackgroundMode(Qt::OpaqueMode);
-   painter.setBackground(backgroundColor);
+   painter.setPen(textColor);
+   painter.setFont(clockFont_);
    //
-   style()->drawItemText(&painter, leftClockRect_, Qt::AlignVCenter, palette(), activeSide_!=casRight, leftClockText_);
-   style()->drawItemText(&painter, leftPlayerNameRect_, Qt::AlignVCenter, palette(), activeSide_!=casRight, leftPlayerName_);
-   //
-   style()->drawItemText(&painter, rightClockRect_, Qt::AlignVCenter, palette(), activeSide_!=casLeft, rightClockText_);
-   style()->drawItemText(&painter, rightPlayerNameRect_, Qt::AlignVCenter, palette(), activeSide_!=casLeft, rightPlayerName_);
+   painter.drawText(leftClockRect_, Qt::AlignCenter, leftClockText_);
+   painter.drawText(leftPlayerNameRect_, Qt::AlignCenter, leftPlayerName_);
+   painter.drawText(rightClockRect_, Qt::AlignCenter, rightClockText_);
+   painter.drawText(rightPlayerNameRect_, Qt::AlignCenter, rightPlayerName_);
 }
 
 void GameClockView::mousePressEvent(QMouseEvent *)
 {
    emit click();
+}
+
+void GameClockView::setClockFont(const QFont &font)
+{
+   clockFont_ = font;
+   repaint();
 }
