@@ -38,10 +38,7 @@ private:
    std::vector<int> blackCaptPieces_;
    QRect whiteRect_;
    QRect blackRect_;
-   QBrush backgroundBrush_;
    QPen linePen_;
-   QColor numberColor_;
-   QFont numberFont_;
    QImage originalPieces_;
    std::vector<QImage> whitePieces_;
    std::vector<QImage> blackPieces_;

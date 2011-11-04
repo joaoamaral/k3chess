@@ -61,8 +61,8 @@ private:
 private:
    EngineInfo info_;
    QString opponentName_;
-   QProcess engineProcess_;
    bool readyRequest_;
+   QProcess engineProcess_;
    EngineType type_;
    QTimer uciokTimer_;
    std::string incompleteLine_;

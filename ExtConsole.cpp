@@ -3,7 +3,7 @@
 namespace
 {
 
-const int cMaxCaptPieceSize = 32;
+const int cMaxCaptPieceSize = 64;
 
 }
 

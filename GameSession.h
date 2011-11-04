@@ -114,6 +114,8 @@ private:
    bool blackDrawOfferActive_;
    bool canDrawByRepetition_;
    //
+   int clockRedrawInterval_; // sec
+   //
    std::map<std::string, unsigned> positionOccurrences_; // for theefold repetition detection
 };
 

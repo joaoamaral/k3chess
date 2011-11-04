@@ -3,21 +3,18 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QStyle>
 
 namespace
 {
 const QColor cDefaultLinePenColor(0xD0, 0xD0, 0xD0);
-const QColor cDefaultNumberColor(0xB0, 0xB0, 0xB0);
 }
 
 CapturedPiecesView::CapturedPiecesView(QWidget *parent) :
    QWidget(parent),
    whiteCaptPieces_(ptPawn-ptQueen+1),
    blackCaptPieces_(ptPawn-ptQueen+1),
-   backgroundBrush_(Qt::white),
-   linePen_(cDefaultLinePenColor),
-   numberColor_(cDefaultNumberColor),
-   numberFont_("Sans")
+   linePen_(cDefaultLinePenColor)
 {
 }
 
@@ -61,12 +58,17 @@ void CapturedPiecesView::resizeEvent(QResizeEvent *)
 
 void CapturedPiecesView::draw(QPainter &painter, const QRect &clipRect)
 {
+   QColor textColor = palette().color(QPalette::Text);
+   QColor backgroundColor = palette().color(QPalette::Background);
+   //
    painter.setPen(Qt::NoPen);
-   painter.setBrush(backgroundBrush_);
+   painter.setBrush(backgroundColor);
    painter.drawRect(clipRect);
    //
    painter.setPen(linePen_);
    painter.drawLine(0, 0, rect().width(), 0);
+   //
+   painter.setPen(textColor);
    //
    if(clipRect.intersects(whiteRect_))
    {
@@ -94,7 +96,7 @@ void CapturedPiecesView::drawPieces(QPainter& painter, const QRect& rect,
                                     const std::vector<int>& captured,
                                     PieceColor color)
 {
-   QFontMetrics fm(numberFont_);
+   QFontMetrics fm(fontMetrics());
    QSize sz(fm.width("8"), fm.height());
    QRect r(rect.left(), rect.top(), (rect.width())/5, rect.height());
    painter.setPen(linePen_);
@@ -109,9 +111,10 @@ void CapturedPiecesView::drawPieces(QPainter& painter, const QRect& rect,
          painter.drawImage(p, pieceImage);
          if(captured[i]>1)
          {
-            QPoint p2(r.right()-sz.width(), r.bottom()-sz.height()/8);
-            drawOutlinedText(painter, numberColor_, Qt::white,
-                             p2, QString::number(captured[i]));
+            QRect r2(r.right()-sz.width(), r.bottom()-sz.height()/8, sz.width(), sz.height());
+            /*drawOutlinedText(painter, numberColor_, Qt::white,
+                             p2, QString::number(captured[i]));*/
+            style()->drawItemText(&painter, r2, Qt::AlignVCenter, palette(), true, QString::number(captured[i]));
          }
       }
       r.moveLeft(r.right());
@@ -171,8 +174,6 @@ void CapturedPiecesView::updateLayout()
    int imgSize = s*3/4;
    resizeImages(imgSize);
    //
-   numberFont_.setPixelSize(s/3);
-   //
    repaint();
 }
 
@@ -199,4 +200,3 @@ void CapturedPiecesView::countFromPosition(const ChessPosition &position, int si
       }
    }
 }
-
