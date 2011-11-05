@@ -125,11 +125,8 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
    {
       case Qt::Key_Refresh:
          {
-            // this is a cludge, because repaint() does not
-            // always trigger actual repaint
-            resize(width(), height()+1);
-            resize(width(), height());
-          }
+            refresh();
+         }
          break;
       default:
          if((event->modifiers() & Qt::AltModifier)==0)
@@ -260,4 +257,13 @@ void K3ChessMainWindow::showCapturedPieces()
 void K3ChessMainWindow::hideCapturedPieces()
 {
    extConsole_->hideCapturedPieces();
+}
+
+void K3ChessMainWindow::refresh()
+{
+   // this is a cludge, because repaint() does not
+   // always trigger actual repaint
+   int w = width(), h = height();
+   resize(w, h+1);
+   resize(w, h);
 }
