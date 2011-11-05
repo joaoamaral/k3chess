@@ -263,7 +263,12 @@ void K3ChessMainWindow::refresh()
 {
    // this is a cludge, because repaint() does not
    // always trigger actual repaint
-   int w = width(), h = height();
-   resize(w, h+1);
-   resize(w, h);
+   if(height()%2)
+   {
+      resize(width(), height()-1);
+   }
+   else
+   {
+      resize(width(), height()+1);
+   }
 }
