@@ -38,6 +38,8 @@ public:
    void showCapturedPieces();
    void hideCapturedPieces();
 
+   void refresh();
+
 protected:
    virtual void closeEvent(QCloseEvent*);
 

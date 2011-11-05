@@ -94,6 +94,7 @@ void LocalChessGui::beginGame(
       const QString& whitePlayerName, const QString& blackPlayerName,
       const GameProfile& profile, bool isResumedGame)
 {
+   mainWindow_->refresh();
    mainWindow_->moveList()->clearMoves();
    mainWindow_->console()->clear();
    mainWindow_->boardView()->setInitialCursorPos(ChessCoord());
