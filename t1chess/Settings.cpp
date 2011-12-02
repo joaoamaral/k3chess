@@ -14,7 +14,7 @@
 namespace
 {
 
-const QString cK3ChessIniPath = "./K3Chess.ini";
+const QString cK3ChessIniPath = "./T1Chess.ini";
 const QString cDefaultKeymapIniFile = "./keys.ini";
 const QString cDefaultPlayerClockSetup = "15 0";
 const QString cDefaultEngineClockSetup = "5 0";
@@ -22,7 +22,7 @@ const QString cDefaultPgnFilePath = "./games.pgn";
 const QString cDefaultLastGameFile = "./lastgame.dat";
 const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
-const QString cDefaultPgnEventName = "K3Chess game";
+const QString cDefaultPgnEventName = "T1Chess game";
 const QString cDefaultSiteName = "?";
 const int cDefaultBoardMargins = 16;
 
@@ -100,8 +100,8 @@ K3ChessSettings::K3ChessSettings() :
    profile_ = Profile::fromString(settings_.value("Profile", "Default").toString());
    // enumerate engines (must have "engine.ini"-files with descriptions)
    enumEngines(QDir("./engines"));
-   enumPiecesStyles(QDir(":/pieces"));
-   enumLocales(QDir(":/locales"));
+   enumPiecesStyles(QDir("./pieces"));
+   enumLocales(QDir("./locales"));
 }
 
 K3ChessSettings::~K3ChessSettings()
@@ -668,7 +668,7 @@ void K3ChessSettings::setBoardMargins(int value)
 
 bool K3ChessSettings::showGameClock() const
 {
-   return settings_.value("ShowGameClock", false).toBool();
+   return settings_.value("ShowGameClock", true).toBool();
 }
 
 void K3ChessSettings::setShowGameClock(bool value)
@@ -678,7 +678,7 @@ void K3ChessSettings::setShowGameClock(bool value)
 
 bool K3ChessSettings::showCapturedPieces() const
 {
-   return settings_.value("ShowCapturedPieces", false).toBool();
+   return settings_.value("ShowCapturedPieces", true).toBool();
 }
 
 void K3ChessSettings::setShowCapturedPieces(bool value)
