@@ -27,6 +27,7 @@ GlobalUISession::GlobalUISession() :
    QObject::connect(&g_settings, SIGNAL(ponderingChanged()), this, SLOT(ponderingChanged()), Qt::UniqueConnection);
    QObject::connect(&g_settings, SIGNAL(localeChanged()), this, SLOT(localeChanged()), Qt::UniqueConnection);
    QObject::connect(&g_localChessGui, SIGNAL(keyPressed(Qt::Key,Qt::KeyboardModifiers)), this, SLOT(keyPressed(Qt::Key, Qt::KeyboardModifiers)), Qt::UniqueConnection);
+   QObject::connect(&g_localChessGui, SIGNAL(commandPanelClick()), this, SLOT(commandPanelClick()), Qt::UniqueConnection);
    QObject::connect(&g_localChessGui, SIGNAL(isExiting()), this, SLOT(isExiting()));
 }
 
@@ -454,5 +455,15 @@ void GlobalUISession::check960Support()
    if(g_settings.isChess960())
    {
       localEngine_->setChess960(true);
+   }
+}
+
+void GlobalUISession::commandPanelClick()
+{
+   if(keyRemapIdx_>=0)
+   {
+      g_keyMapper.addMappedKey(0, g_keyMapper.keyDefs()[keyRemapIdx_].qtKey);
+      ++keyRemapIdx_;
+      nextKeyRemapPrompt();
    }
 }

@@ -100,8 +100,8 @@ K3ChessSettings::K3ChessSettings() :
    profile_ = Profile::fromString(settings_.value("Profile", "Default").toString());
    // enumerate engines (must have "engine.ini"-files with descriptions)
    enumEngines(QDir("./engines"));
-   enumPiecesStyles(QDir("./pieces"));
-   enumLocales(QDir("./locales"));
+   enumPiecesStyles(QDir(":/pieces"));
+   enumLocales(QDir(":/locales"));
 }
 
 K3ChessSettings::~K3ChessSettings()

@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/pieces">
+        <file>pieces/ebook-grayscale/regular.png</file>
+        <file>pieces/ebook-grayscale/alpha.png</file>
+        <file>pieces/ebook-grayscale/cases.png</file>
+        <file>pieces/ebook-grayscale/mark.png</file>
+    </qresource>
+    <qresource prefix="/locales">
+        <file>locales/ru.ini</file>
+        <file>locales/en.ini</file>
+        <file>locales/es.ini</file>
+        <file>locales/fr.ini</file>
+        <file>locales/hu.ini</file>
+    </qresource>
+</RCC>

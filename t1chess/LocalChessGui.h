@@ -55,6 +55,7 @@ signals:
    void userMoves(const CoordPair& pair);
    void userChoice(int id);
    void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers); // for keys pressed while no control is active
+   void commandPanelClick(); // non-menu idle click in custom keyboard mode
    void clockUpdateRequest();
    void isExiting();
 

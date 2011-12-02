@@ -45,6 +45,7 @@ protected:
 
 signals:
    void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
+   void commandPanelClick();
    void isClosing();
 
 protected:

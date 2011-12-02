@@ -108,14 +108,14 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
    //
    switch(key)
    {
-      case Qt::Key_X:
-      case Qt::Key_Q:
+      /*case Qt::Key_X:
+      case Qt::Key_Q:*/
       case Qt::Key_Escape:
-         if(event->modifiers() & Qt::AltModifier)
-         {
-            close();  // close main window when
-                      // Alt+Esc, Alt+Q or Alt+X is pressed
-         }
+      case Qt::Key_Back:
+         /*if(event->modifiers() & Qt::AltModifier)
+         {*/
+            close();  // close main window when Esc (Back) is pressed
+         /*}*/
          break;
       default:
          break;
@@ -156,9 +156,18 @@ void K3ChessMainWindow::commandPanel_optionSelected(int)
 
 void K3ChessMainWindow::commandPanel_idleClick()
 {
-   // allow entering menu by double-clicking on inactive/static command panel part
-   // (this supports stylus/mouse operation, while GUI remains keyboard-oriented)
-   emit keyPressed(Qt::Key_Menu, 0);
+    if(customKeyboardMode_)
+    {
+        // in custom keyboard mode command panel idle click
+        // is NOT converted into Menu key press
+        emit commandPanelClick();
+    }
+    else
+    {
+       // allow entering menu by clicking inactive/static region of command panel
+       // (this supports stylus/mouse operation, while GUI remains keyboard-oriented)
+       emit keyPressed(Qt::Key_Menu, 0);
+    }
 }
 
 void K3ChessMainWindow::updateControlLayout()

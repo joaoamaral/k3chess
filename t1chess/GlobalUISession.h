@@ -40,6 +40,7 @@ private slots:
    void ponderingChanged();
    void localeChanged();
    void keyPressed(Qt::Key key, Qt::KeyboardModifiers modifiers);
+   void commandPanelClick();
 
    void isExiting();
 
