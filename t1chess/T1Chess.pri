@@ -26,10 +26,12 @@ SOURCES = ChessBoardView.cpp \
     KeyPreviewImpl.cpp \
     GlobalStrings.cpp \
     GameSessionInfo.cpp \
-    Random.cpp\
     GameClockView.cpp \
     CapturedPiecesView.cpp \
-    ExtConsole.cpp
+    ExtConsole.cpp \
+    RandomGen.cpp \
+    engines\EngineThread.cpp \
+    engines\EngineThreadIO.cpp
 
 
 HEADERS = ChessBoardView.h \
@@ -63,11 +65,20 @@ HEADERS = ChessBoardView.h \
     KeyPreviewImpl.h \
     GlobalStrings.h \
     GameSessionInfo.h \
-    Random.h\
     GameClockView.h \
     CapturedPiecesView.h \
-    ExtConsole.h
-
+    ExtConsole.h \
+    RandomGen.h \
+    engines\EngineThread.h \
+    engines\EngineThreadIO.h
 
 FORMS += \
     SettingsDialog.ui
+
+RESOURCES += \
+    t1chess.qrc
+
+
+
+
+

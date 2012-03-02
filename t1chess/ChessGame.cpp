@@ -655,7 +655,7 @@ QString ChessGame::toPGN() const
    QString pgn;
    pgn.reserve(2048);
    //
-   pgn.append("[Event \"K3Chess game\"]\n");
+   pgn.append("[Event \"T1Chess game\"]\n");
    pgn.append("[Site \"?\"]\n");
    pgn.append("[Date \"");
    pgn.append(startTime_.date().toString("yyyy.MM.dd"));

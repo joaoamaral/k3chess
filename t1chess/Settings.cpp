@@ -14,7 +14,7 @@
 namespace
 {
 
-const QString cK3ChessIniPath = "./T1Chess.ini";
+const QString cT1ChessIniPath = "./T1Chess.ini";
 const QString cDefaultKeymapIniFile = "./keys.ini";
 const QString cDefaultPlayerClockSetup = "15 0";
 const QString cDefaultEngineClockSetup = "5 0";
@@ -92,24 +92,24 @@ bool Profile::contains(const QString& str) const
    return keywords_.indexOf(str.toLower())>=0;
 }
 
-K3ChessSettings::K3ChessSettings() :
-   settings_(cK3ChessIniPath, QSettings::IniFormat)
+T1ChessSettings::T1ChessSettings() :
+   settings_(cT1ChessIniPath, QSettings::IniFormat)
 {
    settings_.setIniCodec(QTextCodec::codecForName("UTF-8"));
    //
    profile_ = Profile::fromString(settings_.value("Profile", "Default").toString());
    // enumerate engines (must have "engine.ini"-files with descriptions)
-   enumEngines(QDir("./engines"));
-   enumPiecesStyles(QDir("./pieces"));
-   enumLocales(QDir("./locales"));
+   enumEngines(QDir(":/engines"));
+   enumPiecesStyles(QDir(":/pieces"));
+   enumLocales(QDir(":/locales"));
 }
 
-K3ChessSettings::~K3ChessSettings()
+T1ChessSettings::~T1ChessSettings()
 {
 
 }
 
-const EngineInfo& K3ChessSettings::engineInfo() const
+const EngineInfo& T1ChessSettings::engineInfo() const
 {
    QString name = settings_.value("Engine", QString()).toString();
    std::map<QString, EngineInfo>::const_iterator it = engines_.find(name);
@@ -123,7 +123,7 @@ const EngineInfo& K3ChessSettings::engineInfo() const
       return it->second;
 }
 
-QString K3ChessSettings::localeName() const
+QString T1ChessSettings::localeName() const
 {
    QString name = settings_.value("Locale", cDefaultLocaleName).toString();
    if(locales_.find(name)==locales_.end())
@@ -135,7 +135,7 @@ QString K3ChessSettings::localeName() const
       return name;
 }
 
-QString K3ChessSettings::piecesStyle() const
+QString T1ChessSettings::piecesStyle() const
 {
    QString name = settings_.value("Board/PiecesStyle", QString()).toString();
    if(piecesStyles_.find(name)==piecesStyles_.end())
@@ -147,82 +147,82 @@ QString K3ChessSettings::piecesStyle() const
       return name;
 }
 
-QString K3ChessSettings::pieceImageFilePath() const
+QString T1ChessSettings::pieceImageFilePath() const
 {
    return pieceImageFileFromName(piecesStyle());
 }
 
-QString K3ChessSettings::localeIniFilePath() const
+QString T1ChessSettings::localeIniFilePath() const
 {
    return localeIniFilePathFromName(localeName());
 }
 
-QString K3ChessSettings::pgnFilePath() const
+QString T1ChessSettings::pgnFilePath() const
 {
    return settings_.value("Export/PGNFile", cDefaultPgnFilePath).toString();
 }
 
-QString K3ChessSettings::playerName() const
+QString T1ChessSettings::playerName() const
 {
    return settings_.value("PlayerName", cDefaultPlayerName).toString();
 }
 
-bool K3ChessSettings::drawMoveArrow() const
+bool T1ChessSettings::drawMoveArrow() const
 {
    return settings_.value("Board/DrawMoveArrow", true).toBool();
 }
 
-bool K3ChessSettings::drawCoordinates() const
+bool T1ChessSettings::drawCoordinates() const
 {
    return settings_.value("Board/DrawCoordinates", true).toBool();
 }
 
-ChessClock K3ChessSettings::playerClock() const
+ChessClock T1ChessSettings::playerClock() const
 {
    return stringToClock(playerClockString());
 }
 
-ChessClock K3ChessSettings::engineClock() const
+ChessClock T1ChessSettings::engineClock() const
 {
    return stringToClock(engineClockString());
 }
 
-QString K3ChessSettings::playerClockString() const
+QString T1ChessSettings::playerClockString() const
 {
    return settings_.value("Game/PlayerClock", cDefaultPlayerClockSetup).toString();
 }
 
-QString K3ChessSettings::engineClockString() const
+QString T1ChessSettings::engineClockString() const
 {
    return settings_.value("Game/EngineClock", cDefaultEngineClockSetup).toString();
 }
 
-bool K3ChessSettings::autoSaveGames() const
+bool T1ChessSettings::autoSaveGames() const
 {
    return settings_.value("Misc/AutoSaveGames", false).toBool();
 }
 
-bool K3ChessSettings::canPonder() const
+bool T1ChessSettings::canPonder() const
 {
    return settings_.value("Game/Pondering", false).toBool();
 }
 
-bool K3ChessSettings::keyColumnSelect() const
+bool T1ChessSettings::keyColumnSelect() const
 {
    return settings_.value("Input/KeyCoordSelect", true).toBool();
 }
 
-bool K3ChessSettings::keyPieceSelect() const
+bool T1ChessSettings::keyPieceSelect() const
 {
    return settings_.value("Input/KeyPieceSelect", true).toBool();
 }
 
-QString K3ChessSettings::keymapFile() const
+QString T1ChessSettings::keymapFile() const
 {
    return cDefaultKeymapIniFile;
 }
 
-void K3ChessSettings::enumEngines(QDir dir)
+void T1ChessSettings::enumEngines(QDir dir)
 {
     enumEnginesProc(dir);
     if(!engines_.empty() &&
@@ -233,7 +233,7 @@ void K3ChessSettings::enumEngines(QDir dir)
     }
 }
 
-void K3ChessSettings::enumEnginesProc(QDir dir)
+void T1ChessSettings::enumEnginesProc(QDir dir)
 {
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
@@ -255,7 +255,7 @@ void K3ChessSettings::enumEnginesProc(QDir dir)
    }
 }
 
-void K3ChessSettings::enumPiecesStyles(QDir dir)
+void T1ChessSettings::enumPiecesStyles(QDir dir)
 {
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
@@ -285,7 +285,7 @@ void K3ChessSettings::enumPiecesStyles(QDir dir)
    }
 }
 
-void K3ChessSettings::enumLocales(QDir dir)
+void T1ChessSettings::enumLocales(QDir dir)
 {
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
@@ -318,7 +318,7 @@ void K3ChessSettings::enumLocales(QDir dir)
    }
 }
 
-QStringList K3ChessSettings::getEngineNames() const
+QStringList T1ChessSettings::getEngineNames() const
 {
    QStringList qsl;
    std::map<QString, EngineInfo>::const_iterator it = engines_.begin(), itEnd = engines_.end();
@@ -329,7 +329,7 @@ QStringList K3ChessSettings::getEngineNames() const
    return qsl;
 }
 
-QStringList K3ChessSettings::getPiecesStyleNames() const
+QStringList T1ChessSettings::getPiecesStyleNames() const
 {
    QStringList qsl;
    std::map<QString, QString>::const_iterator it = piecesStyles_.begin(), itEnd = piecesStyles_.end();
@@ -340,7 +340,7 @@ QStringList K3ChessSettings::getPiecesStyleNames() const
    return qsl;
 }
 
-QStringList K3ChessSettings::getLocaleNames() const
+QStringList T1ChessSettings::getLocaleNames() const
 {
    QStringList qsl;
    std::map<QString, QString>::const_iterator it = locales_.begin(), itEnd = locales_.end();
@@ -355,7 +355,7 @@ QStringList K3ChessSettings::getLocaleNames() const
    return qsl;
 }
 
-QString K3ChessSettings::pieceImageFileFromName(const QString& name) const
+QString T1ChessSettings::pieceImageFileFromName(const QString& name) const
 {
    std::map<QString, QString>::const_iterator it = piecesStyles_.find(name);
    if(it==piecesStyles_.end())
@@ -368,7 +368,7 @@ QString K3ChessSettings::pieceImageFileFromName(const QString& name) const
    }
 }
 
-QString K3ChessSettings::localeIniFilePathFromName(const QString& name) const
+QString T1ChessSettings::localeIniFilePathFromName(const QString& name) const
 {
    std::map<QString, QString>::const_iterator it = locales_.find(name);
    if(it==locales_.end())
@@ -381,55 +381,55 @@ QString K3ChessSettings::localeIniFilePathFromName(const QString& name) const
    }
 }
 
-void K3ChessSettings::setPiecesStyle(const QString& name)
+void T1ChessSettings::setPiecesStyle(const QString& name)
 {
    if(name==settings_.value("Board/PiecesStyle").toString()) return;
    settings_.setValue("Board/PiecesStyle", name);
    emit boardStyleChanged();
 }
 
-void K3ChessSettings::setLocaleName(const QString& name)
+void T1ChessSettings::setLocaleName(const QString& name)
 {
    if(locales_.empty() || name==settings_.value("Locale").toString()) return;
    settings_.setValue("Locale", name);
    emit localeChanged();
 }
 
-void K3ChessSettings::setCanPonder(bool value)
+void T1ChessSettings::setCanPonder(bool value)
 {
    if(value==canPonder()) return;
    settings_.setValue("Game/Pondering", value);
    emit ponderingChanged();
 }
 
-void K3ChessSettings::setDrawMoveArrow(bool value)
+void T1ChessSettings::setDrawMoveArrow(bool value)
 {
    if(value==drawMoveArrow()) return;
    settings_.setValue("Board/DrawMoveArrow", value);
    emit boardStyleChanged();
 }
 
-void K3ChessSettings::setDrawCoordinates(bool value)
+void T1ChessSettings::setDrawCoordinates(bool value)
 {
    if(value==drawCoordinates()) return;
    settings_.setValue("Board/DrawCoordinates", value);
    emit boardStyleChanged();
 }
 
-void K3ChessSettings::setAutoSaveGames(bool value)
+void T1ChessSettings::setAutoSaveGames(bool value)
 {
    if(value==autoSaveGames()) return;
    settings_.setValue("Misc/AutoSaveGames", value);
 }
 
-void K3ChessSettings::setPlayerName(const QString& name)
+void T1ChessSettings::setPlayerName(const QString& name)
 {
    if(name==playerName()) return;
    settings_.setValue("PlayerName", name);
    emit playerNameChanged();
 }
 
-void K3ChessSettings::setPlayerClock(const QString& str)
+void T1ChessSettings::setPlayerClock(const QString& str)
 {
    QString s = containsDigits(str) ? str : QString("--");
    if(playerClockString()==s) return;
@@ -437,36 +437,36 @@ void K3ChessSettings::setPlayerClock(const QString& str)
    emit timeSettingsChanged();
 }
 
-void K3ChessSettings::setEngineClock(const QString& str)
+void T1ChessSettings::setEngineClock(const QString& str)
 {
    if(engineClockString()==str) return;
    settings_.setValue("Game/EngineClock", str);
    emit timeSettingsChanged();
 }
 
-const Profile& K3ChessSettings::profile() const
+const Profile& T1ChessSettings::profile() const
 {
    return profile_;
 }
 
-void K3ChessSettings::flush()
+void T1ChessSettings::flush()
 {
    settings_.sync();
 }
 
-bool K3ChessSettings::showMoveHints() const
+bool T1ChessSettings::showMoveHints() const
 {
    return settings_.value("Board/ShowMoveHints", true).toBool();
 }
 
-void K3ChessSettings::setShowMoveHints(bool value)
+void T1ChessSettings::setShowMoveHints(bool value)
 {
    if(value==showMoveHints()) return;
    settings_.setValue("Board/ShowMoveHints", value);
    emit boardStyleChanged();
 }
 
-bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
+bool T1ChessSettings::readEngineInfo(const QString& engineIniFile,
                                      EngineInfo& info)
 {
    QSettings ini(engineIniFile, QSettings::IniFormat);
@@ -561,39 +561,39 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
    return true;
 }
 
-bool K3ChessSettings::quickSingleMoveSelection() const
+bool T1ChessSettings::quickSingleMoveSelection() const
 {
    return settings_.value("QuickSingleMoveSelection", true).toBool();
 }
 
-void K3ChessSettings::setQuickSingleMoveSelection(bool value)
+void T1ChessSettings::setQuickSingleMoveSelection(bool value)
 {
    if(value==quickSingleMoveSelection()) return;
    settings_.setValue("QuickSingleMoveSelection", value);
    emit inputSettingsChanged();
 }
 
-QString K3ChessSettings::lastGameFile() const
+QString T1ChessSettings::lastGameFile() const
 {
    return cDefaultLastGameFile;
 }
 
-bool K3ChessSettings::isChess960() const
+bool T1ChessSettings::isChess960() const
 {
    return settings_.value("Chess960", false).toBool();
 }
 
-void K3ChessSettings::setChess960(bool value)
+void T1ChessSettings::setChess960(bool value)
 {
    settings_.setValue("Chess960", value);
 }
 
-QString K3ChessSettings::currentEngineProfile() const
+QString T1ChessSettings::currentEngineProfile() const
 {
    return settings_.value("EngineProfile", "Default").toString();
 }
 
-void K3ChessSettings::setEngine(const QString& engineName, const QString& profileName)
+void T1ChessSettings::setEngine(const QString& engineName, const QString& profileName)
 {
    bool changed = false;
    if(engineName!=settings_.value("Engine").toString())
@@ -616,7 +616,7 @@ void K3ChessSettings::setEngine(const QString& engineName, const QString& profil
    if(changed) emit engineChanged();
 }
 
-const EngineInfo& K3ChessSettings::engineInfo(const QString &engineName) const
+const EngineInfo& T1ChessSettings::engineInfo(const QString &engineName) const
 {
    std::map<QString, EngineInfo>::const_iterator it = engines_.find(engineName);
    if(it==engines_.end())
@@ -630,68 +630,68 @@ const EngineInfo& K3ChessSettings::engineInfo(const QString &engineName) const
    }
 }
 
-void K3ChessSettings::setCoordinateMoveInput(bool value)
+void T1ChessSettings::setCoordinateMoveInput(bool value)
 {
    if(coordinateMoveInput()==value) return;
    settings_.setValue("CoordinateMoveInput", value);
    emit inputSettingsChanged();
 }
 
-bool K3ChessSettings::coordinateMoveInput() const
+bool T1ChessSettings::coordinateMoveInput() const
 {
    return settings_.value("CoordinateMoveInput", false).toBool();
 }
 
-QString K3ChessSettings::initialPositionFen() const
+QString T1ChessSettings::initialPositionFen() const
 {
    return settings_.value("InitialPosition", QString(cStandardInitialFen.c_str())).toString();
 }
 
-void K3ChessSettings::setInitialPositionFen(const QString &fen)
+void T1ChessSettings::setInitialPositionFen(const QString &fen)
 {
    settings_.setValue("InitialPosition", fen);
 }
 
-int K3ChessSettings::boardMargins() const
+int T1ChessSettings::boardMargins() const
 {
    int value = settings_.value("Board/Margins", cDefaultBoardMargins).toInt();
    if(value<0) return 0;
    else return value;
 }
 
-void K3ChessSettings::setBoardMargins(int value)
+void T1ChessSettings::setBoardMargins(int value)
 {
    if(value==boardMargins()) return;
    settings_.setValue("Board/Margins", value);
    emit boardStyleChanged();
 }
 
-bool K3ChessSettings::showGameClock() const
+bool T1ChessSettings::showGameClock() const
 {
    return settings_.value("ShowGameClock", true).toBool();
 }
 
-void K3ChessSettings::setShowGameClock(bool value)
+void T1ChessSettings::setShowGameClock(bool value)
 {
    settings_.setValue("ShowGameClock", value);
 }
 
-bool K3ChessSettings::showCapturedPieces() const
+bool T1ChessSettings::showCapturedPieces() const
 {
    return settings_.value("ShowCapturedPieces", true).toBool();
 }
 
-void K3ChessSettings::setShowCapturedPieces(bool value)
+void T1ChessSettings::setShowCapturedPieces(bool value)
 {
    settings_.setValue("ShowCapturedPieces", value);
 }
 
-bool K3ChessSettings::useRussianNotation() const
+bool T1ChessSettings::useRussianNotation() const
 {
    return settings_.value("UseRussianNotation", false).toBool();
 }
 
-void K3ChessSettings::setUseRussianNotation(bool value)
+void T1ChessSettings::setUseRussianNotation(bool value)
 {
    settings_.setValue("UseRussianNotation", value);
 }

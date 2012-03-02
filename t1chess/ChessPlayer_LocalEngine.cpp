@@ -3,7 +3,8 @@
 #include "StringUtils.h"
 #include "GlobalStrings.h"
 #include "Settings.h"
-#include "Random.h"
+#include "RandomGen.h"
+#include "engines/EngineThreadIO.h".h"
 
 #include <QTextCodec>
 #include <fstream>
@@ -45,19 +46,15 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
 ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
                                                  const QString& profileName) :
    ChessPlayer(info.name), info_(info), readyRequest_(false),
-   engineProcess_(this), inForceMode_(false),
+   engineThread_(this), engineStarted_(false), inForceMode_(false),
    profileName_(profileName.isEmpty() ? QString("Default") : profileName),
    forceMoveTimeout_(cDefaultUciForceMoveTimeout),
    randomizeMoveTimeout_(cRandomizeMoveTimeout), weakMode_(false)
 {
-   //
-   QObject::connect(&engineProcess_, SIGNAL(started()),
+   QObject::connect(&engineThread_, SIGNAL(started()),
                     this, SLOT(engineStarted()), Qt::UniqueConnection);
-   QObject::connect(&engineProcess_, SIGNAL(error(QProcess::ProcessError)),
-                    this, SIGNAL(engineProcessError(QProcess::ProcessError)),
-                    Qt::UniqueConnection);
-   QObject::connect(&engineProcess_, SIGNAL(readyRead()),
-                    this, SLOT(engineHasOutput()), Qt::UniqueConnection);
+   installEventFilter(this);
+   g_engineIO.setOutputListener(this);
    //
    performCleanup(); // remove log etc. files from the previous session
    //
@@ -71,20 +68,19 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
    forceMoveTimer_.blockSignals(true);
    QObject::connect(&forceMoveTimer_, SIGNAL(timeout()), this, SLOT(forceMoveTimeout()));
    //
-   QString workDir = extractFolderPath(info_.exePath);
-   engineProcess_.setWorkingDirectory(workDir);
-   engineProcess_.start(info_.exePath);
+   engineThread_.start();
 }
 
 ChessPlayer_LocalEngine::~ChessPlayer_LocalEngine()
 {
+   g_engineIO.setOutputListener(0);
    performCleanup(); // remove log etc. files of the last session
-   engineProcess_.kill();
+   engineThread_.terminate();
 }
 
 void ChessPlayer_LocalEngine::getReady()
 {
-   if(engineProcess_.state()==QProcess::Running && info_.type!=etDetect)
+   if(engineStarted_ && info_.type!=etDetect)
    {
       readyRequest_ = false;
       emit isReady();
@@ -97,6 +93,8 @@ void ChessPlayer_LocalEngine::getReady()
 
 void ChessPlayer_LocalEngine::engineStarted()
 {
+   engineStarted_ = true;
+   //
    if(info_.type==etDetect)
    {
       // try to detect engine type by sending the "uci" command
@@ -285,7 +283,7 @@ void ChessPlayer_LocalEngine::makeMove(const ChessPosition& position,
             forceMoveTimer_.blockSignals(false);
             int timeout = forceMoveTimeout_;
             if(randomizeMoveTimeout_)
-               timeout += g_random.get(-timeout/3, +timeout/3);
+               timeout += g_randomGen.get(-timeout/3, +timeout/3);
             forceMoveTimer_.start(timeout);
          }
          break;
@@ -364,8 +362,7 @@ void ChessPlayer_LocalEngine::tellEngine(const std::string& str)
 {
    logEngineTalk(TO_ENGINE, str);
    //
-   engineProcess_.write(str.c_str(), str.length());
-   engineProcess_.write("\n", 1);
+   g_engineIO.send_input(str);
 }
 
 void ChessPlayer_LocalEngine::processEngineResponse(const std::string& str)
@@ -426,45 +423,9 @@ void ChessPlayer_LocalEngine::processEngineResponse(const std::string& str)
    }
 }
 
-void ChessPlayer_LocalEngine::engineHasOutput()
+void ChessPlayer_LocalEngine::engineOutput(std::string line)
 {
-   const unsigned cBufferSize = 1024;
-   char buffer[cBufferSize];
-   //
-   std::string line;
-   line.reserve(256);
-   line.append(incompleteLine_);
-   //
-   char ignoredChar = 0x00;
-   //
-   while(true)
-   {
-      unsigned nBytesRead = engineProcess_.read(buffer, cBufferSize);
-      if(nBytesRead==0) break;
-      for(unsigned i=0; i<nBytesRead; ++i)
-      {
-         char c = buffer[i];
-         if(c==ignoredChar) continue;
-         switch(c)
-         {
-            case 0x0D:
-               processEngineResponse(line);
-               line.clear();
-               ignoredChar = 0x0A;
-               break;
-            case 0x0A:
-               processEngineResponse(line);
-               line.clear();
-               ignoredChar = 0x0D;
-               break;
-            default:
-               line.push_back(c);
-               break;
-         }
-      }
-      if(nBytesRead<cBufferSize) break;
-   }
-   incompleteLine_ = line;
+   processEngineResponse(line);
 }
 
 void ChessPlayer_LocalEngine::ponderingChanged()
@@ -614,4 +575,15 @@ void ChessPlayer_LocalEngine::forceMoveTimeout()
    {
       tellEngine("stop"); // force engine to move immediately
    }
+}
+
+bool ChessPlayer_LocalEngine::eventFilter(QObject *obj, QEvent *event)
+{
+   if(obj==this && event->type()==EngineReponse)
+   {
+      processEngineResponse(g_engineIO.get_output());
+      return true;
+   }
+   else
+      return false;
 }

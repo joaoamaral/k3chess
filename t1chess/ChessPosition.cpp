@@ -1,6 +1,6 @@
 #include "ChessPosition.h"
 #include "StringUtils.h"
-#include "Random.h"
+#include "RandomGen.h"
 
 // must be in ChessRules, but for convenience is placed here
 const std::string cStandardInitialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -536,7 +536,7 @@ namespace
 void placeOnRandomFreeCell(ChessPosition& position, int nRemainingFreeCells,
                            ChessPiece piece)
 {
-   int n = g_random.get(0, nRemainingFreeCells-1);
+   int n = g_randomGen.get(0, nRemainingFreeCells-1);
    for(ChessCoord coord(1, 1); coord.col<=position.maxCol(); ++coord.col)
    {
       if(position.cell(coord).type()==ptNone)
@@ -589,8 +589,8 @@ ChessPosition ChessPosition::new960Position()
    //
    position.cells_.resize(position.maxRow_*position.maxCol_);
    //
-   position.setCell(ChessCoord(g_random.get(0, 3)*2+1, 1), ptBishop | pcWhite);
-   position.setCell(ChessCoord(g_random.get(0, 3)*2+2, 1), ptBishop | pcWhite);
+   position.setCell(ChessCoord(g_randomGen.get(0, 3)*2+1, 1), ptBishop | pcWhite);
+   position.setCell(ChessCoord(g_randomGen.get(0, 3)*2+2, 1), ptBishop | pcWhite);
    //
    placeOnRandomFreeCell(position, 6, ptQueen | pcWhite);
    placeOnRandomFreeCell(position, 5, ptKnight | pcWhite);

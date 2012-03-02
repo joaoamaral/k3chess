@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/pieces">
-        <file>pieces/ebook-grayscale/regular.png</file>
-        <file>pieces/ebook-grayscale/alpha.png</file>
-        <file>pieces/ebook-grayscale/cases.png</file>
-        <file>pieces/ebook-grayscale/mark.png</file>
+        <file>pieces/alpha.png</file>
+        <file>pieces/cases.png</file>
+        <file>pieces/club.png</file>
+        <file>pieces/mark.png</file>
+        <file>pieces/regular.png</file>
     </qresource>
     <qresource prefix="/locales">
         <file>locales/ru.ini</file>
@@ -12,4 +13,8 @@
         <file>locales/fr.ini</file>
         <file>locales/hu.ini</file>
     </qresource>
+    <qresource prefix="/engines">
+        <file>engines/toga2/engine.ini</file>
+    </qresource>
+    <qresource prefix="/app_settings"/>
 </RCC>

@@ -3,13 +3,13 @@
 
 #include "Singletons.h"
 
-class Random
+class RandomGen
 {
    friend void Singletons::initialize();
    friend void Singletons::finalize();
    //
-   Random();
-   ~Random();
+   RandomGen();
+   ~RandomGen();
 
 public:
    int get(int lo, int hi);

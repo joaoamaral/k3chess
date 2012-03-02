@@ -4,7 +4,9 @@
 #include "ChessPlayer.h"
 #include "EngineInfo.h"
 
-#include <QProcess>
+#include "engines/EngineThread.h"
+
+#include <QThread>
 #include <QTimer>
 
 class ChessPlayer_LocalEngine : public ChessPlayer
@@ -42,12 +44,12 @@ public:
 
    void ponderingChanged(); // can be called manually to set/clear pondering mode
                             // when the corresponding GUI option changes
-signals:
-   void engineProcessError(QProcess::ProcessError error);
+protected:
+   virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
    void engineStarted();
-   void engineHasOutput();
+   void engineOutput(std::string);
    void uciokTimeout();
    void forceMoveTimeout();
 
@@ -62,10 +64,10 @@ private:
    EngineInfo info_;
    QString opponentName_;
    bool readyRequest_;
-   QProcess engineProcess_;
+   EngineThread engineThread_;
+   bool engineStarted_;
    EngineType type_;
    QTimer uciokTimer_;
-   std::string incompleteLine_;
    bool inForceMode_;   // (force mode is defined for XBoard engines only)
    QString profileName_;
    QTimer forceMoveTimer_;

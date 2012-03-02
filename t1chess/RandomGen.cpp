@@ -1,17 +1,17 @@
-#include "Random.h"
+#include "RandomGen.h"
 #include <ctime>
 #include <cstdlib>
 
-Random::Random() : seed_((unsigned)time(0))
+RandomGen::RandomGen() : seed_((unsigned)time(0))
 {
    srand(seed_);
 }
 
-Random::~Random()
+RandomGen::~RandomGen()
 {
 }
 
-int Random::get(int lo, int hi)
+int RandomGen::get(int lo, int hi)
 {
    if(hi<lo) { int x = hi; hi = lo; lo = x; }
    int r0 = rand();

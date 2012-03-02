@@ -6,7 +6,7 @@
 
 LocalChessGui::LocalChessGui() : clockDisplay_(false)
 {
-   mainWindow_ = new K3ChessMainWindow;
+   mainWindow_ = new T1ChessMainWindow;
    //
    updateBoardStyle();
    updateInputMode();

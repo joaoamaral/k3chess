@@ -6,7 +6,7 @@
 
 const int cDefaultCommandPanelHeight = 48;
 
-K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
+T1ChessMainWindow::T1ChessMainWindow(QWidget *parent) :
    QMainWindow(parent), boardView_(0),
    extConsole_(0), moveList_(0),
    commandPanel_(0), commandArea_(0),
@@ -85,12 +85,12 @@ K3ChessMainWindow::K3ChessMainWindow(QWidget *parent) :
    }
 }
 
-void K3ChessMainWindow::resizeEvent(QResizeEvent *)
+void T1ChessMainWindow::resizeEvent(QResizeEvent *)
 {
    updateControlLayout();
 }
 
-void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
+void T1ChessMainWindow::keyPressEvent(QKeyEvent *event)
 {
    event->accept(); // consume this event anyway
    //
@@ -147,14 +147,14 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
    }
 }
 
-void K3ChessMainWindow::commandPanel_optionSelected(int)
+void T1ChessMainWindow::commandPanel_optionSelected(int)
 {
    // return to board view (if possible)
    // after user selected an option in the command panel
    boardView_->enter();
 }
 
-void K3ChessMainWindow::commandPanel_idleClick()
+void T1ChessMainWindow::commandPanel_idleClick()
 {
     if(customKeyboardMode_)
     {
@@ -170,7 +170,7 @@ void K3ChessMainWindow::commandPanel_idleClick()
     }
 }
 
-void K3ChessMainWindow::updateControlLayout()
+void T1ChessMainWindow::updateControlLayout()
 {
    if(rect().isEmpty()) return;
    //
@@ -227,48 +227,48 @@ void K3ChessMainWindow::updateControlLayout()
    moveList_->setGeometry(moveListRect);
 }
 
-void K3ChessMainWindow::setCustomKeyboardMode(bool value)
+void T1ChessMainWindow::setCustomKeyboardMode(bool value)
 {
    customKeyboardMode_ = value;
 }
 
-void K3ChessMainWindow::closeEvent(QCloseEvent*)
+void T1ChessMainWindow::closeEvent(QCloseEvent*)
 {
    emit isClosing();
 }
 
-int K3ChessMainWindow::switchToClockView()
+int T1ChessMainWindow::switchToClockView()
 {
    int retval = commandArea_->currentIndex();
    commandArea_->setCurrentWidget(gameClock_);
    return retval;
 }
 
-int K3ChessMainWindow::switchToCommandView()
+int T1ChessMainWindow::switchToCommandView()
 {
    int retval = commandArea_->currentIndex();
    commandArea_->setCurrentWidget(commandPanel_);
    return retval;
 }
 
-int K3ChessMainWindow::setCommandAreaMode(int idx)
+int T1ChessMainWindow::setCommandAreaMode(int idx)
 {
    int retval = commandArea_->currentIndex();
    commandArea_->setCurrentIndex(idx);
    return retval;
 }
 
-void K3ChessMainWindow::showCapturedPieces()
+void T1ChessMainWindow::showCapturedPieces()
 {
    extConsole_->showCapturedPieces();
 }
 
-void K3ChessMainWindow::hideCapturedPieces()
+void T1ChessMainWindow::hideCapturedPieces()
 {
    extConsole_->hideCapturedPieces();
 }
 
-void K3ChessMainWindow::refresh()
+void T1ChessMainWindow::refresh()
 {
    // this is a cludge, because repaint() does not
    // always trigger actual repaint

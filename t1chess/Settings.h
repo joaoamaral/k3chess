@@ -1,5 +1,5 @@
-#ifndef __K3ChessSettings_h
-#define __K3ChessSettings_h
+#ifndef __T1ChessSettings_h
+#define __T1ChessSettings_h
 
 #include <QSettings>
 #include <QDir>
@@ -19,15 +19,15 @@ private:
    QStringList keywords_;
 };
 
-class K3ChessSettings : public QObject
+class T1ChessSettings : public QObject
 {
    Q_OBJECT
 
    friend void Singletons::initialize();
    friend void Singletons::finalize();
 
-   K3ChessSettings();
-   ~K3ChessSettings();
+   T1ChessSettings();
+   ~T1ChessSettings();
 
 public:
 

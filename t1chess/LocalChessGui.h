@@ -6,7 +6,7 @@
 #include "Singletons.h"
 #include "GameProfile.h"
 
-class K3ChessMainWindow;
+class T1ChessMainWindow;
 
 class LocalChessGui : public QObject
 {
@@ -67,7 +67,7 @@ private:
    void prepareCommandOptions();
 
 private:
-   K3ChessMainWindow *mainWindow_;
+   T1ChessMainWindow *mainWindow_;
    bool clockDisplay_;
 };
 

@@ -15,11 +15,11 @@
 // GlobalUISession ensures that only one game session at any time
 // has access to local GUI
 
-class K3ChessMainWindow : public QMainWindow
+class T1ChessMainWindow : public QMainWindow
 {
    Q_OBJECT
 public:
-   explicit K3ChessMainWindow(QWidget *parent = 0);
+   explicit T1ChessMainWindow(QWidget *parent = 0);
 
    ChessBoardView *boardView() { return boardView_; }
    QPlainTextEdit *console() { return extConsole_->console(); }

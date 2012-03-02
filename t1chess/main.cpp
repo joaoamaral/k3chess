@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 {
    QApplication app(argc, argv);
    //
-   app.setApplicationName("K3Chess");
+   app.setApplicationName("T1Chess");
    //
 #ifdef QT_KEYPAD_NAVIGATION
    app.setNavigationMode(Qt::NavigationModeKeypadTabOrder);

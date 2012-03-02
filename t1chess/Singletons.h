@@ -4,14 +4,14 @@
 // contains functions for initializing/finalizing singletons
 // in specific order and macros to access them globally
 
-class K3ChessSettings;
+class T1ChessSettings;
 class ChessRules;
 class GlobalStrings;
 class KeyMapper;
 class CommandOptionDefs;
 class LocalChessGui;
 class GlobalUISession;
-class Random;
+class RandomGen;
 
 namespace Singletons
 {
@@ -22,11 +22,11 @@ namespace Singletons
    const GlobalStrings& globalStrings();
 
    CommandOptionDefs& commandOptionDefs();
-   K3ChessSettings& settings();
+   T1ChessSettings& settings();
    KeyMapper& keyMapper();
    LocalChessGui& localChessGui();
    GlobalUISession& globalUISession();
-   Random& random();
+   RandomGen& randomGen();
 }
 
 #define g_globalStrings Singletons::globalStrings()
@@ -36,6 +36,6 @@ namespace Singletons
 #define g_commandOptionDefs Singletons::commandOptionDefs()
 #define g_localChessGui Singletons::localChessGui()
 #define g_globalUISession Singletons::globalUISession()
-#define g_random Singletons::random()
+#define g_randomGen Singletons::randomGen()
 
 #endif
