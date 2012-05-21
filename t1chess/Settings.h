@@ -105,6 +105,8 @@ public:
 
    void flush();
 
+   QString logDir() const;
+
 signals:
    void engineChanged();
    void boardStyleChanged();

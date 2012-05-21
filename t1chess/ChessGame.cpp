@@ -12,7 +12,7 @@ void logString(const std::string& str)
    static unsigned nCalls = 0;
    static bool noLog = false;
    if(noLog) return;
-   std::ofstream out("./logs/pos_moves.log", nCalls==0 ? std::ios::trunc : std::ios::app);
+   std::ofstream out((g_settings.logDir()+"pos_moves.log").toStdString().c_str(), nCalls==0 ? std::ios::trunc : std::ios::app);
    noLog = out.fail();
    if(noLog) return; // will fail if there is no 'logs' folder
    out << str << std::endl;

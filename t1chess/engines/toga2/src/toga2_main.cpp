@@ -24,6 +24,10 @@
 #include <string>
 #include <list>
 
+#include <QString>
+
+QString g_toga2EngineDir = "./";
+
 // functions
 
 // main()

@@ -32,13 +32,13 @@ const std::vector<KeyDef>& KeyMapper::keyDefs() const
 
 void KeyMapper::initKeyDefs()
 {
-   keyDefs_.reserve(8);
+   keyDefs_.reserve(2); // (8)
    //
-   keyDefs_.push_back(KeyDef("Left", Qt::Key_Left));
-   keyDefs_.push_back(KeyDef("Right", Qt::Key_Right));
-   keyDefs_.push_back(KeyDef("Up", Qt::Key_Up));
-   keyDefs_.push_back(KeyDef("Down", Qt::Key_Down));
-   keyDefs_.push_back(KeyDef("Select", Qt::Key_Select));
+//   keyDefs_.push_back(KeyDef("Left", Qt::Key_Left));
+//   keyDefs_.push_back(KeyDef("Right", Qt::Key_Right));
+//   keyDefs_.push_back(KeyDef("Up", Qt::Key_Up));
+//   keyDefs_.push_back(KeyDef("Down", Qt::Key_Down));
+//   keyDefs_.push_back(KeyDef("Select", Qt::Key_Select));
    keyDefs_.push_back(KeyDef("Menu", Qt::Key_Menu));
    keyDefs_.push_back(KeyDef("Refresh", Qt::Key_Refresh));
 }

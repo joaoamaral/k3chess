@@ -30,8 +30,8 @@ SOURCES = ChessBoardView.cpp \
     CapturedPiecesView.cpp \
     ExtConsole.cpp \
     RandomGen.cpp \
-    engines\EngineThread.cpp \
-    engines\EngineThreadIO.cpp
+    engines/EngineThread.cpp \
+    engines/EngineThreadIO.cpp
 
 
 HEADERS = ChessBoardView.h \
@@ -69,14 +69,14 @@ HEADERS = ChessBoardView.h \
     CapturedPiecesView.h \
     ExtConsole.h \
     RandomGen.h \
-    engines\EngineThread.h \
-    engines\EngineThreadIO.h
+    engines/EngineThread.h \
+    engines/EngineThreadIO.h
 
 FORMS += \
     SettingsDialog.ui
 
-RESOURCES += \
-    t1chess.qrc
+RESOURCES +=
+
 
 
 

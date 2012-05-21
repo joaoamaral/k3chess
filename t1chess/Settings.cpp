@@ -7,6 +7,12 @@
 #include <QTime>
 #include <QTextCodec>
 
+//#define USE_DEBUG_MESSAGEBOX
+
+#ifdef USE_DEBUG_MESSAGEBOX
+#include <QMessageBox>
+#endif
+
 // @@note: you can override default locale ("English")
 // by providing a file named "English.ini" in locales directory
 // with your own text strings for labels and messages
@@ -14,17 +20,51 @@
 namespace
 {
 
-const QString cT1ChessIniPath = "./T1Chess.ini";
-const QString cDefaultKeymapIniFile = "./keys.ini";
+const QString cT1ChessIniPath = "T1Chess.ini";
+const QString cDefaultKeymapIniFile = "keys.ini";
 const QString cDefaultPlayerClockSetup = "15 0";
 const QString cDefaultEngineClockSetup = "5 0";
-const QString cDefaultPgnFilePath = "./games.pgn";
-const QString cDefaultLastGameFile = "./lastgame.dat";
+const QString cDefaultPgnFilePath = "games.pgn";
+const QString cDefaultLastGameFile = "lastgame.dat";
 const QString cDefaultPlayerName = "Player";
 const QString cDefaultLocaleName = "English";
 const QString cDefaultPgnEventName = "T1Chess game";
 const QString cDefaultSiteName = "?";
 const int cDefaultBoardMargins = 16;
+
+#ifdef USE_DEBUG_MESSAGEBOX
+void debugMsg(const QString& text)
+{
+   QMessageBox::information(0, "T1CHESS:DEBUG", text);
+}
+#else
+#define debugMsg(msg)
+#endif
+
+const QString& userDir()
+{
+   static QString dir;
+   if(dir.isEmpty())
+   {
+      debugMsg("Detecting user dir");
+      //
+      dir = "/mnt/sdcard/.t1chess";     // prefer T1 chess dir, if exists
+      if(!QDir(dir).exists())
+      {
+         debugMsg("'/mnt/sdcard/.t1chess' not found, trying '/sdcard/.t1chess'");
+         //
+         dir = "/sdcard";      // then try emulator SD card dir
+         if(!QDir(dir).exists())
+         {
+            debugMsg("'/sdcard/.t1chess' not found, defaulting to '.'");
+            //
+            dir = ".";         // finally try app dir
+         }
+      }
+      dir += "/";
+   }
+   return dir;
+}
 
 bool containsDigits(const QString& s)
 {
@@ -93,15 +133,15 @@ bool Profile::contains(const QString& str) const
 }
 
 T1ChessSettings::T1ChessSettings() :
-   settings_(cT1ChessIniPath, QSettings::IniFormat)
+   settings_(userDir()+cT1ChessIniPath, QSettings::IniFormat)
 {
    settings_.setIniCodec(QTextCodec::codecForName("UTF-8"));
    //
    profile_ = Profile::fromString(settings_.value("Profile", "Default").toString());
    // enumerate engines (must have "engine.ini"-files with descriptions)
-   enumEngines(QDir(":/engines"));
-   enumPiecesStyles(QDir(":/pieces"));
-   enumLocales(QDir(":/locales"));
+   enumEngines(QDir(userDir() + "engines"));
+   enumPiecesStyles(QDir(userDir() + "pieces"));
+   enumLocales(QDir(userDir() + "locales"));
 }
 
 T1ChessSettings::~T1ChessSettings()
@@ -159,7 +199,7 @@ QString T1ChessSettings::localeIniFilePath() const
 
 QString T1ChessSettings::pgnFilePath() const
 {
-   return settings_.value("Export/PGNFile", cDefaultPgnFilePath).toString();
+   return settings_.value("Export/PGNFile", userDir() + cDefaultPgnFilePath).toString();
 }
 
 QString T1ChessSettings::playerName() const
@@ -219,18 +259,21 @@ bool T1ChessSettings::keyPieceSelect() const
 
 QString T1ChessSettings::keymapFile() const
 {
-   return cDefaultKeymapIniFile;
+   return userDir() + cDefaultKeymapIniFile;
 }
 
 void T1ChessSettings::enumEngines(QDir dir)
 {
-    enumEnginesProc(dir);
-    if(!engines_.empty() &&
-          engines_.find(settings_.value("Engine",
-             QString()).toString())==engines_.end())
-    {
-       settings_.setValue("Engine", engines_.begin()->first);
-    }
+   debugMsg(QString().sprintf("Enumerating engines in '%s'", dir.absolutePath().toStdString().c_str()));
+   //
+   enumEnginesProc(dir);
+   if(!engines_.empty() &&
+         engines_.find(settings_.value("Engine", QString()).toString())==engines_.end())
+   {
+      settings_.setValue("Engine", engines_.begin()->first);
+   }
+   //
+   debugMsg(QString().sprintf("%d engines found", engines_.size()));
 }
 
 void T1ChessSettings::enumEnginesProc(QDir dir)
@@ -239,10 +282,10 @@ void T1ChessSettings::enumEnginesProc(QDir dir)
    QFileInfoList items = dir.entryInfoList();
    foreach(QFileInfo fi, items)
    {
-      if(fi.isDir())
+      if(fi.isDir() && fi.fileName() != "." && fi.fileName() != ".." &&
+            fi.absoluteFilePath().length() > dir.absolutePath().length())
       {
-         if(!fi.fileName().startsWith("."))
-            enumEnginesProc(fi.filePath());
+         enumEnginesProc(fi.absoluteFilePath());
       }
       else if(fi.fileName()=="engine.ini")
       {
@@ -257,14 +300,16 @@ void T1ChessSettings::enumEnginesProc(QDir dir)
 
 void T1ChessSettings::enumPiecesStyles(QDir dir)
 {
+   debugMsg(QString().sprintf("Enumerating piece styles in '%s'", dir.absolutePath().toStdString().c_str()));
+   //
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
    foreach(QFileInfo fi, items)
    {
-      if(fi.isDir())
+      if(fi.isDir() && fi.fileName() != "." && fi.fileName() != ".." &&
+            fi.absoluteFilePath().length() > dir.absolutePath().length())
       {
-         if(!fi.fileName().startsWith("."))
-            enumPiecesStyles(fi.filePath());
+         enumPiecesStyles(fi.absoluteFilePath());
       }
       else if(fi.fileName().contains('.'))
       {
@@ -272,7 +317,7 @@ void T1ChessSettings::enumPiecesStyles(QDir dir)
          QString name = fi.fileName().left(fi.fileName().length()-ext.length()-1);
          if(ext=="png" || ext=="bmp" || ext=="jpg")
          {
-            piecesStyles_.insert(std::make_pair(name, fi.filePath()));
+            piecesStyles_.insert(std::make_pair(name, fi.absoluteFilePath()));
          }
       }
    }
@@ -283,27 +328,31 @@ void T1ChessSettings::enumPiecesStyles(QDir dir)
    {
       settings_.setValue("Board/PiecesStyle", piecesStyles_.begin()->first);
    }
+   //
+   debugMsg(QString().sprintf("%d piece styles found", piecesStyles_.size()));
 }
 
 void T1ChessSettings::enumLocales(QDir dir)
 {
+   debugMsg(QString().sprintf("Enumerating locales in '%s'", dir.absolutePath().toStdString().c_str()));
+   //
    dir.setFilter(QDir::Files | QDir::Dirs);
    QFileInfoList items = dir.entryInfoList();
    foreach(QFileInfo fi, items)
    {
-      if(fi.isDir())
+      if(fi.isDir() && fi.fileName() != "." && fi.fileName() != ".." &&
+            fi.absoluteFilePath().length() > dir.absolutePath().length())
       {
-         if(!fi.fileName().startsWith("."))
-            enumLocales(fi.filePath());
+         enumLocales(fi.absoluteFilePath());
       }
       else if(fi.fileName().endsWith(".ini"))
       {
-         QSettings ini(fi.filePath(), QSettings::IniFormat);
+         QSettings ini(fi.absoluteFilePath(), QSettings::IniFormat);
          ini.setIniCodec(QTextCodec::codecForName("UTF-8"));
          QString name = ini.value("Info/LocaleName", QString()).toString();
          if(!name.isEmpty())
          {
-            locales_.insert(std::make_pair(name, fi.filePath()));
+            locales_.insert(std::make_pair(name, fi.absoluteFilePath()));
          }
       }
    }
@@ -316,6 +365,8 @@ void T1ChessSettings::enumLocales(QDir dir)
    {
       settings_.setValue("Locale", cDefaultLocaleName);
    }
+   //
+   debugMsg(QString().sprintf("%d locales found", locales_.size()));
 }
 
 QStringList T1ChessSettings::getEngineNames() const
@@ -475,6 +526,9 @@ bool T1ChessSettings::readEngineInfo(const QString& engineIniFile,
    ini.beginGroup("Description");
    QString name = ini.value("EngineName", QString()).toString();
    if(name.isEmpty()) return false;
+   //
+   debugMsg(name);
+   //
    QString exePath = ini.value("Executable", QString()).toString();
    if(exePath.isEmpty()) return false;
    if(exePath.startsWith("../") || exePath.startsWith("..\\"))
@@ -511,9 +565,14 @@ bool T1ChessSettings::readEngineInfo(const QString& engineIniFile,
    {
       if(groupName.startsWith("Profile"))
       {
+         debugMsg(groupName);
+         //
          ini.beginGroup(groupName);
          //
          QString profileName = ini.value("Name", QString()).toString();
+         //
+         debugMsg(profileName);
+         //
          //
          QStringList& commands = info.startupCommands[profileName];
          commands.clear();
@@ -575,7 +634,7 @@ void T1ChessSettings::setQuickSingleMoveSelection(bool value)
 
 QString T1ChessSettings::lastGameFile() const
 {
-   return cDefaultLastGameFile;
+   return userDir() + cDefaultLastGameFile;
 }
 
 bool T1ChessSettings::isChess960() const
@@ -696,3 +755,7 @@ void T1ChessSettings::setUseRussianNotation(bool value)
    settings_.setValue("UseRussianNotation", value);
 }
 
+QString T1ChessSettings::logDir() const
+{
+   return userDir() + "logs/";
+}

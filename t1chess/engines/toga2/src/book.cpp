@@ -14,6 +14,10 @@
 #include "move_gen.h"
 #include "util.h"
 
+#include <QFile>
+
+extern QString g_toga2EngineDir;
+
 // types
 
 struct entry_t {
@@ -26,7 +30,8 @@ struct entry_t {
 
 // variables
 
-static FILE * BookFile;
+//static FILE * BookFile;
+static QFile *BookFile;
 static int BookSize;
 
 // prototypes
@@ -34,7 +39,7 @@ static int BookSize;
 static int    find_pos     (uint64 key);
 
 static void   read_entry   (entry_t * entry, int n);
-static uint64 read_integer (FILE * file, int size);
+static uint64 read_integer (QFile * file, int size);
 
 // functions
 
@@ -52,16 +57,14 @@ void book_open(const char file_name[]) {
 
    ASSERT(file_name!=NULL);
 
-   BookFile = fopen(file_name,"rb");
+   BookFile = new QFile(g_toga2EngineDir + "/" + file_name);
 
-   if (BookFile != NULL) {
+   if (BookFile->exists()) {
 
-      if (fseek(BookFile,0,SEEK_END) == -1) {
-         my_fatal("book_open(): fseek(): %s\n",strerror(errno));
-      }
-
-      BookSize = ftell(BookFile) / 16;
-      if (BookSize == -1) my_fatal("book_open(): ftell(): %s\n",strerror(errno));
+      BookSize = BookFile->size()/16;
+      if (BookSize == 0 ||
+         !BookFile->open(QIODevice::ReadOnly))
+          my_fatal("Can't use book\n");
    }
 }
 
@@ -69,9 +72,12 @@ void book_open(const char file_name[]) {
 
 void book_close() {
 
-   if (BookFile != NULL && fclose(BookFile) == EOF) {
-      my_fatal("book_close(): fclose(): %s\n",strerror(errno));
-   }
+    if(BookFile)
+    {
+        BookFile->close();
+        delete BookFile;
+        BookFile = 0;
+    }
 }
 
 // book_move()
@@ -172,8 +178,8 @@ static void read_entry(entry_t * entry, int n) {
 
    ASSERT(BookFile!=NULL);
 
-   if (fseek(BookFile,n*16,SEEK_SET) == -1) {
-      my_fatal("read_entry(): fseek(): %s\n",strerror(errno));
+   if (!BookFile->seek(n*16)) {
+      my_fatal("read_entry(): QFile->seek()\n");
    }
 
    entry->key   = read_integer(BookFile,8);
@@ -185,7 +191,7 @@ static void read_entry(entry_t * entry, int n) {
 
 // read_integer()
 
-static uint64 read_integer(FILE * file, int size) {
+static uint64 read_integer(QFile *file, int size) {
 
    uint64 n;
    int i;
@@ -198,14 +204,12 @@ static uint64 read_integer(FILE * file, int size) {
 
    for (i = 0; i < size; i++) {
 
-      b = fgetc(file);
+       char cc;
+       bool isEof = !file->getChar(&cc);
+       b = (unsigned)(unsigned char)cc;
 
-      if (b == EOF) {
-         if (feof(file)) {
-            my_fatal("read_integer(): fgetc(): EOF reached\n");
-         } else { // error
-            my_fatal("read_integer(): fgetc(): %s\n",strerror(errno));
-         }
+      if (isEof) {
+         my_fatal("read_integer(): QFile->getChar(): EOF reached\n");
       }
 
       ASSERT(b>=0&&b<256);

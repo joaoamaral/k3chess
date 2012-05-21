@@ -26,7 +26,7 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
    static unsigned nCalls = 0;
    static bool noLog = false;
    if(noLog) return;
-   std::ofstream out("./logs/engine_talk.log", nCalls==0 ? std::ios::trunc : std::ios::app);
+   std::ofstream out((g_settings.logDir()+"engine_talk.log").toStdString().c_str(), nCalls==0 ? std::ios::trunc : std::ios::app);
    noLog = out.fail(); // will fail if there is no 'logs' folder
    if(noLog) return;
    //
@@ -51,6 +51,7 @@ ChessPlayer_LocalEngine::ChessPlayer_LocalEngine(const EngineInfo& info,
    forceMoveTimeout_(cDefaultUciForceMoveTimeout),
    randomizeMoveTimeout_(cRandomizeMoveTimeout), weakMode_(false)
 {
+   engineThread_.setEngineDir(extractFolderPath(info.exePath));
    QObject::connect(&engineThread_, SIGNAL(started()),
                     this, SLOT(engineStarted()), Qt::UniqueConnection);
    installEventFilter(this);

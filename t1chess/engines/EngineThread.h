@@ -8,6 +8,7 @@ class EngineThread : public QThread
    Q_OBJECT
 public:
    EngineThread(QObject *parent) : QThread(parent) {}
+   void setEngineDir(const QString& engineDir);
    virtual void run();
 };
 

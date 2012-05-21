@@ -30,7 +30,7 @@ T1ChessMainWindow::T1ChessMainWindow(QWidget *parent) :
    else
       extConsole_->hideCapturedPieces();
    //
-   QFont textFont("Sans", 8, QFont::Bold);
+   QFont textFont("Sans", 7, QFont::Bold); // 8
    //
    boardView_->setFocusPolicy(Qt::NoFocus);
    moveList_->setFocusPolicy(Qt::NoFocus);
@@ -60,12 +60,12 @@ T1ChessMainWindow::T1ChessMainWindow(QWidget *parent) :
       setStyleSheet(cUIStyleSheet_Ebook);
       //
       QFont clockFont(font());
-      clockFont.setPixelSize(15);
+      clockFont.setPixelSize(14); // (15)
       clockFont.setBold(false);
       gameClock_->setClockFont(clockFont);
       //
       QFont captNumberFont(font());
-      captNumberFont.setPixelSize(14);
+      captNumberFont.setPixelSize(12); // (14)
       captNumberFont.setBold(false);
       capturedPieces()->setNumberFont(captNumberFont);
    }

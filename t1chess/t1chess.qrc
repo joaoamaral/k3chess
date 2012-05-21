@@ -17,4 +17,7 @@
         <file>engines/toga2/engine.ini</file>
     </qresource>
     <qresource prefix="/app_settings"/>
+    <qresource prefix="/books">
+        <file>engines/books/performance.bin</file>
+    </qresource>
 </RCC>
