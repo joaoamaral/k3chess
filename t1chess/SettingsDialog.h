@@ -9,7 +9,7 @@ namespace Ui {
 class SettingsDialog;
 }
 
-class SettingsDialog : public QDialog, public KeyPreviewImpl
+class SettingsDialog : public QDialog
 {
    Q_OBJECT
 
@@ -29,25 +29,19 @@ private slots:
 
    void on_cmbEngine_currentIndexChanged(QString );
 
+   void on_btnOK_clicked();
+
 private:
    void initializeLabels(const QString& engineProfile=QString());
    void adjustAppearance();
    void loadValues();
    void applyChanges();
 
-   void installChildEventFilter();
    void updateEngineProfilesCombo(const QString& engineProfile=QString());
 
    QString getCanonizedProfileName() const;
    QString getLocalizedProfileName(const QString& profileName) const;
    QStringList getLocalizedProfileNames() const;
-
-   virtual bool keyPreview(int key, Qt::KeyboardModifiers modifiers,
-                           bool pressed);
-   /*   void on_cmbInterfaceLanguage_currentIndexChanged(QString );
-      void on_SettingsDialog_accepted();
-      void on_SettingsDialog_rejected();
-   */
 
 private:
    Ui::SettingsDialog *ui;

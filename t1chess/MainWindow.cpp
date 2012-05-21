@@ -60,12 +60,12 @@ T1ChessMainWindow::T1ChessMainWindow(QWidget *parent) :
       setStyleSheet(cUIStyleSheet_Ebook);
       //
       QFont clockFont(font());
-      clockFont.setPixelSize(14); // (15)
+      clockFont.setPixelSize(14);
       clockFont.setBold(false);
       gameClock_->setClockFont(clockFont);
       //
       QFont captNumberFont(font());
-      captNumberFont.setPixelSize(12); // (14)
+      captNumberFont.setPixelSize(12);
       captNumberFont.setBold(false);
       capturedPieces()->setNumberFont(captNumberFont);
    }

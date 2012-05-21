@@ -9,10 +9,10 @@
 
 namespace
 {
-const int cHorizontalLabelPadding = 14;
-const int cVerticalLabelPadding = 6;
-const int cUnderlineHeight = 4; // must be within cVerticalLabelPadding
+const int cHorizontalLabelSpacing = 8;
+const int cVerticalLabelSpacing = 8;
 const QColor cDefaultBackgroundColor(213, 196, 170);
+const int cCommandButtonPadding = 16;
 
 QColor blendColor(QColor c, QColor d)
 {
@@ -151,7 +151,7 @@ void CommandPanel::resizeEvent(QResizeEvent*)
 void CommandPanel::updateLabelPositions()
 {
    QRect lastRect;
-   QPoint nextTopLeft(0, (rect().height()-fontMetrics().height()*3/2-cUnderlineHeight)/2);
+   QPoint nextTopLeft(0, (rect().height()-fontMetrics().height()-cCommandButtonPadding)/2);
    //
    rects_.clear();
    unsigned lineStartIdx = 0;
@@ -159,8 +159,7 @@ void CommandPanel::updateLabelPositions()
    std::list<CommandOption>::const_iterator it = options_.items().begin(), itEnd = options_.items().end();
    for(;it!=itEnd;++it)
    {
-      QRect r(0, 0, fontMetrics().width(it->text()), fontMetrics().height());
-      r.setBottom(r.bottom()+cUnderlineHeight);
+      QRect r(0, 0, fontMetrics().width(it->text())+cCommandButtonPadding, fontMetrics().height()+cCommandButtonPadding);
       //
       rects_.push_back(r);
       //
@@ -174,7 +173,7 @@ void CommandPanel::updateLabelPositions()
             rect.moveTopLeft(nextTopLeft);
             lastRect = rect;
             nextTopLeft.setX(0);
-            nextTopLeft.setY(lastRect.bottom()+cVerticalLabelPadding);
+            nextTopLeft.setY(lastRect.bottom()+cVerticalLabelSpacing);
             lineStartIdx = rects_.size();
             continue;
          }
@@ -187,11 +186,11 @@ void CommandPanel::updateLabelPositions()
             //
             //
             nextTopLeft.setX(0);
-            nextTopLeft.setY(lastRect.bottom()+cVerticalLabelPadding);
+            nextTopLeft.setY(lastRect.bottom()+cVerticalLabelSpacing);
          }
       }
       rect.moveTopLeft(nextTopLeft);
-      nextTopLeft.setX(rect.right()+cHorizontalLabelPadding);
+      nextTopLeft.setX(rect.right()+cHorizontalLabelSpacing);
       nextTopLeft.setY(rect.top());
       lastRect = rect;
    }
@@ -269,13 +268,17 @@ void CommandPanel::drawPanel(QPainter& painter, const QRect& clipRect)
       assert(i<(int)rects_.size());
       //
       QRect rect(rects_[i]);
-      QRect textRect(rect);
-      textRect.setBottom(textRect.bottom()-cUnderlineHeight);
+      QRect textRect(rect.left()+cCommandButtonPadding/2, rect.top()+cCommandButtonPadding/2,
+                     rect.width()-cCommandButtonPadding, rect.height()-cCommandButtonPadding);
       //
       if(!rect.intersects(clipRect)) continue;
       //
       if(i==pressedIndex_)
       {
+         painter.setPen(textColor);
+         painter.setBrush(textColor);
+         painter.drawRect(rect);
+         //
          painter.setPen(backgroundColor);
          painter.setBackground(textColor);
          painter.drawText(textRect, Qt::AlignHCenter, it->text());
@@ -283,15 +286,10 @@ void CommandPanel::drawPanel(QPainter& painter, const QRect& clipRect)
       else if(enabled_[i])
       {
          painter.setPen(textColor);
+         painter.setBrush(Qt::NoBrush);
+         painter.drawRect(rect);
          //
-         QRect underlineRect(rect.left(), rect.bottom()-cUnderlineHeight,
-                             rect.width()-1, cUnderlineHeight);
-         if(i==highlightedIndex_ && showHighlight_)
-         {
-            painter.setBrush(textColor);
-            painter.drawRect(underlineRect);
-         }
-         //
+         painter.setPen(textColor);
          painter.drawText(textRect, Qt::AlignCenter, it->text());
       }
       else

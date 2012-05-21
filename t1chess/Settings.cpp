@@ -507,7 +507,7 @@ void T1ChessSettings::flush()
 
 bool T1ChessSettings::showMoveHints() const
 {
-   return settings_.value("Board/ShowMoveHints", true).toBool();
+   return settings_.value("Board/ShowMoveHints", false).toBool();
 }
 
 void T1ChessSettings::setShowMoveHints(bool value)

@@ -22,12 +22,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
    QObject::connect(this, SIGNAL(accepted()), this, SLOT(on_SettingsDialog_accepted()), Qt::UniqueConnection);
    QObject::connect(this, SIGNAL(rejected()), this, SLOT(on_SettingsDialog_rejected()), Qt::UniqueConnection);
    //
-   enableKeyPreview();
+   //enableKeyPreview();
 }
 
 SettingsDialog::~SettingsDialog()
 {
-   disableKeyPreview();
+   //disableKeyPreview();
    //
    delete ui;
 }
@@ -39,10 +39,10 @@ void SettingsDialog::loadValues()
    ui->cbAutoSaveGames->setChecked(g_settings.autoSaveGames());
    ui->cbDrawMoveArrow->setChecked(g_settings.drawMoveArrow());
    ui->cbDrawCoordinates->setChecked(g_settings.drawCoordinates());
-   ui->cbPondering->setChecked(g_settings.canPonder());
+   //ui->cbPondering->setChecked(g_settings.canPonder());
    ui->cbQuickSingleMoveSelection->setChecked(g_settings.quickSingleMoveSelection());
    ui->cbShowMoveHints->setChecked(g_settings.showMoveHints());
-   ui->cbCoordinateMoveInput->setChecked(g_settings.coordinateMoveInput());
+   //ui->cbCoordinateMoveInput->setChecked(g_settings.coordinateMoveInput());
    //ui->cbShowGameClock->setChecked(g_settings.showGameClock());
    //
    QStringList engineNames = g_settings.getEngineNames();
@@ -129,8 +129,8 @@ void SettingsDialog::initializeLabels(const QString& engineProfile)
    ui->cbDrawCoordinates->setText(g_label("DrawCoordinates"));
    ui->cbShowMoveHints->setText(g_label("ShowMoveHints"));
    ui->cbQuickSingleMoveSelection->setText(g_label("QuickSingleMoveSelection"));
-   ui->cbPondering->setText(g_label("Pondering"));
-   ui->cbCoordinateMoveInput->setText(g_label("CoordinateMoveInput"));
+   //ui->cbPondering->setText(g_label("Pondering"));
+   //ui->cbCoordinateMoveInput->setText(g_label("CoordinateMoveInput"));
    //ui->cbShowGameClock->setText(g_label("ShowGameClock"));
    ui->lGeneralSettings->setText(g_label("GeneralSettings"));
    ui->lGameControl->setText(g_label("GameControl"));
@@ -169,6 +169,7 @@ void SettingsDialog::adjustAppearance()
    }
 }
 
+/*
 bool SettingsDialog::keyPreview(int key, Qt::KeyboardModifiers modifiers,
                                 bool pressed)
 {
@@ -184,6 +185,7 @@ bool SettingsDialog::keyPreview(int key, Qt::KeyboardModifiers modifiers,
          return false;
    }
 }
+*/
 
 void SettingsDialog::showEvent(QShowEvent *)
 {
@@ -221,10 +223,10 @@ void SettingsDialog::applyChanges()
    g_settings.setAutoSaveGames(ui->cbAutoSaveGames->isChecked());
    g_settings.setDrawMoveArrow(ui->cbDrawMoveArrow->isChecked());
    g_settings.setDrawCoordinates(ui->cbDrawCoordinates->isChecked());
-   g_settings.setCanPonder(ui->cbPondering->isChecked());
+   //g_settings.setCanPonder(ui->cbPondering->isChecked());
    g_settings.setQuickSingleMoveSelection(ui->cbQuickSingleMoveSelection->isChecked());
    g_settings.setShowMoveHints(ui->cbShowMoveHints->isChecked());
-   g_settings.setCoordinateMoveInput(ui->cbCoordinateMoveInput->isChecked());
+   //g_settings.setCoordinateMoveInput(ui->cbCoordinateMoveInput->isChecked());
    //g_settings.setShowGameClock(ui->cbShowGameClock->isChecked());
    //
    g_settings.setPlayerName(ui->edPlayerName->text().trimmed());
@@ -295,4 +297,9 @@ void SettingsDialog::on_cmbEngine_currentIndexChanged(QString)
 {
     if(isInitializing_) return;
     updateEngineProfilesCombo();
+}
+
+void SettingsDialog::on_btnOK_clicked()
+{
+   accept();
 }

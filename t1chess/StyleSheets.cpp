@@ -1,7 +1,7 @@
 #include "StyleSheets.h"
 
 const QString cUIStyleSheet_Ebook =
-   "color: black; font-family: Sans;"   "font-size: 14px; font-weight: bold;"
+   "color: black; font-family: Sans;"   "font-size: 13px; font-weight: bold;"
    "background-color: white; selection-color: black;"
    "selection-background-color: #F5DEB3;";
 
