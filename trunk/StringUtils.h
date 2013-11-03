@@ -4,6 +4,8 @@
 #include <string>
 #include <QString>
 
+std::string toStdString(const QString& qs); // workaround for QT compiled without STL support
+
 std::string uintToStr(unsigned value);
 unsigned strToUint(const std::string& s, unsigned pos, unsigned& pos_parsed);
 void skipSpace(const std::string& s, unsigned& pos);

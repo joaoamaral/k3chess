@@ -1,5 +1,21 @@
 #include "StringUtils.h"
 
+std::string toStdString(const QString& qs)
+{
+    int n = qs.length();
+    std::string result;
+    result.reserve(n);
+    /* @@warning: works correctly only for charcodes < 0x80 */
+    for(int i=0; i<n; ++i)
+    {
+        if(qs[i].unicode() < 0x80)
+            result.push_back((char)(unsigned char)(qs[i].unicode()));
+        else
+            result.push_back(0x7F);
+    }
+    return result;
+}
+
 std::string uintToStr(unsigned value)
 {
    std::string s(' ', 32);

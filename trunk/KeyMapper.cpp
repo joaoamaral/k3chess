@@ -39,8 +39,9 @@ void KeyMapper::initKeyDefs()
    keyDefs_.push_back(KeyDef("Up", Qt::Key_Up));
    keyDefs_.push_back(KeyDef("Down", Qt::Key_Down));
    keyDefs_.push_back(KeyDef("Select", Qt::Key_Select));
-   keyDefs_.push_back(KeyDef("Menu", Qt::Key_Menu));
+   keyDefs_.push_back(KeyDef("Menu", Qt::Key_Escape)); // Menu and Escape combined
    keyDefs_.push_back(KeyDef("Refresh", Qt::Key_Refresh));
+   keyDefs_.push_back(KeyDef("Exit", Qt::Key_Close));
 }
 
 void KeyMapper::loadKeyMapping()
