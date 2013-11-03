@@ -1,5 +1,6 @@
 #include "LocalChessGui.h"
 #include "MainWindow.h"
+#include "StringUtils.h"
 #include "GlobalStrings.h"
 #include "Settings.h"
 #include "SettingsDialog.h"
@@ -12,7 +13,7 @@ LocalChessGui::LocalChessGui() : clockDisplay_(false)
    updateInputMode();
    //
    mainWindow_->boardView()->updatePosition(
-               ChessPosition::fromString(g_settings.initialPositionFen().toStdString()));
+               ChessPosition::fromString(toStdString(g_settings.initialPositionFen())));
    //
    if(g_settings.profile().contains("ebook")||
          g_settings.profile().contains("handheld"))

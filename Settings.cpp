@@ -534,7 +534,8 @@ bool K3ChessSettings::readEngineInfo(const QString& engineIniFile,
          //
          if(commands.isEmpty())
          {
-            info.startupCommands.erase(info.startupCommands.find(groupName));
+             std::map<QString, QStringList>::iterator it = info.startupCommands.find(groupName);
+             if(it!=info.startupCommands.end()) info.startupCommands.erase(it);
          }
          else
          {

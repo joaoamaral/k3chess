@@ -117,6 +117,9 @@ void K3ChessMainWindow::keyPressEvent(QKeyEvent *event)
                       // Alt+Esc, Alt+Q or Alt+X is pressed
          }
          break;
+      case Qt::Key_Close: // close main window when
+         close();         // the mapped close key is pressed
+         break;
       default:
          break;
    }

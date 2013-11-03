@@ -29,7 +29,7 @@ void logEngineTalk(TalkDirection direction, const std::string& msg)
    noLog = out.fail(); // will fail if there is no 'logs' folder
    if(noLog) return;
    //
-   out << time.toString("HH:mm:ss.zzz").toStdString() << " ";
+   out << toStdString(time.toString("HH:mm:ss.zzz")) << " ";
    switch(direction)
    {
       case TO_ENGINE: out << "-->"; break;
@@ -179,7 +179,7 @@ void ChessPlayer_LocalEngine::engineTypeDetected(bool updateEngineIni)
    {
       foreach(QString cmd, *commands)
       {
-         tellEngine(cmd.toStdString());
+         tellEngine(toStdString(cmd));
       }
    }
    //
@@ -590,13 +590,13 @@ bool ChessPlayer_LocalEngine::setChess960(bool value)
    {
       if(info_.supports960())
       {
-         tellEngine(info_.commandStandard.toStdString());
+         tellEngine(toStdString(info_.commandStandard));
          return true;
       }
    }
    else if(info_.supports960())
    {
-      tellEngine(info_.command960.toStdString());
+      tellEngine(toStdString(info_.command960));
       return true;
    }
    return false;

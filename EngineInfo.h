@@ -1,6 +1,7 @@
 #ifndef __EngineInfo_h
 #define __EngineInfo_h
 
+#include <map>
 #include <QStringList>
 
 enum EngineType { etDetect, etUCI, etXBoard };

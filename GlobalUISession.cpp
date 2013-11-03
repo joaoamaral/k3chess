@@ -19,7 +19,7 @@ GlobalUISession::GlobalUISession() :
 {
    initialize();
    //
-   initialPosition_ = ChessPosition::fromString(g_settings.initialPositionFen().toStdString());
+   initialPosition_ = ChessPosition::fromString(toStdString(g_settings.initialPositionFen()));
    initialPosition_.setChess960(g_settings.isChess960());
    //
    QObject::connect(&g_settings, SIGNAL(playerNameChanged()), this, SLOT(playerNameChanged()), Qt::UniqueConnection);

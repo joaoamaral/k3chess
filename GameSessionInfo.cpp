@@ -1,4 +1,5 @@
 #include "GameSessionInfo.h"
+#include "StringUtils.h"
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
@@ -81,10 +82,10 @@ bool GameSessionInfo::loadFromFile(const QString& fileName)
    //
    QString fen = in.readLine();
    //
-   initialPosition = ChessPosition::fromString(fen.toStdString());
+   initialPosition = ChessPosition::fromString(toStdString(fen.toLocal8Bit()));
    if(initialPosition.isEmpty()) return false;
    //
-   initialPosition.setChess960(fen.toStdString()!=cStandardInitialFen);
+   initialPosition.setChess960(toStdString(fen)!=cStandardInitialFen);
    //
    moves.clear();
    //
@@ -92,7 +93,7 @@ bool GameSessionInfo::loadFromFile(const QString& fileName)
    {
       QString move_str = in.readLine();
       if(move_str.isEmpty()) break;
-      moves.push_back(ChessMove::fromString(move_str.toStdString()));
+      moves.push_back(ChessMove::fromString(toStdString(move_str)));
    }
    //
    return true;
