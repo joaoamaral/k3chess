@@ -5,6 +5,9 @@
 #include "Settings.h"
 #include "SettingsDialog.h"
 
+#include <QInputDialog>
+#include <QMessageBox>
+
 LocalChessGui::LocalChessGui() : clockDisplay_(false)
 {
    mainWindow_ = new K3ChessMainWindow;
@@ -301,6 +304,30 @@ void LocalChessGui::updateShowCaptured()
    {
       mainWindow_->hideCapturedPieces();
    }
+}
+
+bool LocalChessGui::getInitialPosition(const QString &message, ChessPosition& position)
+{
+   bool ok;
+   QString text = QInputDialog::getText(mainWindow_, "K3Chess",
+                                        message, QLineEdit::Normal,
+                                        "", &ok);
+   if(ok)
+   {
+      position = ChessPosition::fromString(text.toStdString());
+      if(position.isEmpty())
+      {
+         QMessageBox msgBox;
+         msgBox.setText(g_msg("InvalidFEN"));
+         msgBox.setIcon(QMessageBox::Critical);
+         msgBox.exec();
+         return false;
+      }
+      updatePosition(position);
+      return true;
+   }
+
+   return false;
 }
 
 void LocalChessGui::updateMoveList(const QStringList &slist)

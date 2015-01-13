@@ -91,9 +91,6 @@ QString toSANMove(const ChessPosition& position,
       {
          s.append(ChessPiece(piece.type()|pcWhite).toChar());
          // check for ambiguous move
-         ChessPosition testPosition(position);
-         testPosition.setCell(move.from, ChessPiece(ptPawn|getOpponent(piece.color())));
-         //
          std::list<CoordPair> movesTo;
          moves.getMovesTo(move.to, movesTo);
          //
@@ -563,12 +560,14 @@ bool ChessGame::applyMove(const ChessMove& move)
    ChessMoveType moveType = g_chessRules.applyMove(position_, move);
    positions_.push_back(position_.toString());
    //
+   ChessMoveMap prevPossibleMoves = possibleMoves_;
+   //
    recalcPossibleMoves();
    //
    bool isCheck = g_chessRules.isKingChecked(position_.sideToMove(), position_);
    bool isCheckmate = possibleMoves_.empty() && isCheck;
    //
-   QString sanMove = toSANMove(prevPosition, move, moveType, possibleMoves_, isCheck, isCheckmate);
+   QString sanMove = toSANMove(prevPosition, move, moveType, prevPossibleMoves, isCheck, isCheckmate);
    QString ruMove = toRuMove(prevPosition, move, moveType, isCheck, isCheckmate);
    //
    sanMoves_.push_back(sanMove);
@@ -655,44 +654,48 @@ QString ChessGame::toPGN() const
    QString pgn;
    pgn.reserve(2048);
    //
-   pgn.append("[Event \"K3Chess game\"]\n");
-   pgn.append("[Site \"?\"]\n");
+   pgn.append("[Event \"K3Chess game\"]\r\n");
+   pgn.append("[Site \"?\"]\r\n");
    pgn.append("[Date \"");
    pgn.append(startTime_.date().toString("yyyy.MM.dd"));
-   pgn.append("\"]\n");
-   pgn.append("[Round \"?\"]\n");
+   pgn.append("\"]\r\n");
+   pgn.append("[Round \"?\"]\r\n");
    //
    pgn.append("[White \"");
    pgn.append(whitePlayerName_);
-   pgn.append("\"]\n");
+   pgn.append("\"]\r\n");
    //
    pgn.append("[Black \"");
    pgn.append(blackPlayerName_);
-   pgn.append("\"]\n");
+   pgn.append("\"]\r\n");
    //
    pgn.append("[Result \"");
    //
    QString score = getPgnScore(result_);
    pgn.append(score.isEmpty() ? QString("*") : score);
-   pgn.append("\"]\n");
+   pgn.append("\"]\r\n");
    //
    pgn.append("[Termination \"");
    pgn.append(getPgnResultMessage(result_));
-   pgn.append("\"]\n");
+   pgn.append("\"]\r\n");
    //
    if(position_.isChess960())
    {
-      pgn.append("[Variant \"Chess960\"]\n");
-      pgn.append("[FEN \"");
-      pgn.append(positions_[0].c_str());
-      pgn.append("\"]\n");
+      pgn.append("[Variant \"Chess960\"]\r\n");
    }
    //
-   for(unsigned i=0; i<sanMoves_.size(); ++i)
+   if(positions_[0]!=cStandardInitialFen)
+   {
+      pgn.append("[FEN \"");
+      pgn.append(QString::fromStdString(positions_[0]));
+      pgn.append("\"]\r\n");
+   }
+   //
+   for(unsigned i=0; i<(unsigned)sanMoves_.size(); ++i)
    {
       if((i%10)==0)
       {
-         pgn.append('\n');
+         pgn.append("\r\n");
       }
       //
       if(i>0)
@@ -702,7 +705,7 @@ QString ChessGame::toPGN() const
       //
       if((i%2)==0)
       {
-         pgn.append(QString::number(i+1));
+         pgn.append(QString::number(i/2+1));
          pgn.append(". ");
       }
       //
@@ -762,10 +765,14 @@ ChessMove ChessGame::interpretMoveString(const std::string &move_str) const
 
 unsigned ChessGame::addPositionOccurrence(const std::string& fen)
 {
-   std::map<std::string, unsigned>::iterator it = positionOccurrences_.find(fen);
+   std::string::size_type pos = fen.find_last_of(' ');
+   pos = fen.find_last_of(' ', pos-1);
+   std::string f = fen.substr(0, pos);
+   std::map<std::string, unsigned>::iterator it =
+         positionOccurrences_.find(f);
    if(it==positionOccurrences_.end())
    {
-      positionOccurrences_.insert(it, std::make_pair(fen, 1));
+      positionOccurrences_.insert(it, std::make_pair(f, 1));
       return 1;
    }
    else
