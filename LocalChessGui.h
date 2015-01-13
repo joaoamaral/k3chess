@@ -51,6 +51,9 @@ public:
    void updateShowClock();
    void updateShowCaptured();
 
+   //
+   bool getInitialPosition(const QString &message, ChessPosition& position);
+
 signals:
    void userMoves(const CoordPair& pair);
    void userChoice(int id);

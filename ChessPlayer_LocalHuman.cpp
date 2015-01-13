@@ -67,10 +67,13 @@ void ChessPlayer_LocalHuman::userChoice(int id)
       case cmd_InGame_Takeback:  emit playerRequestsTakeback(); break;
       case cmd_InGame_OfferDraw: emit playerOffersDraw();
          // resume move selection
-         mode_ = modeSelectingMove;
-         QObject::connect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this,
-                          SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
-         g_localChessGui.beginMoveSelection();
+         if(mode_!=modeStandby)
+         {
+            mode_ = modeSelectingMove;
+            QObject::connect(&g_localChessGui, SIGNAL(userMoves(const CoordPair&)), this,
+                             SLOT(userMoves(const CoordPair&)), Qt::UniqueConnection);
+            g_localChessGui.beginMoveSelection();
+         }
          break;
       case cmd_InGame_Resign:     emit playerResigns();  break;
       case cmd_InGame_Abort:      emit playerRequestsAbort();  break;

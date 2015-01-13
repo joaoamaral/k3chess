@@ -167,6 +167,16 @@ void GlobalUISession::userChoice(int id)
          g_localChessGui.showSettingsDialog();
          showNewGameMenu();
          break;
+      case cmd_ExtMenu_FEN:
+         {
+            ChessPosition position;
+            if(g_localChessGui.getInitialPosition(g_msg("InputInitialFEN"), position))
+            {
+               initialPosition_ = position;
+            }
+            showNewGameMenu();
+         }
+         break;
       case cmd_ExtMenu_Quit:
          requestExit();
          break;

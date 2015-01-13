@@ -22,6 +22,9 @@ const int cmd_Promotion_Bishop = 32;
 const int cmd_Promotion_Knight = 33;
 const int cmd_PostGame_Save = 40;
 const int cmd_PostGame_Discard = 42;
+#ifdef CONFIG_DESKTOP
+const int cmd_ExtMenu_FEN = 12;
+#endif
 
 class CommandOptionDefs : public QObject
 {

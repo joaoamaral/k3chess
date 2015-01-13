@@ -4,6 +4,9 @@ const CommandOption cmdOption_NewGame_PlayerWhite(cmd_NewGame_PlayerWhite, "NewG
 const CommandOption cmdOption_NewGame_PlayerBlack(cmd_NewGame_PlayerBlack, "NewGame_PlayerBlack", srtMenuVar, Qt::Key_B);
 const CommandOption cmdOption_NewGame_TwoPlayers(cmd_NewGame_TwoPlayers, "NewGame_TwoPlayers", srtMenuVar, Qt::Key_T);
 const CommandOption cmdOption_ExtMenu_Settings(cmd_ExtMenu_Settings, "ExtMenu_Settings", srtMenuVar, Qt::Key_O);
+#ifdef CONFIG_DESKTOP
+const CommandOption cmdOption_ExtMenu_FEN(cmd_ExtMenu_FEN, "ExtMenu_FEN", srtMenuVar, Qt::Key_F);
+#endif
 //const CommandOption cmdOption_ExtMenu_About(cmd_ExtMenu_About, "ExtMenu_About", srtMenuVar, Qt::Key_A);
 const CommandOption cmdOption_ExtMenu_Quit(cmd_ExtMenu_Quit, "ExtMenu_Quit", srtMenuVar, Qt::Key_Q);
 const CommandOption cmdOption_InGame_Takeback(cmd_InGame_Takeback, "InGame_Takeback", srtMenuVar, Qt::Key_T);
@@ -39,6 +42,9 @@ void CommandOptionDefs::initialize()
    newGameOptions_.add(cmdOption_NewGame_TwoPlayers);
    //
    extMenuOptions_.add(cmdOption_ExtMenu_Settings);
+#ifdef CONFIG_DESKTOP
+   extMenuOptions_.add(cmdOption_ExtMenu_FEN);
+#endif
    extMenuOptions_.add(cmdOption_ExtMenu_Quit);
    //
    inGameOptions_.add(cmdOption_InGame_Takeback);
